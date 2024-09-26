@@ -2,16 +2,16 @@ import localFont from "next/font/local";
 import "@pThunder/app/globals.css";
 
 
-export default function Layout({
+export default function AuthLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="ko">
-            <body>
-                {children}
-            </body>
-        </html>
+        <div
+            className={`w-screen h-screen`}
+        >
+            {children}
+        </div>
     );
 }
