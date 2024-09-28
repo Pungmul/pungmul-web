@@ -1,6 +1,6 @@
 const sendSignUpRequest = async (userInfo: FormData) => {
     try {
-        const response = await fetch('/api/sign-up', {
+        const response = await fetch('sign-up/api', {
             method: 'POST',
             body: userInfo
         })

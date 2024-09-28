@@ -9,10 +9,9 @@ export default function SignUpPage() {
 
     const router = useRouter();
     const [PWValid, setPWValid] = useState(true);
-    const [PWCValid, setPWCValid] = useState(true);
     const [password, setPassword] = useState<string>(``)
-    const [confirmPassword, setConfirmPassword] = useState<string>(``)
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [PWVisible, setPWVisible] = useState(false);
     const file = null;
     const handleTelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const formattedPhoneNumber = formatPhoneNumber(e.currentTarget.value);
@@ -30,7 +29,7 @@ export default function SignUpPage() {
 
     const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!PWCValid || !PWValid) return;
+        if (!PWValid) return;
         const formData = new FormData(e.currentTarget);
         const userInfo = {
             loginId: formData.get('loginId') as string,
@@ -63,92 +62,120 @@ export default function SignUpPage() {
     }
 
     return (
-        <div className="w-full h-screen flex flex-col items-center justifyd-center">
-            회원 가입
-            <div className="px-12 border">
+        <div className="w-full justify-center h-screen flex flex-col items-center justifyd-center">
+
+            <div className="px-12 w-96 py-4 rounded-md border">
+                <div className="flex flex-row justify-between items-start">
+
+                    <div className="text-xl text-purple-800">회원 가입</div>
+
+                    <div className="text-md cursor-pointer text-gray-400"
+                    onClick={()=>{router.back()}}
+                    >X</div>
+                </div>
                 <form onSubmit={submitHandler} className="w-full flex flex-col gap-2 py-4">
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">ID</span>
-                        <input required type="email" name="loginId" id="loginId" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
-                        <div>중복 검사</div>
+                    <div className=" flex flex-row items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <input required type="email" name="loginId" id="loginId" placeholder="ID" className="flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none" autoSave="off" autoComplete="off" />
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">비밀번호</span>
-                        <input type="password"
+                    <div className={`flex flex-row items-center border-2 rounded-md px-2 p-1 bg-purple-200 ${PWValid ? `border-purple-400 bg-purple-200` : `border-red-600 bg-red-200`} `}>
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <input type={PWVisible ? 'text' : 'password'}
                             required
+                            autoComplete="off"
                             value={password}
+                            placeholder="비밀번호"
                             onChange={e => setPassword(e.currentTarget.value)}
                             onBlur={(e) => {
                                 const value = e.currentTarget.value;
-                                const regex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+                                const regex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,12}$/;
                                 setPWValid(regex.test(value));
-                            }} name="password" id="password" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                            }} name="password" id="password" className={`flex-grow bg-transparent ${PWValid ? `placeholder-purple-400 text-purple-800` : password.length > 0 ? `placeholder-red-400 text-red-600` : `placeholder-red-400 text-red-600 underline`}   py-0.5 px-2 outline-none`} />
+                        <span className={`w-4 h-4 ${PWVisible ? "bg-slate-200" : "bg-black"} cursor-pointer`} onClick={() => { setPWVisible(!PWVisible) }} />
                     </div>
                     {!PWValid && <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32"></span>
-                        <span className="flex-grow max-w-56 text-sm text-red-400">비밀번호는 영문, 숫자를 포함한 8~12자 이내의 문자입니다.</span>
+                        <span className="flex-grow text-xs text-red-400">비밀번호는 영문, 숫자를 포함한 8~12자 이내의 문자입니다.</span>
                     </div>}
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">비밀번호 확인</span>
-                        <input type="password"
-                            required
-                            value={confirmPassword}
-                            onChange={e => setConfirmPassword(e.currentTarget.value)}
-                            onBlur={(e) => {
-                                const value = e.currentTarget.value;
-                                setPWCValid(value == password);
-                            }}
-                            name="confirm-password" id="confirm-password" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <input required type="text" name="name" id="name" className="flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none"
+                            placeholder="이름" />
                     </div>
-                    {!PWCValid && <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32"></span>
-                        <span className="flex-grow max-w-56 text-sm text-red-400">비밀번호와 일치하지 않습니다.</span>
-                    </div>}
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">이름</span>
-                        <input required type="text" name="name" id="name" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <input type="text" name="clubName" id="clubName" className="flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none"
+                            placeholder="패 이름" />
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">패 이름</span>
-                        <input type="text" name="clubName" id="clubName" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <input required type="date" max={`${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${new Date().getDate()}`} name="birth" id="birth"
+                            className="flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-1 outline-none" />
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">생일</span>
-                        <input required type="date" max={`${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${new Date().getDate()}`} name="birth" id="birth" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center justify-between gap-2">
+                        <div className="flex flex-row flex-grow items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200">
+                            <span className="w-4 h-4 bg-purple-700" />
+                            <select name="clubAge" id="clubAge" className="text-right flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none">
+                                <option value="" disabled selected>학번</option>
+                                {Array.from({ length: 100 }, (_, i) => i).map((number) => <option key={number + 'age'} value={`${number.toString().padStart(2, '0')}`}>{number.toString().padStart(2, '0')}</option>)}
+                            </select>
+                        </div>
+                        <div className="flex flex-row flex-grow items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200">
+                            <span className="w-4 h-4 bg-purple-700" />
+                            <select required name="gender" id="gender" defaultValue={"M"} className="text-right flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none">
+                                <option value="M">남</option>
+                                <option value="F">여</option>
+                            </select>
+                        </div>
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">학번</span>
-                        <select name="clubAge" id="clubAge" className="text-right flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700">
-                            {Array.from({ length: 100 }, (_, i) => i).map((number) => <option key={number + 'age'} value={`${number.toString().padStart(2, '0')}`}>{number.toString().padStart(2, '0')}</option>)}
-                        </select>
-                    </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">성별</span>
-                        <select required name="gender" id="gender" defaultValue={"M"} className="text-right flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700">
-                            <option value="M">남</option>
-                            <option value="F">여</option>
-                        </select>
-                    </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">전화번호</span>
+
+                    <div className="flex flex-row items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
                         <input
+                            placeholder="휴대전화번호"
                             value={phoneNumber}
                             onChange={handleTelChange}
-                            required type="tel" name="phoneNumber" id="phoneNumber" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                            required type="tel" name="phoneNumber" id="phoneNumber" className="flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none" />
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">이메일</span>
-                        <input required type="email" name="email" id="email" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <input placeholder="이메일(정보 수신)" required type="email" name="email" id="email" className="flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none" />
                     </div>
-                    <div className=" flex flex-row items-center"  >
-                        <span className="mr-2 w-32">지역</span>
-                        <input type="text" name="area" id="area" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center justify-between gap-2">
+                        <div className="flex flex-row flex-grow items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                            <span className="w-4 h-4 bg-purple-700" />
+                            <select name="area" id="area" className="text-right flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-2 outline-none">
+                                <option value="" disabled selected>지역 정보</option>
+                                {/* <!-- 광역시 --> */}
+                                <option value="seoul">서울</option>
+                                <option value="busan">부산</option>
+                                <option value="incheon">인천</option>
+                                <option value="daegu">대구</option>
+                                <option value="daejeon">대전</option>
+                                <option value="gwangju">광주</option>
+                                <option value="ulsan">울산</option>
+                                <option value="sejong">세종</option>
+                                {/* <!-- 도 --> */}
+                                <option value="gyeonggi">경기</option>
+                                <option value="gangwon">강원</option>
+                                <option value="chungbuk">충청</option>
+                                <option value="chungnam">충청</option>
+                                <option value="jeonbuk">전라</option>
+                                <option value="jeonnam">전라</option>
+                                <option value="gyeongbuk">경상</option>
+                                <option value="gyeongnam">경상</option>
+                                <option value="jeju">제주</option>
+                            </select>
+                        </div>
+
+                        <div className="flex flex-row flex-grow items-center border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                            <span className="w-4 h-4 bg-purple-700" />
+                            <select name="clubId" id="clubId" className="text-right flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-1 outline-none">
+                                <option value="" disabled selected>소속패 ID</option>
+                                {Array.from({ length: 30 }, (_, i) => i).map((number) => <option key={number + 'club'} value={`${number.toString().padStart(3, 'A0')}`}>{number.toString().padStart(3, 'A0')}</option>)}
+                            </select>
+                        </div>
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">소속패 ID</span>
-                        <input type="text" name="clubId" id="clubId" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
-                    </div>
-                    <button type="submit" className="w-full my-1 flex-grow rounded-md bg-purple-800 text-white py-0.5 px-1 outline-purple-700">제출</button>
+                    <button type="submit" className="w-full my-1 flex-grow rounded-md bg-purple-800 text-white py-1 px-1 outline-purple-700">제출</button>
                 </form>
             </div>
         </div>
