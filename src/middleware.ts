@@ -8,7 +8,7 @@ export function middleware(req: NextRequest) {
     console.log(req.nextUrl.pathname)
     
     if (accessToken === 'invalid' || !accessToken) {
-        if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/sign-up') return NextResponse.next();
+        if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/sign-up'||req.nextUrl.pathname === '/login/api' || req.nextUrl.pathname === '/sign-up/api') return NextResponse.next();
         return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트
     }
 
@@ -33,9 +33,7 @@ export function middleware(req: NextRequest) {
     }
 
     // 예: 로그인 페이지('/login') 또는 회원가입 페이지('/signup')에서 홈 페이지('/')로 리다이렉트
-    if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/sign-up') {
-        return NextResponse.redirect(new URL('/home', req.url));  // 홈 페이지로 리다이렉트
-    }
+    
 
     return NextResponse.next();
 }

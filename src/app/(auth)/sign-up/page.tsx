@@ -50,21 +50,28 @@ export default function SignUpPage() {
 
         const profileFile = formData.get('profile');
 
-        console.log(profileFile)
-        if (profileFile)
+        
+        if (profileFile) {
             userForm.append('profile', profileFile);
+        }
 
 
         const accountBlob = new Blob([JSON.stringify(userInfo)], {
             type: 'application/json'
         });
+
         userForm.append('accountData', accountBlob);
-        console.log(userInfo)
+
+        console.log(userForm)
 
         try {
             // 비동기로 요청을 전송
-            await sendSignUpRequest(userForm);
-            console.log('완료');
+            const signupResult = await sendSignUpRequest(userForm);
+            
+
+            if(!signupResult) throw Error('회원가입 실패')
+
+            router.replace(`/login`);
         } catch (e) {
             console.error('Signup failed:', e);
         }
@@ -79,7 +86,7 @@ export default function SignUpPage() {
                     <div className="text-xl text-purple-800">회원 가입</div>
 
                     <div className="text-md cursor-pointer text-gray-400"
-                    onClick={()=>{router.back()}}
+                        onClick={() => { router.back() }}
                     >X</div>
                 </div>
                 <form onSubmit={submitHandler} className="w-full flex flex-col gap-2 py-4">
@@ -166,12 +173,12 @@ export default function SignUpPage() {
                                 {/* <!-- 도 --> */}
                                 <option value="gyeonggi">경기</option>
                                 <option value="gangwon">강원</option>
-                                <option value="chungbuk">충청</option>
-                                <option value="chungnam">충청</option>
-                                <option value="jeonbuk">전라</option>
-                                <option value="jeonnam">전라</option>
-                                <option value="gyeongbuk">경상</option>
-                                <option value="gyeongnam">경상</option>
+                                <option value="chungbuk">충북</option>
+                                <option value="chungnam">충남</option>
+                                <option value="jeonbuk">전북</option>
+                                <option value="jeonnam">전남</option>
+                                <option value="gyeongbuk">경북</option>
+                                <option value="gyeongnam">경남</option>
                                 <option value="jeju">제주</option>
                             </select>
                         </div>
@@ -180,13 +187,14 @@ export default function SignUpPage() {
                             <span className="w-4 h-4 bg-purple-700" />
                             <select name="clubId" id="clubId" className="text-right flex-grow bg-transparent placeholder-purple-400 text-purple-800 py-0.5 px-1 outline-none">
                                 <option value="" disabled selected>소속패 ID</option>
-                                {Array.from({ length: 30 }, (_, i) => i).map((number) => <option key={number + 'club'} value={`${number.toString().padStart(3, 'A0')}`}>{number.toString().padStart(3, 'A0')}</option>)}
+                                {Array.from({ length: 30 }, (_, i) => i).map((number) => <option key={number + 'club'} value={`${number.toString().padStart(2, '0')}`}>{number.toString().padStart(2, '0')}</option>)}
                             </select>
                         </div>
                     </div>
-                    <div className=" flex flex-row items-center ">
-                        <span className="mr-2 w-32">프로필 사진</span>
-                        <input type="file" name="profile" accept=".jpeg .png" id="profile" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    <div className="flex flex-row items-center justify-between border-purple-400 border-2 rounded-md px-2 p-1 bg-purple-200 ">
+                        <span className="w-4 h-4 bg-purple-700" />
+                        <label htmlFor="profile" className=" rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" >프로필 사진 선택</label>
+                        <input type="file" name="profile" accept=".jpeg .png" id="profile" className="hidden" />
                     </div>
                     <button type="submit" className="w-full my-1 flex-grow rounded-md bg-purple-800 text-white py-0.5 px-1 outline-purple-700">제출</button>
                 </form>
