@@ -6,7 +6,7 @@ interface loginInfo{
 const sendLoginRequest = async (loginInfo: loginInfo) => {
     console.log(loginInfo);
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch('login/api', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
