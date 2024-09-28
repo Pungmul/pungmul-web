@@ -6,7 +6,7 @@ const sendSignUpRequest = async (userInfo: FormData) => {
         })
 
         if (!response.ok) throw Error('비정상 동작')
-        
+
         console.log(response.json)
         return true;
     } catch (e) {
