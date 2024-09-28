@@ -10,7 +10,6 @@ export async function POST(req: Request) {
 
     const response = await fetch(proxyUrl, {
       method: 'POST',
-      headers:req.headers,
       body: formData, // 원본 body를 그대로 전달
     });
 

@@ -42,14 +42,23 @@ export default function SignUpPage() {
             phoneNumber: phoneNumber.replace(/\D/g, ''),
             email: formData.get('email') as string,
             area: formData.get('area') as string || null,
-            clubId: formData.get('clubId') as string || null
+            clubId: Number(formData.get('clubId') as string) || null
         };
 
         const userForm = new FormData();
 
-        userForm.append('profile', 'file');
 
-        userForm.append('accountData', JSON.stringify(userInfo));
+        const profileFile = formData.get('profile');
+
+        console.log(profileFile)
+        if (profileFile)
+            userForm.append('profile', profileFile);
+
+
+        const accountBlob = new Blob([JSON.stringify(userInfo)], {
+            type: 'application/json'
+        });
+        userForm.append('accountData', accountBlob);
         console.log(userInfo)
 
         try {
@@ -175,7 +184,11 @@ export default function SignUpPage() {
                             </select>
                         </div>
                     </div>
-                    <button type="submit" className="w-full my-1 flex-grow rounded-md bg-purple-800 text-white py-1 px-1 outline-purple-700">제출</button>
+                    <div className=" flex flex-row items-center ">
+                        <span className="mr-2 w-32">프로필 사진</span>
+                        <input type="file" name="profile" accept=".jpeg .png" id="profile" className="flex-grow rounded-md border border-violet-300 bg-purple-100 text-purple-800 py-0.5 px-1 outline-purple-700" />
+                    </div>
+                    <button type="submit" className="w-full my-1 flex-grow rounded-md bg-purple-800 text-white py-0.5 px-1 outline-purple-700">제출</button>
                 </form>
             </div>
         </div>
