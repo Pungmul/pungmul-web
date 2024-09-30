@@ -1,44 +1,82 @@
 'use client'
 import { useEffect, useState } from "react"
 import { getInstrumentsInfomation, addInstrumentSkill } from "./utils";
+import { tree } from "next/dist/build/templates/app-page";
 
-interface InstrumentData { instrument: Instrument, instrumentAbility: string, major: boolean }
+interface InstrumentData { instrument: Instrument, instrumentAbility: Level, major: boolean }
 type Instrument = "KKWAENGGWARI" | "JING" | "JANGGU" | "BUK" | "SOGO" | "TAEPYUNGSO";
 const instruments: Instrument[] = ["KKWAENGGWARI", "JING", "JANGGU", "BUK", "SOGO", "TAEPYUNGSO"];
 
+const instrumentNamesMap: { [key in Instrument]: string } = {
+    KKWAENGGWARI: "꽹과리",
+    JING: "징",
+    JANGGU: "장구",
+    BUK: "북",
+    SOGO: "소고",
+    TAEPYUNGSO: "태평소"
+};
+type Level = "UNSKILLED" | "BASIC" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
+
+const levels: Level[] = ["UNSKILLED", "BASIC", "INTERMEDIATE", "ADVANCED", "EXPERT"];
+
+const levelNamesMap: { [key in Level]: string } = {
+    UNSKILLED: "초심자",
+    BASIC: "초급자",
+    INTERMEDIATE: "중급자",
+    ADVANCED: "숙련자",
+    EXPERT: "전문가",
+};
 export default function MyPagePage() {
     const [selectVisible, setVisible] = useState(false);
-    const [isMain, setMain] = useState<Instrument | null>(null);
-    const [instrumentData, setInstrumentsData] = useState([]);
+    const [isMain, setMain] = useState<string | null>(null);
+    const [instrumentsData, setInstrumentsData] = useState<InstrumentData[]>([]);
 
     const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
 
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const addInst = formData.get('add_instrument') as string;
-        if(addInst==null) return;
+        if (addInst == null) return;
         try {
             const response = await addInstrumentSkill(addInst);
-            if(!response) throw Error('악기 정보 업데이트 실패');
+            if (!response) throw Error('악기 정보 업데이트 실패');
             console.log('업로드 완료')
-        } catch (e){
+            setVisible(false)
+
+            const InstrumentsData = await getInstrumentsInfomation();
+            setInstrumentsData(InstrumentsData)
+
+        } catch (e) {
             console.error(e);
         }
     }
+
+    useEffect(() => {
+        const sortedInstrumentsData = [...instrumentsData].sort((a, b) => {
+            if (isMain == (a.instrument) && isMain != (b.instrument)) return -1;  // `a`가 `ismain`에 포함되면 `a`를 상단으로
+            if (isMain != (a.instrument) && isMain == (b.instrument)) return 1;   // `b`가 `ismain`에 포함되면 `b`를 상단으로
+            if (levels.indexOf(b.instrumentAbility) == levels.indexOf(a.instrumentAbility))
+                return instruments.indexOf(a.instrument) - instruments.indexOf(b.instrument)
+                return levels.indexOf(b.instrumentAbility) - levels.indexOf(a.instrumentAbility)
+        });
+        setInstrumentsData(sortedInstrumentsData);
+    }, [isMain])
+
     useEffect(() => {
         const loadInstrumentsData = async () => {
             const InstrumentsData = await getInstrumentsInfomation();
-            console.log(InstrumentsData)
             setInstrumentsData(InstrumentsData)
         }
         loadInstrumentsData();
     }, [])
+
     useEffect(() => {
-        instrumentData.map((instrumentData: InstrumentData) => {
+        instrumentsData.map((instrumentData: InstrumentData) => {
             if (instrumentData.major)
                 setMain(instrumentData.instrument)
         })
-    }, [instrumentData])
+    }, [instrumentsData])
+
     return (
         <div className="flex mt-20 flex-col items-center">
             <div className="w-96 my-2">
@@ -61,14 +99,15 @@ export default function MyPagePage() {
                         <div className="flex flex-row justify-between mx-1">
                             <div>악기</div>
                             <div>
-                                <select name="add_instrument" id="add_instrument">
-                                    {instruments.map(instrument => {
-                                        return (
-                                            <option value={instrument}>
-                                                {instrument}
-                                            </option>
-                                        )
-                                    })}
+                                <select name="add_instrument" id="add_instrument" className="text-right">
+                                    {
+                                        instruments.filter(instrument => !instrumentsData.map(data => data.instrument).includes(instrument)).map(instrument => {
+                                            return (
+                                                <option key={instrument} value={instrument}>
+                                                    {instrumentNamesMap[instrument]}
+                                                </option>
+                                            )
+                                        })}
                                 </select>
                             </div>
                         </div>
@@ -78,18 +117,24 @@ export default function MyPagePage() {
                     <div className="-right-0.5 top-0 p-0.5 absolute cursor-pointer text-gray-300"
                         onClick={() => setVisible(true)}>추가하기</div>
                     <div className="flex flex-col gap-2 px-0.5 py-2 rounded border border-gray-200 my-2">
-                        {instrumentData.map((instrumentData: InstrumentData) =>
-                            <div className="flex flex-row justify-between group">
+                        {instrumentsData.map((instrumentData: InstrumentData, index: number) =>
+                            <div key={instrumentData.instrument} className="flex flex-row justify-between group">
                                 <div className="flex items-center flex-row gap-1">
-                                    <div className={`w-4 h-4 border cursor-pointer ${instrumentData.major?'opacity-100':'opacity-0'} group-hover:opacity-100`}
-                                        onClick={(e) => {
-                                            e.currentTarget.classList.toggle('bg-amber-300')
+                                    <div className={`w-4 h-4 border cursor-pointer group-hover:opacity-100 ${instrumentData.instrument == isMain ? 'bg-amber-300 border-amber-300 ' : `opacity-0`}`}
+                                        onClick={() => {
+                                            setMain(instrumentData.instrument)
                                         }} />
-                                    <div>{instrumentData.instrument}</div>
+                                    <div>{instrumentNamesMap[instrumentData.instrument]}</div>
                                 </div>
                                 <div className="flex items-center flex-row gap-1">
-                                    <div>{instrumentData.instrumentAbility}</div>
-                                    <div className="w-4 h-4 bg-red-500 cursor-pointer  opacity-0 group-hover:opacity-100" />
+                                    <div>{levelNamesMap[instrumentData.instrumentAbility]}</div>
+                                    <div className="w-4 h-4 bg-red-500 cursor-pointer  opacity-0 group-hover:opacity-100"
+                                        onClick={() => {
+                                            const updatedData = [...instrumentsData];
+                                            updatedData.splice(index, 1);  // 해당 index에서 1개 항목 제거
+                                            setInstrumentsData(updatedData);
+                                            instrumentData.major = true;
+                                        }} />
                                 </div>
                             </div>)}
                     </div>

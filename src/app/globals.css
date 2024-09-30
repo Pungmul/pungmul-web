@@ -25,3 +25,26 @@ body {
     text-wrap: balance;
   }
 }
+
+
+.border-0\.5 {
+  border-width: 0.5px;
+}
+
+.naverBtn {
+  background-image: url('./assets/icons/btnG_아이콘원형.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.kakao-color{
+  background-color: #FEE500;
+}
+.kakaoBtn {
+  background-image: url('./assets/icons/Vector.png');
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}

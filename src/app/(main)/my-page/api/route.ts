@@ -18,7 +18,6 @@ export async function GET() {
 
         // 프록시 응답 받기
         const proxyResponse = await response.json();
-        console.log(proxyResponse.response)
 
         const { instrumentStatusDTOList } = proxyResponse.response;
         // 클라이언트에 프록시 응답 반환

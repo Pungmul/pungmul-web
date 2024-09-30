@@ -13,11 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <div id="main-contents" className="flex-grow h-screen flex flex-row">
-        <SideMenu />
-        <div className="flex-grow">
-          {children}
-        </div>
+    <div id="main-contents" className="flex flex-row">
+      <SideMenu />
+      <div className="flex-grow">
+        {children}
       </div>
+    </div>
   );
 }

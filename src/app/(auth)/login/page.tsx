@@ -15,7 +15,7 @@ export default function LoginPage() {
             if (!loginResponse) throw Error('로그인 실패');
 
             router.replace(`/home`);
-        } catch (e) {   
+        } catch (e) {
             console.log(e);
         }
     }
@@ -48,6 +48,33 @@ export default function LoginPage() {
                     <button type="submit" className="w-full bg-purple-800 text-white py-2 rounded-md mt-4">로그인</button>
                 </form>
                 <div className="self-center text-gray-400 cursor-pointer" onClick={() => { router.push('/sign-up') }}>회원가입</div>
+                <div className="flex flex-row items-center">
+                    <div className="flex-grow border-0.5" />
+                    <div className="text-sm text-gray-300 mx-2">소셜 계정으로 로그인</div>
+                    <div className="flex-grow border-0.5"></div>
+                </div>
+                <div className="flex flex-row items-center justify-between">
+                    <div className="flex flex-col w-14 items-center cursor-pointer" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-full" >
+                            <div className="w-12 h-12 naverBtn"></div>
+                        </div>
+                        <div className="text-gray-300 pt-2 font-medium text-sm">네이버</div>
+                    </div>
+                    <div className="flex flex-col w-14 items-center cursor-pointer" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-full kakao-color overflow-hidden flex items-center justify-center">
+                            <div className="w-7 h-7 kakaoBtn"></div>
+                        </div>
+                        <div className="text-gray-300 pt-2 font-medium text-sm">카카오</div>
+                    </div>
+                    <div className="flex flex-col w-14 items-center cursor-pointer" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-full bg-slate-300" />
+                        <div className="text-gray-300 pt-2 font-medium text-sm">Apple</div>
+                    </div>
+                    <div className="flex flex-col w-14 items-center cursor-pointer" onClick={() => { }}>
+                        <div className="w-12 h-12 rounded-full border-0.5 border-slate-300" />
+                        <div className="text-gray-300 pt-2 font-medium text-sm">Google</div>
+                    </div>
+                </div>
             </div>
         </div>
     )
