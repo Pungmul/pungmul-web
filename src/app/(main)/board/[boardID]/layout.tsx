@@ -11,15 +11,15 @@ export default function Layout({
     children, params
 }: Readonly<{
     children: React.ReactNode
-    params: { boardID: number, pageID?:number }
+    params: { boardID: number }
 }>) {
     
     return (
         <div className="flex flex-row h-screen items-center justify-center gap-4 mx-24">
-            <div className="w-auto border h-3/4 rounded-md p-2 overflow-y-scroll">
+            <div className="border rounded-lg w-auto min-w-72 h-3/4 overflow-y-scroll">
                 <PostList params={params} />
             </div>
-            <div className="flex-grow border h-3/4 rounded-md p-2">
+            <div className="border h-3/4 rounded-md flex-grow">
                 {children}
             </div>
         </div>

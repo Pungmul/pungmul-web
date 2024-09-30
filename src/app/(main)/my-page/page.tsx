@@ -30,6 +30,7 @@ export default function MyPagePage() {
     const [selectVisible, setVisible] = useState(false);
     const [isMain, setMain] = useState<string | null>(null);
     const [instrumentsData, setInstrumentsData] = useState<InstrumentData[]>([]);
+    const [userData, setUser] = useState<any>(null)
 
     const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
 
@@ -57,14 +58,16 @@ export default function MyPagePage() {
             if (isMain != (a.instrument) && isMain == (b.instrument)) return 1;   // `b`가 `ismain`에 포함되면 `b`를 상단으로
             if (levels.indexOf(b.instrumentAbility) == levels.indexOf(a.instrumentAbility))
                 return instruments.indexOf(a.instrument) - instruments.indexOf(b.instrument)
-                return levels.indexOf(b.instrumentAbility) - levels.indexOf(a.instrumentAbility)
+            return levels.indexOf(b.instrumentAbility) - levels.indexOf(a.instrumentAbility)
         });
         setInstrumentsData(sortedInstrumentsData);
     }, [isMain])
 
     useEffect(() => {
         const loadInstrumentsData = async () => {
-            const InstrumentsData = await getInstrumentsInfomation();
+            const data = await getInstrumentsInfomation();
+            const { instrumentStatusDTOList: InstrumentsData } = data;
+            setUser(data);
             setInstrumentsData(InstrumentsData)
         }
         loadInstrumentsData();
@@ -84,9 +87,17 @@ export default function MyPagePage() {
             </div>
             <div className="border-gray-300 border rounded-md px-6 py-4 w-96 flex flex-col gap-4">
                 <div className="flex flex-row justify-between">
-                    <span className="text-xl">이름</span><span className="text-xl">입니다</span>
+                    <span className="text-gray-400">이름</span><span>{userData?.name}{`${userData?.clubName?` (${userData.clubName})`:''}`}</span>
                 </div>
-
+                <div className="flex flex-row justify-between">
+                    <span className="text-gray-400">동아리</span><span>{userData?.name}{` (${userData?.clubAge})`} </span>
+                </div>
+                <div className="flex flex-row justify-between">
+                    <span className="text-gray-400">성별</span><span>{userData?.gender=="M"?"남":"여"}</span>
+                </div>
+                <div className="flex flex-row justify-between">
+                    <span className="text-gray-400">이름</span><span>{userData?.phoneNumber}</span>
+                </div>
                 <div className="relative">
                     <form
                         onSubmit={submitHandler}

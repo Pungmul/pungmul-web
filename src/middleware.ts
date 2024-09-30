@@ -12,7 +12,7 @@ export function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트
     }
 
-    if (req.nextUrl.pathname.startsWith('/logout')) {
+    if (req.nextUrl.pathname.startsWith('/logout')&&accessToken) {
 
         const response = NextResponse.redirect(new URL('/login', req.url));
         response.cookies.set('accessToken', '', {

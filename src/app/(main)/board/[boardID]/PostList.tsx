@@ -68,9 +68,9 @@ export default function PostList({ params }: { params: { boardID: number } }) {
     }, [])
 
     return (
-        <div>
+        <div className="overflow-y-scroll">
             {BoardData?.recentPostList?.list.map(post => (
-                <div className={`w-64 flex flex-col px-4 py-4 border border-collapse cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
+                <div className={`w-full flex flex-col px-4 py-4 border-b cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
                     onClick={() => {
                         router.push(`/board/${boardID}/${post.postId}`)
                     }}>

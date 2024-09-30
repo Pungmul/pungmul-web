@@ -19,9 +19,8 @@ export async function GET() {
         // 프록시 응답 받기
         const proxyResponse = await response.json();
 
-        const { instrumentStatusDTOList } = proxyResponse.response;
         // 클라이언트에 프록시 응답 반환
-        return Response.json(instrumentStatusDTOList, { status: 200 });
+        return Response.json({ ...proxyResponse.response }, { status: 200 });
 
     } catch (error) {
         console.error('프록시 처리 중 에러:', error);
@@ -44,7 +43,7 @@ export async function POST(req: Request) {
         const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: {
-                'Content-Type':'application/json',
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify(reqJson)

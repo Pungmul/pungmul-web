@@ -7,6 +7,7 @@ export default function LoginPage() {
     const router = useRouter();
 
     const [PWVisible, setPWVisible] = useState(false);
+    const [isFailed, setFail] = useState(false);
 
     const loginHandler = async (userForm: { loginId: string, password: string }) => {
         try {
@@ -17,6 +18,7 @@ export default function LoginPage() {
             router.replace(`/home`);
         } catch (e) {
             console.log(e);
+            setFail(true);
         }
     }
 
@@ -45,7 +47,12 @@ export default function LoginPage() {
                             name="password" id="password" className={`flex-grow bg-transparent placeholder-purple-400 text-purple-800  py-0.5 px-2 outline-none`} />
                         <span className={`w-4 h-4 ${PWVisible ? "bg-slate-200" : "bg-black"} cursor-pointer`} onClick={() => { setPWVisible(!PWVisible) }} />
                     </div>
-                    <button type="submit" className="w-full bg-purple-800 text-white py-2 rounded-md mt-4">로그인</button>
+                    <div className="fexl-col w-full">
+                        {isFailed &&
+                            <div className="w-56 text-red-400">로그인 실패: 계정을 확인해주세요.</div>}
+                        <button type="submit" className="w-full bg-purple-800 text-white py-2 rounded-md mt-2">로그인</button>
+                    </div>
+
                 </form>
                 <div className="self-center text-gray-400 cursor-pointer" onClick={() => { router.push('/sign-up') }}>회원가입</div>
                 <div className="flex flex-row items-center">
