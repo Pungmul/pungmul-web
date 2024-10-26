@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import sendSignUpRequest from "./utils";
 
+import "@pThunder/app/globals.css";
 
 export default function SignUpPage() {
 
@@ -12,7 +13,7 @@ export default function SignUpPage() {
     const [password, setPassword] = useState<string>(``)
     const [phoneNumber, setPhoneNumber] = useState('');
     const [PWVisible, setPWVisible] = useState(false);
-    const file = null;
+    // const file = null;
     const handleTelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const formattedPhoneNumber = formatPhoneNumber(e.currentTarget.value);
         setPhoneNumber(formattedPhoneNumber);

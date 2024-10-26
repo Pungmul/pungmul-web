@@ -1,4 +1,3 @@
-import localFont from "next/font/local";
 import "@pThunder/app/globals.css";
 
 

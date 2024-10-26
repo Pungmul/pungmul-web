@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { addComment, addReply, clickLike, loadPost } from "./utils";
 
 interface Post {
@@ -51,6 +51,8 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
     const [Post, setPost] = useState<Post | null>(null);
     const [isReplying, setReply] = useState<number | null>(null)
+
+    const wholeRef = useRef<any>(null);
 
     useEffect(() => {
         const loadingPost = async () => {
@@ -115,19 +117,25 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
     const CommentHandler = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const comment = (new FormData(e.currentTarget).get('comment')) as string;
+        const form =  e.currentTarget;
+        const comment = (new FormData(form).get('comment')) as string;
 
         try {
-            const data = await addComment(pageID, comment)
+            const data = await addComment(pageID, comment) as Comment;
 
             if (!data) throw Error('댓글 작성 실패')
 
             const currentPost = Post;
-
-            if (currentPost)
+            
+           
+            if (currentPost) {
+                console.log(buildCommentTree([...currentPost!.commentList, data]))
                 setPost({ ...currentPost, commentList: buildCommentTree([...currentPost.commentList, data]) })
+                wholeRef.current?.scrollIntoView({ behavior: 'smooth',scrollY:10000 });
+                (form.elements.namedItem('comment') as HTMLInputElement).value='';
+            }
 
-            e.currentTarget.reset();
+
         } catch (error) {
             console.log(error)
         }
@@ -146,9 +154,10 @@ export default function Page({ params }: { params: { pageID: number } }) {
             const currentPost = Post;
 
             if (currentPost) {
-                e.currentTarget.reset();
                 setReply(null);
                 setPost({ ...currentPost, commentList: buildCommentTree([...currentPost.commentList, data]) })
+                
+                e.currentTarget.reset();
             }
 
 
@@ -160,7 +169,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
     return (
         <div className="h-full flex flex-col">
-            <div className="overflow-x-hidden overflow-y-scroll flex-grow rounded-md bg-gray-300">
+            <div ref={wholeRef} className="overflow-x-hidden overflow-y-scroll flex-grow rounded-md bg-gray-300">
                 <div className="flex flex-col gap-1 px-6 py-6  bg-white">
                     <div className="flex flex-row">
                         <div className="text-2xl font-semibold">
@@ -186,7 +195,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
                     <div className="my-2">
                         {Post?.content}
                     </div>
-                    <div className="w-full overflow-x-scroll">
+                    <div className="w-full ">
                         <div className="flex flex-row w-full gap-2">
                             {Post?.imageList?.map((image) => (
                                 <img
@@ -211,16 +220,16 @@ export default function Page({ params }: { params: { pageID: number } }) {
                         </div>
                     </div>
                 </div>
-                {Post?.commentList?.length! > 0 && <div className="w-full mt-6 flex-col gap-2 flex">
+                {Post?.commentList!.length! > 0 && <div className="w-full mt-6 flex-col gap-2 flex">
                     {Post?.commentList.map(comment => (
-                        <div className="w-full bg-white ">
+                        <div key={comment.commentId} className="w-full bg-white ">
                             <div className="w-full py-4 px-4 bg-white rounded-md border-b" onClick={() => setReply(comment.commentId)}>
                                 <div>{comment.userName}</div>
                                 <div>{comment.content}</div>
                             </div>
                             <div className="w-full flex-col gap-2 flex">
                                 {comment.replies?.map(reply => (
-                                    <div className="w-full py-4 ml-2 pl-4 border-b rounded-md bg-gray-200">
+                                    <div key={reply.commentId} className="w-full py-4 ml-2 pl-4 border-b rounded-md bg-gray-200">
                                         <div>{reply.userName}</div>
                                         <div>{reply.content}</div>
                                     </div>

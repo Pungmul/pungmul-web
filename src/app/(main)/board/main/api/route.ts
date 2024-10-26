@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-export async function GET(req: Request) {
+export async function GET() {
 
     try {
         const proxyUrl = `${process.env.BASE_URL}/api/boards`;

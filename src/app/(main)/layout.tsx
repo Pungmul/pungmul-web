@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div id="main-contents" className="flex flex-row">
+    <div id="main-contents" className="flex flex-col-reverse md:flex-row h-screen">
       <SideMenu />
       <div className="flex-grow">
         {children}

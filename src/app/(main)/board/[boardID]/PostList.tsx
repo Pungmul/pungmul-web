@@ -48,16 +48,18 @@ interface BoardData {
     recentPostList: RecentPostList;
 }
 
-export default function PostList({ params }: { params: { boardID: number } }) {
+
+export default function PostList({ params, data }: { params: { boardID: number }, data: BoardData }) {
     const router = useRouter();
     const { boardID } = params
 
     const segments = useSelectedLayoutSegments();
-    const [BoardData, setData] = useState<BoardData | null>(null);
+    const [BoardData, setData] = useState<BoardData>(data);
+    const [page, setPage] = useState(1);
+
     useEffect(() => {
         const loadPage = async () => {
             try {
-                console.log(boardID)
                 const data = await loadPosts(boardID) as BoardData;
                 console.log(data)
                 setData(data);
@@ -68,9 +70,9 @@ export default function PostList({ params }: { params: { boardID: number } }) {
     }, [])
 
     return (
-        <div className="overflow-y-scroll">
+        <>
             {BoardData?.recentPostList?.list.map(post => (
-                <div className={`w-full flex flex-col px-4 py-4 border-b cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
+                <div key={post.postId} className={`w-full flex flex-col px-4 py-4 border-b cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
                     onClick={() => {
                         router.push(`/board/${boardID}/${post.postId}`)
                     }}>
@@ -90,6 +92,6 @@ export default function PostList({ params }: { params: { boardID: number } }) {
                     </div>
                 </div>
             ))}
-        </div>
+        </>
     )
 }

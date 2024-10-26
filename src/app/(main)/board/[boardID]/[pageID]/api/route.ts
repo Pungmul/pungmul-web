@@ -8,7 +8,6 @@ export async function GET(req: Request) {
 
         const proxyUrl = `${process.env.BASE_URL}/api/posts/${postID}`;
         
-        console.log(proxyUrl)
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 

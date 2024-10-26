@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from "react"
 import { getInstrumentsInfomation, addInstrumentSkill } from "./utils";
-import { tree } from "next/dist/build/templates/app-page";
+
+import "@pThunder/app/globals.css";
 
 interface InstrumentData { instrument: Instrument, instrumentAbility: Level, major: boolean }
 type Instrument = "KKWAENGGWARI" | "JING" | "JANGGU" | "BUK" | "SOGO" | "TAEPYUNGSO";
@@ -26,11 +27,25 @@ const levelNamesMap: { [key in Level]: string } = {
     ADVANCED: "숙련자",
     EXPERT: "전문가",
 };
+
+interface User {
+    loginId: string;
+    name: string;
+    clubName?: string;
+    birth: string; // "YYYY-MM-DD" 형식
+    clubAge: number;
+    gender: 'M' | 'F';
+    phoneNumber: string;
+    email: string;
+    area?: string;
+    instrumentsData: InstrumentData[];
+}
+
 export default function MyPagePage() {
     const [selectVisible, setVisible] = useState(false);
     const [isMain, setMain] = useState<string | null>(null);
     const [instrumentsData, setInstrumentsData] = useState<InstrumentData[]>([]);
-    const [userData, setUser] = useState<any>(null)
+    const [userData, setUser] = useState<User | null>(null)
 
     const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
 
@@ -87,13 +102,13 @@ export default function MyPagePage() {
             </div>
             <div className="border-gray-300 border rounded-md px-6 py-4 w-96 flex flex-col gap-4">
                 <div className="flex flex-row justify-between">
-                    <span className="text-gray-400">이름</span><span>{userData?.name}{`${userData?.clubName?` (${userData.clubName})`:''}`}</span>
+                    <span className="text-gray-400">이름</span><span>{userData?.name}{`${userData?.clubName ? ` (${userData.clubName})` : ''}`}</span>
                 </div>
                 <div className="flex flex-row justify-between">
                     <span className="text-gray-400">동아리</span><span>{userData?.name}{` (${userData?.clubAge})`} </span>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <span className="text-gray-400">성별</span><span>{userData?.gender=="M"?"남":"여"}</span>
+                    <span className="text-gray-400">성별</span><span>{userData?.gender == "M" ? "남" : "여"}</span>
                 </div>
                 <div className="flex flex-row justify-between">
                     <span className="text-gray-400">이름</span><span>{userData?.phoneNumber}</span>
@@ -112,7 +127,7 @@ export default function MyPagePage() {
                             <div>
                                 <select name="add_instrument" id="add_instrument" className="text-right">
                                     {
-                                        instruments.filter(instrument => !instrumentsData.map(data => data.instrument).includes(instrument)).map(instrument => {
+                                        instruments.filter(instrument => !instrumentsData?.map(data => data.instrument).includes(instrument)).map(instrument => {
                                             return (
                                                 <option key={instrument} value={instrument}>
                                                     {instrumentNamesMap[instrument]}

@@ -9,7 +9,6 @@ export async function GET(req: Request) {
         const proxyUrl = `${process.env.BASE_URL}/api/boards/${boardId}`;
 
         
-        console.log(url)
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -22,7 +21,6 @@ export async function GET(req: Request) {
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
 
         const { response } = await proxyResponse.json();
-        console.log(response);
         return Response.json(response, { status: 200 })
 
     } catch (error) {
