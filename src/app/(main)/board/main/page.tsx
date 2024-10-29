@@ -22,13 +22,20 @@ export default function BoardMainPage() {
     }, [])
 
     return (
-        <div>
-            {boardList.map(board => (
-                <div key={board.id} className="flex flex-row items-center gap-1 p-0.5 cursor-pointer"
-                onClick={()=>router.push(`${board.id}`)}>
-                    <div className="w-6 h-6 bg-slate-500"/>
-                    <div>{board.name}</div>
-                </div>))}
+        <div className="w-full px-4 py-4">
+                <div className="border-0.5 border-gray-400 rounded-md px-4 py-4 flex flex-col gap-4">
+                    <div className="text-xl font-semibold">게시판</div>
+                    <div className="px-4">
+                        {boardList.map(board => (
+                            <div key={board.id} className="w-full flex flex-row items-center gap-4 p-0.5 cursor-pointer"
+                                onClick={() => router.push(`${board.id}`)}>
+                                <div className="w-6 h-6 bg-slate-500" />
+                                <div>{board.name}</div>
+                            </div>))}
+                    </div>
+            </div>
+
         </div>
+
     )
 }

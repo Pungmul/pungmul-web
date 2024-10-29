@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { addComment, addReply, clickLike, loadPost } from "./utils";
+import { debounce } from "lodash";
+import { requestFriend } from "@pThunder/app/(main)/friends/utils";
 
 interface Post {
     postId: number;                // 게시물 ID (Long 타입, TypeScript에서는 number로 사용)
@@ -12,7 +14,7 @@ interface Post {
     likedNum: number;              // 좋아요 수
     timeSincePosted: number;       // 게시 후 경과 시간 (분 단위)
     timeSincePostedText: string;   // 경과 시간 텍스트 (예: "2분 전")
-    author: string;                // 작성자
+    author: any;
     commentList: Comment[];
     isLiked: boolean;
 }
@@ -94,6 +96,20 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
         return rootComments;
     }
+    const FriendRequset = useCallback(debounce(async (friendName: string, freindId: string) => {
+        try {
+            const response = await requestFriend(freindId);
+            if (!response) throw Error('친구 추가 실패')
+            alert(`${friendName}님께 친구를 신청했어요`);
+        } catch (e: unknown) {
+            console.error(e);
+            if (e instanceof Error) {
+                alert(e.message);
+            } else {
+                alert("An unknown error occurred");
+            }
+        }
+    }), [])
 
     const LikeHandler = useCallback(async () => {
         try {
@@ -117,7 +133,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
     const CommentHandler = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const form =  e.currentTarget;
+        const form = e.currentTarget;
         const comment = (new FormData(form).get('comment')) as string;
 
         try {
@@ -126,13 +142,13 @@ export default function Page({ params }: { params: { pageID: number } }) {
             if (!data) throw Error('댓글 작성 실패')
 
             const currentPost = Post;
-            
-           
+
+
             if (currentPost) {
                 console.log(buildCommentTree([...currentPost!.commentList, data]))
                 setPost({ ...currentPost, commentList: buildCommentTree([...currentPost.commentList, data]) })
-                wholeRef.current?.scrollIntoView({ behavior: 'smooth',scrollY:10000 });
-                (form.elements.namedItem('comment') as HTMLInputElement).value='';
+                wholeRef.current?.scrollIntoView({ behavior: 'smooth', scrollY: 10000 });
+                (form.elements.namedItem('comment') as HTMLInputElement).value = '';
             }
 
 
@@ -156,7 +172,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
             if (currentPost) {
                 setReply(null);
                 setPost({ ...currentPost, commentList: buildCommentTree([...currentPost.commentList, data]) })
-                
+
                 e.currentTarget.reset();
             }
 
@@ -177,8 +193,16 @@ export default function Page({ params }: { params: { pageID: number } }) {
                         </div>
                     </div>
                     <div className="flex flex-col gap-0">
-                        <div className="font-semibold">
-                            {Post?.author == 'Anonymous' ? '익명' : Post?.author}
+                        <div className="flex flex-row gap-4">
+                            <div className="font-semibold">
+                            {Post?.author == 'Anonymous' ? '익명' : Post?.author.name}
+                            </div>
+                            {Post?.author !== 'Anonymous' && Post?.author &&
+                                <div className=" text-xs items-center justify-center flex  border border-blue-400 rounded-sm text-blue-600 hover:bg-blue-400 hover:text-white cursor-pointer"
+                                    onClick={() => FriendRequset(Post?.author.name, Post?.author.username)}>
+                                    친구 추가
+                                </div>
+                            }
                         </div>
                         <div className="flex flex-row justify-between items-start">
                             <div className="text-gray-400 text-sm">
