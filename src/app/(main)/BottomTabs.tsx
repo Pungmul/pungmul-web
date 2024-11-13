@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import "@pThunder/app/globals.css";
 
-export default function SideMenu() {
+export default function BottomTabs() {
     const router = useRouter();
     return (
         <div className="w-full justify-center px-4 bg-gray-400 flex flex-row bottom-0 items-center gap-4 py-2 sticky ">

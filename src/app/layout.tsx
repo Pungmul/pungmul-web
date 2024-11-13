@@ -1,6 +1,5 @@
 import "@pThunder/app/globals.css";
 
-
 export default function Layout({
     children,
 }: Readonly<{
@@ -8,7 +7,7 @@ export default function Layout({
 }>) {
     return (
         <html lang="ko">
-            <body className="mx-auto">
+            <body className="mx-auto h-screen">
                 {children}
             </body>
         </html>

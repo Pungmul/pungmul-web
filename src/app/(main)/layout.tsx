@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@pThunder/app/globals.css";
-import SideMenu from "./sidemenu";
+import BottomTabs from "./BottomTabs";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <div id="main-contents" className="flex flex-col-reverse w-full h-screen">
-      <SideMenu />
+      <BottomTabs />
       <div className="flex-grow">
         {children}
       </div>

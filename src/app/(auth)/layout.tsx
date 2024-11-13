@@ -8,7 +8,7 @@ export default function AuthLayout({
 }>) {
     return (
         <div
-            className={`w-screen h-screen`}
+            className={`w-full h-full`}
         >
             {children}
         </div>
