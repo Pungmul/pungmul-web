@@ -8,7 +8,7 @@ export default function Layout({
 }>) {
     return (
         <html lang="ko">
-            <body>
+            <body className="mx-auto">
                 {children}
             </body>
         </html>

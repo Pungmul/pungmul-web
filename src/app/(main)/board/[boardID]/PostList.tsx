@@ -42,7 +42,7 @@ interface RecentPostList {
     hasNextPage: boolean;
 }
 
-interface BoardData {
+export interface BoardData {
     boardInfo: BoardInfo;
     hotPost: HotPost;
     recentPostList: RecentPostList;

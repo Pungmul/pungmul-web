@@ -18,6 +18,7 @@ interface Post {
     commentList: Comment[];
     isLiked: boolean;
 }
+
 interface ImageObject {
     id: number;                          // 파일의 고유 ID
     originalFilename: string;            // 원본 파일명
@@ -27,6 +28,7 @@ interface ImageObject {
     fileSize: number;                    // 파일 크기 (바이트 단위)
     createdAt: string;                   // 파일이 생성된 시간 (ISO 형식)
 }
+
 interface Profile {
     id: number;                          // 프로필 이미지의 고유 ID
     originalFilename: string;            // 원본 파일명
@@ -47,6 +49,7 @@ interface Comment {
     createdAt: string;                   // 댓글 작성 시간
     replies: Comment[];
 }
+
 export default function Page({ params }: { params: { pageID: number } }) {
 
     const { pageID } = params;
@@ -185,7 +188,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
     return (
         <div className="h-full flex flex-col">
-            <div ref={wholeRef} className="overflow-x-hidden overflow-y-scroll flex-grow rounded-md bg-gray-300">
+            <div ref={wholeRef} className="overflow-x-hidden overflow-y-auto flex-grow rounded-md bg-gray-300">
                 <div className="flex flex-col gap-1 px-6 py-6  bg-white">
                     <div className="flex flex-row">
                         <div className="text-2xl font-semibold">

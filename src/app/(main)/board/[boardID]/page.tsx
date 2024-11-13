@@ -1,8 +1,13 @@
-export default function Page() {
+import PostList, { BoardData } from "./PostList";
+
+export default function Page({
+    params
+}: Readonly<{
+    params: { boardID: number, data: BoardData }
+}>) {
     return (
         <>
-            <div>왼쪽에서 글을 선택하거나</div>
-            <div>새로운 글을 작성하세요</div>
+            <PostList params={params} data={params.data} />
         </>
     )
 }
