@@ -66,3 +66,12 @@ body {
 .shadow-up-lg {
   box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.25);
 }
+
+.scroll-bar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-bar-hidden {
+  -ms-overflow-style: none;  /* IE and 엣지 */
+  scrollbar-width: none;  /* 파이어폭스 */
+}

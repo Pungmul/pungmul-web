@@ -55,7 +55,7 @@ export default function Home() {
     // Kakao Map API를 로드하고 지도를 초기화하는 함수
     const loadKakaoMap = (location: LocationType) => {
       const kakaoMapScript = document.createElement('script');
-      kakaoMapScript.async = false;
+      kakaoMapScript.async = true;
       kakaoMapScript.src = KAKAO_SDK_URL;
       document.head.appendChild(kakaoMapScript);
 
@@ -69,6 +69,44 @@ export default function Home() {
 
           const mapInstance = new window.kakao.maps.Map(container, options);
           setMap(mapInstance);
+
+          var circle = new window.kakao.maps.Circle({
+            center: new window.kakao.maps.LatLng(location.latitude, location.longitude),  // 원의 중심좌표 입니다 
+            radius: 100, // 미터 단위의 원의 반지름입니다 
+            strokeWeight: 1, // 선의 두께입니다 
+            strokeColor: '#5B2B99', // 선의 색깔입니다
+            strokeOpacity: 0.6, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+            fillColor: '#816DFF', // 채우기 색깔입니다
+            fillOpacity: 0.2  // 채우기 불투명도 입니다   
+          });
+
+          // 지도에 원을 표시합니다 
+          var mouseoverOption = {
+            fillColor: '#816DFF', // 채우기 색깔입니다
+            fillOpacity: 0.5  // 채우기 불투명도 입니다   
+          };
+
+          // 다각형에 마우스아웃 이벤트가 발생했을 때 변경할 채우기 옵션입니다
+          var mouseoutOption = {
+            fillColor: '#816DFF', // 채우기 색깔입니다
+            fillOpacity: 0.2  // 채우기 불투명도 입니다   
+          };
+
+          // 다각형에 마우스오버 이벤트를 등록합니다
+          window.kakao.maps.event.addListener(circle, 'mouseover', function () {
+
+            // 다각형의 채우기 옵션을 변경합니다
+            circle.setOptions(mouseoverOption);
+
+          });
+
+          window.kakao.maps.event.addListener(circle, 'mouseout', function () {
+
+            // 다각형의 채우기 옵션을 변경합니다
+            circle.setOptions(mouseoutOption);
+
+          });
+          circle.setMap(mapInstance);
         });
       };
 
@@ -80,10 +118,18 @@ export default function Home() {
       };
     };
 
+
+
     // 위치가 변경될 때마다 loadLocation을 호출하는 watchPosition 설정
     const watchId = geolocation.watchPosition(
       loadLocation,
-      (error) => console.error("Geolocation error:", error),
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          console.error("Permission denied for geolocation");
+        } else {
+          console.error("Geolocation error:", error);
+        }
+      },
       { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
 
@@ -98,8 +144,8 @@ export default function Home() {
   useEffect(() => {
     if (!isLoading && currentLocation && map) {
       var imageSrc = '/gpsMarker.png', // 마커이미지의 주소입니다    
-        imageSize = new window.kakao.maps.Size(32, 32) // 마커이미지의 크기입니다
-      var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize)
+        imageSize = new window.kakao.maps.Size(24, 24) // 마커이미지의 크기입니다
+      var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, { offset: new window.kakao.maps.Point(12, 12) })
 
       const marker = new window.kakao.maps.Marker({
         image: markerImage,
@@ -118,12 +164,12 @@ export default function Home() {
         {!isLoading &&
           <div className="absolute w-12 h-12 flex items-center justify-center cursor-pointer shadow-lg z-10 rounded-full bottom-12 bg-white right-4"
             onClick={moveMyLocation}>
-            <img src="gps.png" className="w-8 h-8" sizes="cover" />
+            <img src="/gps.png" className="w-8 h-8" sizes="cover" />
           </div>}
       </div>
       <div className="absolute z-10 bottom-0 w-full h-64 rounded-xl shadow-up-md bg-white overflow-hidden flex flex-col">
         <div className="mx-4 my-4 text-lg">현재 모집중인 번개</div>
-        <div className="w-full overflow-x-scroll h-full my-4">
+        <div className="w-full overflow-x-scroll h-full my-4 scroll-bar-hidden">
           <div className="flex flex-row w-auto h-full gap-4">
             {[1, 2, 3].map(element =>
               <div key={element} className="flex-shrink-0 w-4/5 px-12">

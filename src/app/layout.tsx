@@ -7,7 +7,7 @@ export default function Layout({
 }>) {
     return (
         <html lang="ko">
-            <body className="mx-auto h-screen">
+            <body className="mx-auto h-svh overflow-hidden">
                 {children}
             </body>
         </html>
