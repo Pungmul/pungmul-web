@@ -1,7 +1,7 @@
 'use client'
 import "@pThunder/app/globals.css";
 import { useCallback, useEffect, useState } from "react";
-
+import { throttle } from "lodash";
 
 declare global {
   interface Window {
@@ -45,7 +45,9 @@ export default function Home() {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       };
+      
       setLocation(newLocation); // 위치 상태 업데이트
+
       if (isLoading) {
         setLoading(false)
         loadKakaoMap(newLocation)
@@ -118,11 +120,9 @@ export default function Home() {
       };
     };
 
-
-
     // 위치가 변경될 때마다 loadLocation을 호출하는 watchPosition 설정
     const watchId = geolocation.watchPosition(
-      loadLocation,
+      (throttle((position) => loadLocation(position), 10000)),
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
           console.error("Permission denied for geolocation");

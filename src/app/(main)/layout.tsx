@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div id="main-contents" className="flex flex-col-reverse w-full h-svh">
+    <div id="main-contents" className="flex flex-col-reverse w-full h-dvh">
       <BottomTabs />
       <div className="flex-grow">
         {children}
