@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@pThunder/app/globals.css";
 import BottomTabs from "./BottomTabs";
+import FCMClient from "./fcmComponent";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,9 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <div id="main-contents" className="flex flex-col-reverse w-full h-dvh">
+      <FCMClient />
       <BottomTabs />
-      <div className="flex-grow">
-        {children}
+      <div className="flex-grow overflow-auto">
+        <div className="h-full">
+            {children}
+        </div>
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ export default function PostList({ params, data }: { params: { boardID: number }
     return (
         <>
             {BoardData?.recentPostList?.list.map(post => (
-                <div key={post.postId} className={`w-full flex flex-col px-4 py-4 border-b cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
+                <div key={post.postId} className={`w-full flex flex-col px-6 py-4 border-b cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
                     onClick={() => {
                         router.push(`/board/${boardID}/${post.postId}`)
                     }}>
