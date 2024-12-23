@@ -1,13 +1,16 @@
+"use client"
+import { useEffect, useState } from "react";
 import PostList, { BoardData } from "./PostList";
+import { loadPosts } from "./utils";
 
-export default function Page({
+export default function BoardPage({
     params
 }: Readonly<{
-    params: { boardID: number, data: BoardData }
+    params: { boardID: number }
 }>) {
     return (
         <>
-            <PostList params={params} data={params.data} />
+            <PostList params={params} />
         </>
     )
 }

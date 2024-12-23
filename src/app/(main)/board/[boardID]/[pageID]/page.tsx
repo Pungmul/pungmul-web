@@ -2,8 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { addComment, addReply, clickLike, loadPost } from "./utils";
-import { debounce } from "lodash";
+import { debounce, divide } from "lodash";
 import { requestFriend } from "@pThunder/app/(main)/friends/utils";
+import { Header } from "@pThunder/app/component/header";
+
+import sendIcon from '@public/sendIcon.svg';
+import checkMark from '@public/checkMark.svg';
+import Image from "next/image";
 
 interface Post {
     postId: number;                // 게시물 ID (Long 타입, TypeScript에서는 number로 사용)
@@ -55,7 +60,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
     const { pageID } = params;
 
     const [Post, setPost] = useState<Post | null>(null);
-    const [isReplying, setReply] = useState<number | null>(null)
+    const [isReplying, setReply] = useState<Comment | null>(null)
 
     const wholeRef = useRef<any>(null);
 
@@ -166,7 +171,7 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
         try {
             if (!isReplying) throw Error('is not reply')
-            const data = await addReply(pageID, comment, isReplying)
+            const data = await addReply(pageID, comment, isReplying.commentId)
 
             if (!data) throw Error('댓글 작성 실패')
 
@@ -187,104 +192,152 @@ export default function Page({ params }: { params: { pageID: number } }) {
 
 
     return (
-        <div className="h-full flex flex-col">
-            <div ref={wholeRef} className="overflow-x-hidden overflow-y-auto flex-grow rounded-md bg-gray-300">
-                <div className="flex flex-col gap-1 px-6 py-6  bg-white">
-                    <div className="flex flex-row">
-                        <div className="text-2xl font-semibold">
-                            {Post?.title}
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-0">
-                        <div className="flex flex-row gap-4">
-                            <div className="font-semibold">
-                            {Post?.author == 'Anonymous' ? '익명' : Post?.author.name}
-                            </div>
-                            {Post?.author !== 'Anonymous' && Post?.author &&
-                                <div className=" text-xs items-center justify-center flex  border border-blue-400 rounded-sm text-blue-600 hover:bg-blue-400 hover:text-white cursor-pointer"
-                                    onClick={() => FriendRequset(Post?.author.name, Post?.author.username)}>
-                                    친구 추가
-                                </div>
-                            }
-                        </div>
-                        <div className="flex flex-row justify-between items-start">
-                            <div className="text-gray-400 text-sm">
-                                {Post?.timeSincePostedText}
-                            </div>
-                            <div className="flex items-center flex-row gap-2">
-                                <div className="w-4 h-4 bg-gray-400" />
-                                <div className="text-gray-400 text-sm">{Post?.viewCount}</div>
-                            </div>
-                        </div>
+        <>
 
-                    </div>
+            <Header title={Post?.title || ''} />
+            <div className="h-full flex flex-col">
 
-                    <div className="my-2">
-                        {Post?.content}
-                    </div>
-                    <div className="w-full ">
-                        <div className="flex flex-row w-full gap-2">
-                            {Post?.imageList?.map((image) => (
-                                <img
-                                    key={image.id}
-                                    src={image.fullFilePath} // 이미지의 경로를 사용하여 렌더링
-                                    alt={image.originalFilename}
-                                    style={{ width: '100px', height: 'auto', margin: '10px' }} // 스타일 적용
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="flex flex-row gap-4">
-                        <div className="flex items-center flex-row gap-1 cursor-pointer"
-                            onClick={LikeHandler}>
-                            <div className={`w-6 h-6 ${Post?.isLiked ? 'bg-red-200' : 'border-red-200 border'}`} />
-                            <div className="text-red-300">{Post?.likedNum}</div>
-                        </div>
-                        <div className="flex items-center flex-row gap-1">
-                            <div className="w-6 h-6 bg-blue-200" />
-                            <div className="text-blue-300">{Post?.commentList?.length ?? 0}</div>
-                        </div>
-                    </div>
-                </div>
-                {Post?.commentList!.length! > 0 && <div className="w-full mt-6 flex-col gap-2 flex">
-                    {Post?.commentList.map(comment => (
-                        <div key={comment.commentId} className="w-full bg-white ">
-                            <div className="w-full py-4 px-4 bg-white rounded-md border-b" onClick={() => setReply(comment.commentId)}>
-                                <div>{comment.userName}</div>
-                                <div>{comment.content}</div>
+                <div ref={wholeRef} style={{ backgroundColor: '#F9F9F9' }} className="flex-grow">
+                    <div className="flex flex-col gap-4 px-6 py-5 mt-2  bg-white">
+                        <div className="flex flex-col gap-2">
+                            <div className="font-semibold" style={{ fontSize: 17 }}>
+                                {Post?.title}
                             </div>
-                            <div className="w-full flex-col gap-2 flex">
-                                {comment.replies?.map(reply => (
-                                    <div key={reply.commentId} className="w-full py-4 ml-2 pl-4 border-b rounded-md bg-gray-200">
-                                        <div>{reply.userName}</div>
-                                        <div>{reply.content}</div>
+                            <div className="flex flex-row justify-between items-start">
+                                <div className="flex flex-row gap-2 items-center">
+                                    <div className="text-gray-400" style={{ fontSize: 14 }}>
+                                        {Post?.author == 'Anonymous' ? '익명' : Post?.author}
                                     </div>
 
-                                ))}
+                                    {Post?.author !== 'Anonymous' && Post?.author &&
+                                        <div className=" text-xs items-center justify-center flex  border border-blue-400 rounded-sm text-blue-600 hover:bg-blue-400 hover:text-white cursor-pointer"
+                                            onClick={() => FriendRequset(Post?.author.name, Post?.author.username)}>
+                                            친구 추가
+                                        </div>
+                                    }
+                                    <div className="text-gray-300" style={{ fontSize: 11 }}>
+                                        {Post?.timeSincePostedText}
+                                    </div>
+                                </div>
+                                <div className="flex items-center flex-row gap-1">
+                                    <div className="w-4 h-4 bg-gray-300" />
+                                    <div className="text-gray-300 text-sm">{Post?.viewCount}</div>
+                                </div>
                             </div>
-                            {isReplying == comment.commentId && <form onSubmit={ReplyHandler} className="flex flex-row sticky bottom-0 w-full bg-white items-center gap-2 px-2 py-3 shadow-up-md">
-                                <label htmlFor="anony">
-                                    <input type="checkbox" defaultChecked={true} name="anony" id="anony" />
-                                    {' 익명 댓글'}
-                                </label>
-                                <input type="text" name='comment' className="px-2 py-1 border flex-grow" />
-                                <button type="submit" className="px-3 py-1 bg-slate-300">완료</button>
-                            </form>}
                         </div>
 
-                    ))}
-                </div>}
+                        <div style={{ fontSize: 14 }}>
+                            {Post?.content}
+                        </div>
 
+                        <div className="w-full overflow-x-auto">
+                            <div className="flex flex-row w-full gap-2">
+                                {Post?.imageList?.map((image) => (
+                                    <img
+                                        key={image.id}
+                                        src={image.fullFilePath} // 이미지의 경로를 사용하여 렌더링
+                                        alt={image.originalFilename}
+                                        style={{ width: '100px', height: 'auto', }} // 스타일 적용
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-row gap-4">
+                            <div className="flex items-center flex-row gap-1 cursor-pointer"
+                                onClick={LikeHandler}>
+                                <div className={`w-6 h-6 ${Post?.isLiked ? 'bg-red-200' : 'border-red-200 border'}`} />
+                                <div className="text-red-300">{Post?.likedNum}</div>
+                            </div>
+                            <div className="flex items-center flex-row gap-1">
+                                <div className="w-6 h-6 bg-blue-200" />
+                                <div className="text-blue-300">{Post?.commentList?.length ?? 0}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {Post?.commentList!.length! > 0 && <div className="w-full mt-12 flex-col flex">
+                        {Post?.commentList.map(comment => (
+                            <div key={comment.commentId} className="w-full bg-white ">
+                                <div style={{ backgroundColor: isReplying?.commentId == comment.commentId ? '#F4F2FF' : '#FFF' }} className="w-full py-4 px-6 gap-2 flex flex-col border-b" onClick={() => { if (isReplying?.commentId == comment.commentId) setReply(null); else setReply(comment) }}>
+                                    <div className="flex flex-row justify-between items-center">
+                                        <div className="flex flex-row gap-1 items-center" style={{ fontSize: 12 }}>
+                                            <div>{comment.userName}</div>
+                                            <div className="text-gray-300">{comment.createdAt}</div>
+                                        </div>
+                                        <div className="flex flex-row items-center">
+                                            <div className="w-4 h-4 bg-blue-500"></div>
+                                            <div className="w-4 h-4 bg-red-500"></div>
+                                            <div className="w-4 h-4 bg-green-500"></div>
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: 13 }}>{comment.content}</div>
+                                </div>
+                                <div className="w-full flex-col flex">
+                                    {comment.replies?.map(reply => (
+                                        <div key={reply.commentId} className="w-full py-4 pl-8 pr-6 border-b border-b-gray-300" style={{ backgroundColor: '#EAEAEA' }}>
+                                            <div className="flex flex-row justify-between items-center">
+                                                <div className="flex flex-row gap-1 items-center" style={{ fontSize: 12 }}>
+                                                    <div>{reply.userName}</div>
+                                                    <div className="text-gray-300">{reply.createdAt}</div>
+                                                </div>
+                                                <div className="flex flex-row items-center">
+                                                    <div className="w-4 h-4 bg-blue-500"></div>
+                                                    <div className="w-4 h-4 bg-red-500"></div>
+                                                    <div className="w-4 h-4 bg-green-500"></div>
+                                                </div>
+                                            </div>
+                                            <div style={{ fontSize: 13 }}>{reply.content}</div>
+                                        </div>
+
+                                    ))}
+                                </div>
+                            </div>
+
+                        ))}
+                    </div>}
+
+                </div>
+                <form onSubmit={isReplying ? ReplyHandler : CommentHandler} className="sticky bottom-0 w-fullshadow-up-md">
+                    {isReplying &&
+                        <div style={{ paddingLeft: 24, paddingRight: 24, height: 32, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F2F2F2' }}>
+                            <div style={{ fontSize: 12, color: '#816DFF' }}>@{isReplying.userName}</div>
+                            <div style={{ width: 24, height: 24, cursor: 'pointer', backgroundColor: '#816DFF' }} onClick={() => setReply(null)}></div>
+                        </div>
+                    }
+                    <div className=" bg-white items-center px-2 py-2 ">
+                        <div className="flex flex-row items-center px-4 py-1 rounded-full" style={{ backgroundColor: '#F9F9F9' }}>
+                            <label
+                                htmlFor="anony"
+                                className="flex flex-row gap-2 items-center cursor-pointer"
+                            >
+                                <input
+                                    type="checkbox"
+                                    defaultChecked={true}
+                                    name="anony"
+                                    id="anony"
+                                    className="hidden peer"
+                                />
+                                <div
+                                    className="hidden w-5 h-5 peer-checked:flex rounded-sm items-center justify-center"
+                                    style={{ backgroundColor: '#816DFF' }}
+                                >
+                                    <Image src={checkMark} width={12} alt="" />
+                                </div>
+                                <div
+                                    className="block w-5 h-5 bg-white peer-checked:hidden rounded-sm"
+                                />
+                                <div style={{fontSize:12}} className="text-gray-400 peer-checked:text-black">익명</div>
+                            </label>
+                            <input type="text" name='comment' style={{ fontSize: 12 }} placeholder="댓글을 입력하세요..." className="bg-transparent outline-none px-2 py-1  flex-grow" />
+                            <button type="submit" className="w-6 h-6 p-1">
+                                <Image src={sendIcon} width={32} alt="" />
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
             </div>
-            <form onSubmit={CommentHandler} className="flex flex-row sticky bottom-0 w-full bg-white items-center gap-2 px-2 py-3 shadow-up-md">
-                <label htmlFor="anony">
-                    <input type="checkbox" defaultChecked={true} name="anony" id="anony" />
-                    {' 익명 댓글'}
-                </label>
-                <input type="text" name='comment' className="px-2 py-1 border flex-grow" />
-                <button type="submit" className="px-3 py-1 bg-slate-300">완료</button>
-            </form>
-        </div>
+        </>
+
     )
 }

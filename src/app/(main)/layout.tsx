@@ -16,11 +16,8 @@ export default function RootLayout({
   return (
     <div id="main-contents" className="flex flex-col-reverse w-full h-dvh">
       <FCMClient />
-      <BottomTabs />
-      <div className="flex-grow overflow-auto">
-        <div className="h-full">
+      <div className="relative flex-grow overflow-y-auto overflow-x-hidden">
             {children}
-        </div>
       </div>
     </div>
   );

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react"
 import { getInstrumentsInfomation, addInstrumentSkill } from "./utils";
 
 import "@pThunder/app/globals.css";
+import { Header } from "@pThunder/app/component/header";
+import { useRouter } from "next/navigation";
 
 interface InstrumentData { instrument: Instrument, instrumentAbility: Level, major: boolean }
 type Instrument = "KKWAENGGWARI" | "JING" | "JANGGU" | "BUK" | "SOGO" | "TAEPYUNGSO";
@@ -42,6 +44,8 @@ interface User {
 }
 
 export default function MyPagePage() {
+    const router = useRouter();
+
     const [selectVisible, setVisible] = useState(false);
     const [isMain, setMain] = useState<string | null>(null);
     const [instrumentsData, setInstrumentsData] = useState<InstrumentData[]>([]);
@@ -96,11 +100,9 @@ export default function MyPagePage() {
     }, [instrumentsData])
 
     return (
-        <div className="flex mt-20 flex-col items-center">
-            <div className="w-96 my-2">
-                <p className="ml-2 text-2xl font-bold">마이페이지</p>
-            </div>
-            <div className="border-gray-300 border rounded-md px-6 py-4 w-96 flex flex-col gap-4">
+        <div className="flex flex-col h-full">
+            <Header title="마이 페이지" />
+            <div className="px-6 py-4 flex-grow flex flex-col gap-4" style={{ paddingLeft: 24, paddingRight: 24, }}>
                 <div className="flex flex-row justify-between">
                     <span className="text-gray-400">이름</span><span>{userData?.name}{`${userData?.clubName ? ` (${userData.clubName})` : ''}`}</span>
                 </div>
@@ -165,9 +167,12 @@ export default function MyPagePage() {
                             </div>)}
                     </div>
                 </div>
+
+                <div className="w-full py-3 rounded-md text-white text-base font-semibold justify-center items-center bg-red-400 cursor-pointer flex" onClick={() => router.push('/logout')}>로그아웃</div>
             </div>
 
-        </div>
+        </div >
+
     )
 }
 

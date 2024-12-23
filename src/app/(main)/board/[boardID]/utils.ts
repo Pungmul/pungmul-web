@@ -1,6 +1,5 @@
 export const loadPosts = async (id: number) => {
     try {
-
         const response = await fetch(`/board/${id}/api?boardId=${id}`, {
             credentials: 'include'
         })
@@ -8,7 +7,7 @@ export const loadPosts = async (id: number) => {
         if (!response.ok) throw Error('비정상 동작')
 
         const data = await response.json();
-
+        console.log(data)
         return data;
     } catch (e) {
         console.error(e);

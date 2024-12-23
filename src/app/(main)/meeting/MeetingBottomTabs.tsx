@@ -14,12 +14,12 @@ import NewsFeedIconFilled from '@public/NewsFeed-icon-filled.svg';
 import ChatIconOutline from '@public/Chat-icon-outline.svg';
 import ChatIconFilled from '@public/Chat-icon-filled.svg';
 
-export default function BottomTabs() {
+export default function MeetingBottomTabs() {
     const router = useRouter();
     const pathname = usePathname(); // 현재 경로 가져오기
 
     return (
-        <div className="w-full justify-between bg-white flex-shrink-0 flex flex-row bottom-0 items-center sticky" style={{ height: 74 , padding:'0 24px'}}>
+        <div className="w-full justify-between px-8 bg-white flex-shrink-0 flex flex-row bottom-0 items-center sticky" style={{ height: 74 }}>
 
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/home')}>
                 {pathname == '/home' ? <Image src={HomeIconFilled} width={32} alt="" /> : <Image src={HomeIconOutline} width={32} alt="" />}

@@ -9,6 +9,8 @@ export default function PostingButton({ boardID }: { boardID: number }) {
     };
 
     return (
-        <div className="w-12 h-12 rounded-full bg-gray-400" onClick={handleClick} />
+        <div style={{height:24, width:48, textAlign:'right', cursor:'pointer'}} onClick={handleClick}>
+            글쓰기
+        </div>
     );
 }

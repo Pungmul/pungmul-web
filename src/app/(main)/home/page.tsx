@@ -1,193 +1,241 @@
 'use client'
 import "@pThunder/app/globals.css";
-import { useCallback, useEffect, useState } from "react";
-import { throttle } from "lodash";
 
-declare global {
-  interface Window {
-    kakao: any;
-  }
+import BottomTabs from "@pThunder/app/(main)/BottomTabs";
+import { useRouter } from "next/navigation";
+
+import Image from "next/image";
+
+import MyPageIcon from '@public/MyPage-Icon.svg';
+import NotificationIcon from '@public/Notification-Icon.svg'
+import ChevronRightIcon from '@public/Chevron-right-icon.svg'
+import LocationIcon from '@public/Location-icon.svg'
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import { FreeMode } from "swiper/modules";
+
+interface RecentPost {
+  postId: number;
+  title: string;
+  content: string;
+  viewCount: number;
+  likedNum: number;
+  timeSincePosted: number;
+  timeSincePostedText: string;
+  author: string;
 }
 
-type LocationType = {
-  latitude: number;
-  longitude: number;
-};
-
-const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
 export default function Home() {
-  const [currentLocation, setLocation] = useState<LocationType>()
-  const [isLoading, setLoading] = useState(true);
-  const [map, setMap] = useState<any>()
-
-  const moveMyLocation = useCallback(() => {
-    if (currentLocation && map) {
-      const panToCenter = () => {
-        var moveLatLon = new window.kakao.maps.LatLng(currentLocation.latitude, currentLocation.longitude);
-        map.panTo(moveLatLon);
-        console.log('panto 호출')
-      }
-      panToCenter()
-    }
-  }, [currentLocation, map])
-
-  useEffect(() => {
-    const { geolocation } = navigator;
-    if (!geolocation) {
-      console.error("Geolocation is not supported by this browser.");
-      return;
-    }
-
-    // 사용자의 위치가 변경될 때마다 실행되는 함수
-    const loadLocation = (position: { coords: LocationType }) => {
-      const newLocation = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      };
-      
-      setLocation(newLocation); // 위치 상태 업데이트
-
-      if (isLoading) {
-        setLoading(false)
-        loadKakaoMap(newLocation)
-      }
-    };
-
-    // Kakao Map API를 로드하고 지도를 초기화하는 함수
-    const loadKakaoMap = (location: LocationType) => {
-      const kakaoMapScript = document.createElement('script');
-      kakaoMapScript.async = true;
-      kakaoMapScript.src = KAKAO_SDK_URL;
-      document.head.appendChild(kakaoMapScript);
-
-      const onLoadKakaoAPI = () => {
-        window.kakao.maps.load(() => {
-          const container = document.getElementById('map');
-          const options = {
-            center: new window.kakao.maps.LatLng(location.latitude, location.longitude),
-            level: 1
-          };
-
-          const mapInstance = new window.kakao.maps.Map(container, options);
-          setMap(mapInstance);
-
-          var circle = new window.kakao.maps.Circle({
-            center: new window.kakao.maps.LatLng(location.latitude, location.longitude),  // 원의 중심좌표 입니다 
-            radius: 100, // 미터 단위의 원의 반지름입니다 
-            strokeWeight: 1, // 선의 두께입니다 
-            strokeColor: '#5B2B99', // 선의 색깔입니다
-            strokeOpacity: 0.6, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-            fillColor: '#816DFF', // 채우기 색깔입니다
-            fillOpacity: 0.2  // 채우기 불투명도 입니다   
-          });
-
-          // 지도에 원을 표시합니다 
-          var mouseoverOption = {
-            fillColor: '#816DFF', // 채우기 색깔입니다
-            fillOpacity: 0.5  // 채우기 불투명도 입니다   
-          };
-
-          // 다각형에 마우스아웃 이벤트가 발생했을 때 변경할 채우기 옵션입니다
-          var mouseoutOption = {
-            fillColor: '#816DFF', // 채우기 색깔입니다
-            fillOpacity: 0.2  // 채우기 불투명도 입니다   
-          };
-
-          // 다각형에 마우스오버 이벤트를 등록합니다
-          window.kakao.maps.event.addListener(circle, 'mouseover', function () {
-
-            // 다각형의 채우기 옵션을 변경합니다
-            circle.setOptions(mouseoverOption);
-
-          });
-
-          window.kakao.maps.event.addListener(circle, 'mouseout', function () {
-
-            // 다각형의 채우기 옵션을 변경합니다
-            circle.setOptions(mouseoutOption);
-
-          });
-          circle.setMap(mapInstance);
-        });
-      };
-
-      kakaoMapScript.addEventListener('load', onLoadKakaoAPI);
-      // cleanup: 스크립트를 제거하고 이벤트 리스너 해제
-      return () => {
-        kakaoMapScript.removeEventListener('load', onLoadKakaoAPI);
-        document.head.removeChild(kakaoMapScript);
-      };
-    };
-
-    // 위치가 변경될 때마다 loadLocation을 호출하는 watchPosition 설정
-    const watchId = geolocation.watchPosition(
-      (throttle((position) => loadLocation(position), 10000)),
-      (error) => {
-        if (error.code === error.PERMISSION_DENIED) {
-          console.error("Permission denied for geolocation");
-        } else {
-          console.error("Geolocation error:", error);
-        }
-      },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-    );
-
-
-    // cleanup: 컴포넌트 언마운트 시 위치 추적 중단
-    return () => {
-      geolocation.clearWatch(watchId);
-    };
-  }, []);
-
-
-  useEffect(() => {
-    if (!isLoading && currentLocation && map) {
-      var imageSrc = '/gpsMarker.png', // 마커이미지의 주소입니다    
-        imageSize = new window.kakao.maps.Size(24, 24) // 마커이미지의 크기입니다
-      var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, { offset: new window.kakao.maps.Point(12, 12) })
-
-      const marker = new window.kakao.maps.Marker({
-        image: markerImage,
-        map: map,
-        position: new window.kakao.maps.LatLng(currentLocation.latitude, currentLocation.longitude)
-      })
-    }
-  }, [currentLocation, isLoading, map])
+  const router = useRouter();
+  const today = new Date()
+  const testPosts: RecentPost[] = [
+    {
+      postId: 5,
+      author: '익명',
+      title: 'test',
+      content: '테스트를 위해 만들어진 양식입니다.',
+      likedNum: 1,
+      viewCount: 5,
+      timeSincePosted: today.getTime(),
+      timeSincePostedText: "2024-12-12T10:53:07.692Z"
+    },
+    {
+      postId: 55,
+      author: '익명',
+      title: 'test2',
+      content: '테스트를 위해 만들어진 양식입니다.',
+      likedNum: 1,
+      viewCount: 5,
+      timeSincePosted: today.getTime(),
+      timeSincePostedText: "2024-12-12T10:53:07.692Z"
+    },
+    {
+      postId: 4,
+      author: '익명',
+      title: 'test3',
+      content: '테스트를 위해 만들어진 양식입니다.',
+      likedNum: 1,
+      viewCount: 5,
+      timeSincePosted: today.getTime(),
+      timeSincePostedText: "2024-12-12T10:53:07.692Z"
+    },
+    {
+      postId: 1,
+      author: '익명',
+      title: 'test4',
+      content: '테스트를 위해 만들어진 양식입니다.',
+      likedNum: 1,
+      viewCount: 5,
+      timeSincePosted: today.getTime(),
+      timeSincePostedText: "2024-12-12T10:53:07.692Z"
+    },
+  ]
 
   return (
-    <div className="relative w-full h-full flex flex-col">
-      {isLoading && <div className="absolute z-20 bg-black bg-opacity-40 text-white w-full h-full flex flex-col items-center justify-center">
-        로딩중...
-      </div>}
-      <div id="map" className="relative flex-grow w-full mb-56 h-full">
-        {!isLoading &&
-          <div className="absolute w-12 h-12 flex items-center justify-center cursor-pointer shadow-lg z-10 rounded-full bottom-12 bg-white right-4"
-            onClick={moveMyLocation}>
-            <img src="/gps.png" className="w-8 h-8" sizes="cover" />
-          </div>}
-      </div>
-      <div className="absolute z-10 bottom-0 w-full h-64 rounded-xl shadow-up-md bg-white overflow-hidden flex flex-col">
-        <div className="mx-4 my-4 text-lg">현재 모집중인 번개</div>
-        <div className="w-full overflow-x-scroll h-full my-4 scroll-bar-hidden">
-          <div className="flex flex-row w-auto h-full gap-4">
-            {[1, 2, 3].map(element =>
-              <div key={element} className="flex-shrink-0 w-4/5 px-12">
-                <Card />
-              </div>)}
+    <div className="flex flex-col h-full w-full">
+      <div className="w-full h-full flex-grow flex flex-col overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+        <div className="flex flex-row justify-end" style={{ paddingTop: 36, paddingBottom: 4, paddingLeft: 24, paddingRight: 24, gap: 8 }}>
+          <Image src={NotificationIcon} width={36} alt="" />
+          <Image src={MyPageIcon} width={36} alt="" className="cursor-pointer" onClick={() => router.push('/my-page')} />
+        </div>
+        <div className="flex flex-col">
+          <div style={{ paddingLeft: 24, paddingRight: 24, fontSize: 16, fontWeight: 600 }}>
+            내 모임
+          </div>
+          <Swiper
+            slidesPerView={'auto'}
+            spaceBetween={16}
+            freeMode={true}
+            modules={[FreeMode]}
+            style={{ paddingTop: 24, paddingBottom: 24 }}
+            className="w-full h-full mySwiper"
+          >
+            <>
+              <SwiperSlide style={{ width: 12 }} className="flex-shrink-0">
+              </SwiperSlide>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <SwiperSlide style={{ width: 140, height: 120 }} className="cursor-pointer" 
+                onClick={()=>router.push('/meeting')}>
+                  <div key={index + 'moim'} className="w-full h-full rounded-md flex-shrink-0 bg-gray-400 overflow-hidden flex flex-col shadow-md" >
+                    <div className="flex-grow">
+                    </div>
+                    <div
+                      className="bg-white"
+                      style={{
+                        padding: '6px 8px'
+                      }}>
+                      <div className="line-clamp-2 overflow-hidden w-full" style={{
+                        fontSize: 11,
+                        lineHeight: '120%', // 줄 간격
+                      }}
+                      >
+                        모임이름은 최대몇글짜까지표시됩니다리우스웨인버스라크라우치머리헤딩딩
+                      </div>
+                    </div>
+
+                  </div>
+                </SwiperSlide>
+
+              ))}
+              <SwiperSlide style={{ width: 12 }} className="flex-shrink-0">
+              </SwiperSlide>
+            </>
+          </Swiper>
+
+        </div>
+        <div className="flex flex-col" style={{ gap: 20, paddingBottom: 32 }}>
+          <div className="flex flex-row justify-between items-center" style={{ paddingLeft: 24, paddingRight: 24, }}>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>다가오는 일정</div>
+            <Image src={ChevronRightIcon} width={20} alt="" className="cursor-pointer" />
+          </div>
+          <div style={{ paddingLeft: 26, paddingRight: 26 }}>
+            <div className="flex flex-col bg-white" style={{ gap: 12, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16, boxShadow: '0.25px 0.5px 6px 0px rgba(0, 0, 0, 0.15)', borderRadius: 5 }}>
+              <div style={{ fontSize: 13, color: '#898989' }}>내 모임 이름</div>
+              <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                <div style={{ fontSize: 13, color: '#898989' }}>2024.11.08(월)</div>
+                <div style={{ fontSize: 13, color: '#898989' }}>(D-7)</div>
+              </div>
+              <div style={{ fontSize: 16 }}>약속 이름</div>
+              <div className="flex flex-col" style={{ gap: 6 }}>
+                <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                  <Image src={LocationIcon} width={16} color="#898989" alt="" />
+                  <div style={{ fontSize: 11, color: '#898989' }}>장소</div>
+                </div>
+                <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                  <div style={{ width: 16, height: 16 }} className="bg-gray-300"></div>
+                  <div style={{ fontSize: 11, color: '#898989' }}>시간</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <div className="flex flex-col" style={{ gap: 20, paddingBottom: 32 }}>
+          <div className="flex flex-row items-center" style={{ paddingLeft: 24, paddingRight: 24, fontSize: 16, fontWeight: 600 }}>
+            지금 뜨는 인기글
+          </div>
+          <div style={{ paddingLeft: 26, paddingRight: 26 }}>
+            <div className="flex flex-col overflow-hidden" style={{ boxShadow: '0.25px 0.5px 6px 0px rgba(0, 0, 0, 0.15)', borderRadius: 5 }}>
+              {testPosts.map(post => (
+                <div key={post.postId} style={{ gap: 8, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }} className={`w-full bg-white flex flex-col px-6 border-b cursor-pointer`}
+                >
+                  <div className="flex justify-between flex-col items-start">
+                    <div style={{ fontSize: 14 }} className="w-full truncate">{post.title}</div>
+                    <div style={{ fontSize: 12 }} className="text-gray-300 max-w-24 truncate">{post.author == 'Anonymous' ? '익명' : post.author}</div>
+                  </div>
+                  <div className="flex flex-row gap-2 items-center justify-between">
+                    <div className="flex flex-row gap-2 items-center">
+                      <div className="flex flex-row items-center gap-1">
+                        <div style={{ width: 12, height: 12 }} className=" bg-red-200" />
+                        <div style={{ fontSize: 11 }} className="text-red-200" >{post.likedNum}</div>
+                      </div>
+                      <div className="flex flex-row items-center gap-1">
+                        <div style={{ width: 12, height: 12 }} className=" bg-gray-200" />
+                        <div style={{ fontSize: 11 }} >{post.viewCount}</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-row gap-2  items-end">
+                      <div className="flex flex-row gap-1 items-center">
+                        <div className="text-gray-400 text-xs">{post.timeSincePostedText}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div style={{ paddingLeft: 24, paddingRight: 24, fontSize: 16, fontWeight: 600 }}>
+            공연 홍보
+          </div>
+          <Swiper
+            slidesPerView={'auto'}
+            spaceBetween={16}
+            freeMode={true}
+            style={{ paddingTop: 24, paddingBottom: 24 }}
+            modules={[FreeMode]}
+            className="w-full h-full mySwiper"
+          >
+            <>
+              <SwiperSlide style={{ width: 12 }} className="flex-shrink-0">
+                <div>
+                </div>
+              </SwiperSlide>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <SwiperSlide key={index + 'hongbo'} style={{ width: 140, height: 194 }} className="cursor-pointer">
+                  <div className="rounded-md flex-shrink-0 w-full h-full  bg-gray-400 overflow-hidden flex flex-col shadow-md" >
+                    <div className="flex-grow">
 
+                    </div>
+                    <div className="bg-white w-full flex flex-col" style={{ paddingTop: 6, paddingBottom: 6, paddingLeft: 8, paddingRight: 8, height: 44, gap: 'auto' }}>
+                      <div className="truncate w-full" style={{ fontSize: 11, color: '#808080' }}>
+                        공연이름은 최대몇글짜까지표시됩니다리우스웨인버스라크라우치머리헤딩딩
+                      </div>
+                      <div className="flex flex-row justify-between">
+                        <div className="truncate" style={{ fontSize: 11, color: '#808080' }}>
+                          2024.11.08(월)
+                        </div>
+                        <div className="flex flex-row items-center gap-1 flex-shrink-0">
+                          <div style={{ width: 12, height: 12 }} className=" bg-gray-200" />
+                          <div style={{ fontSize: 11 }} >50</div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+              <SwiperSlide style={{ width: 12 }} className="flex-shrink-0">
+                <div>
+                </div>
+              </SwiperSlide>
+            </>
+          </Swiper>
+        </div>
       </div>
+      <BottomTabs />
     </div>
   );
-}
-
-
-const Card: React.FC = () => {
-  return (
-    <div className="h-full w-full rounded-md bg-black text-white ">
-      sss
-    </div>
-  )
 }

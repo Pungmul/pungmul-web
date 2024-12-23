@@ -189,7 +189,7 @@ export default function ClientComponent({ initFriendList, initRquestedFriendsLis
 
 const Modal: React.FC<{ children: React.ReactNode, visible: boolean, close: () => void }> = ({ children, visible, close }) => {
     return (
-        <div className={`${visible ? 'absolute' : 'hidden'} w-screen h-screen bg-black bg-opacity-50 top-0 left-0 flex flex-col items-center justify-center`}
+        <div className={`${visible ? 'absolute' : 'hidden'} w-full h-full bg-black bg-opacity-50 top-0 left-0 flex flex-col items-center justify-center`}
             onClick={(e) => { if (e.currentTarget == e.target) close(); }}>
             <div className="py-2 bg-white rounded-md flex flex-col">
                 <div className="mx-2 self-end pb-0.5 w-6 h-6 bg-black cursor-pointer"
