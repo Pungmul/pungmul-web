@@ -1,6 +1,6 @@
 'use client'
 import "@pThunder/app/globals.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { throttle } from "lodash";
 import Image from "next/image";
 
@@ -13,6 +13,8 @@ import GpsMark from '@public/Gps.svg';
 
 import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import { useRouter } from "next/navigation";
+import SockJS from "sockjs-client";
+import { Client, Stomp } from "@stomp/stompjs";
 
 declare global {
   interface Window {
@@ -27,7 +29,64 @@ type LocationType = {
 
 const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
+export function mySocketFactory() {
+  // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL // || 'http://3.37.163.10:8080';
+  
+  return new SockJS(`http://pungmul.site/ws/api/lightning/nearby`);
+}
+
+const useLightningSocket = () => {
+  const stompClientRef = useRef<Client | null>(null);
+
+  useEffect(() => {
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token is not found');
+      return;
+    }
+    const socket = mySocketFactory();
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+      debug: (str) => {
+        console.log('STOMP Debug:', str);
+      },
+      connectHeaders: {
+        Authorization: `Bearer ${token}`,  // JWT 토큰 추가
+      },
+      onConnect: () => {
+        console.log('Connected to WebSocket');
+
+        // 서버로부터 메시지 수신
+        client.subscribe('/sub/lightning-meeting/nearby', (response) => {
+          console.log('Received message:', response.body);
+        });
+
+        // 메시지 발행 예제
+
+      },
+      onStompError: (frame) => {
+        console.error('Broker reported error:', frame.headers['message']);
+        console.error('Additional details:', frame.body);
+      },
+    });
+
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      client.deactivate();
+      console.log('WebSocket disconnected');
+    };
+  }, []);
+
+  return stompClientRef.current;
+};
+
 export default function Lightning() {
+
+  const lightningSocket = useLightningSocket();
   const [currentLocation, setLocation] = useState<LocationType>()
   const [isLoading, setLoading] = useState(true);
   const [map, setMap] = useState<any>()
@@ -45,6 +104,15 @@ export default function Lightning() {
     }
   }, [currentLocation, map])
 
+  const sendLocation = useCallback((location: LocationType) => {
+    lightningSocket?.publish({
+      destination: '/pub/lightning-meeting/nearby',
+      body: JSON.stringify({
+        ...location,
+        mapLevel: 7
+      }),
+    });
+  }, [])
   useEffect(() => {
     const { geolocation } = navigator;
     if (!geolocation) {
@@ -80,43 +148,44 @@ export default function Lightning() {
           const mapInstance = new window.kakao.maps.Map(container, options);
           setMap(mapInstance);
 
-          var circle = new window.kakao.maps.Circle({
-            center: new window.kakao.maps.LatLng(position.coords.latitude, position.coords.longitude),  // 원의 중심좌표 입니다 
-            radius: 100, // 미터 단위의 원의 반지름입니다 
-            strokeWeight: 1, // 선의 두께입니다 
-            strokeColor: '#5B2B99', // 선의 색깔입니다
-            strokeOpacity: 0.6, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-            fillColor: '#816DFF', // 채우기 색깔입니다
-            fillOpacity: 0.2  // 채우기 불투명도 입니다   
-          });
+          sendLocation({ latitude: position.coords.latitude, longitude: position.coords.longitude })
+          // var circle = new window.kakao.maps.Circle({
+          //   center: new window.kakao.maps.LatLng(position.coords.latitude, position.coords.longitude),  // 원의 중심좌표 입니다 
+          //   radius: 100, // 미터 단위의 원의 반지름입니다 
+          //   strokeWeight: 1, // 선의 두께입니다 
+          //   strokeColor: '#5B2B99', // 선의 색깔입니다
+          //   strokeOpacity: 0.6, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+          //   fillColor: '#816DFF', // 채우기 색깔입니다
+          //   fillOpacity: 0.2  // 채우기 불투명도 입니다   
+          // });
 
-          // 지도에 원을 표시합니다 
-          var mouseoverOption = {
-            fillColor: '#816DFF', // 채우기 색깔입니다
-            fillOpacity: 0.5  // 채우기 불투명도 입니다   
-          };
+          // // 지도에 원을 표시합니다 
+          // var mouseoverOption = {
+          //   fillColor: '#816DFF', // 채우기 색깔입니다
+          //   fillOpacity: 0.5  // 채우기 불투명도 입니다   
+          // };
 
-          // 다각형에 마우스아웃 이벤트가 발생했을 때 변경할 채우기 옵션입니다
-          var mouseoutOption = {
-            fillColor: '#816DFF', // 채우기 색깔입니다
-            fillOpacity: 0.2  // 채우기 불투명도 입니다   
-          };
+          // // 다각형에 마우스아웃 이벤트가 발생했을 때 변경할 채우기 옵션입니다
+          // var mouseoutOption = {
+          //   fillColor: '#816DFF', // 채우기 색깔입니다
+          //   fillOpacity: 0.2  // 채우기 불투명도 입니다   
+          // };
 
-          // 다각형에 마우스오버 이벤트를 등록합니다
-          window.kakao.maps.event.addListener(circle, 'mouseover', function () {
+          // // 다각형에 마우스오버 이벤트를 등록합니다
+          // window.kakao.maps.event.addListener(circle, 'mouseover', function () {
 
-            // 다각형의 채우기 옵션을 변경합니다
-            circle.setOptions(mouseoverOption);
+          //   // 다각형의 채우기 옵션을 변경합니다
+          //   circle.setOptions(mouseoverOption);
 
-          });
+          // });
 
-          window.kakao.maps.event.addListener(circle, 'mouseout', function () {
+          // window.kakao.maps.event.addListener(circle, 'mouseout', function () {
 
-            // 다각형의 채우기 옵션을 변경합니다
-            circle.setOptions(mouseoutOption);
+          //   // 다각형의 채우기 옵션을 변경합니다
+          //   circle.setOptions(mouseoutOption);
 
-          });
-          circle.setMap(mapInstance);
+          // });
+          // circle.setMap(mapInstance);
 
           setLoading(false)
         });

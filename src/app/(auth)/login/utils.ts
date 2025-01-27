@@ -16,6 +16,10 @@ const sendLoginRequest = async (loginInfo: loginInfo) => {
 
         if (!response.ok) throw Error('비정상 동작')
 
+        const { token } = await response.json();
+
+        localStorage.setItem('token', token);
+
         return true;
     } catch (e) {
         console.error(e);

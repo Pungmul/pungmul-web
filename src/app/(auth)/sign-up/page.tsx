@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import sendSignUpRequest from "./utils";
 
 import Image from "next/image";
@@ -12,22 +12,22 @@ import WarningCircleIcon from '@public/Warning-circle-icon.svg'
 
 import "@pThunder/app/globals.css";
 import { Header } from "@pThunder/app/component/header";
+import { debounce } from "lodash";
+import useSignupStore from "./sign-up.store";
 
 export default function SignUpPage() {
 
     const router = useRouter();
-    const [onStep, setStep] = useState(0)
-    const [PWValid, setPWValid] = useState(true);
-    const [password, setPassword] = useState<string>(``)
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [PWVisible, setPWVisible] = useState(false);
 
-    // const file = null;
-    const handleTelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const formattedPhoneNumber = formatPhoneNumber(e.currentTarget.value);
-        setPhoneNumber(formattedPhoneNumber);
-    };
+    const currentSignUpStep = useSignupStore((state) => state.currentStep);
+    const setCurrentStep = useSignupStore((state) => state.setCurrentStep);
 
+    
+    const canNextStep = useSignupStore((state) => state.canNextStep);
+    const setCanNextStep = useSignupStore((state) => state.setCanNextStep);
+    
+    const sendSignUpRequest = useSignupStore((state) => state.sendSignUpRequest);
+    
     const formatPhoneNumber = (value: string) => {
         const cleaned = value.replace(/\D/g, '');
         const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
@@ -37,63 +37,19 @@ export default function SignUpPage() {
         return cleaned;
     };
 
-    const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!PWValid) return;
-        const formData = new FormData(e.currentTarget);
-        const userInfo = {
-            loginId: formData.get('loginId') as string,
-            name: formData.get('name') as string,
-            password,
-            clubName: formData.get('clubName') as string || null,
-            birth: formData.get('birth') as string,
-            clubAge: Number(formData.get('clubAge') as string) || null,
-            gender: formData.get('gender') as string,
-            phoneNumber: phoneNumber.replace(/\D/g, ''),
-            email: formData.get('email') as string,
-            area: formData.get('area') as string || null,
-            clubId: Number(formData.get('clubId') as string) || null
-        };
+    useEffect(() => {
+        setCurrentStep('약관동의')
+    }, [])
 
-        const userForm = new FormData();
-
-
-        const profileFile = formData.get('profile');
-
-
-        if (profileFile) {
-            userForm.append('profile', profileFile);
-        }
-
-
-        const accountBlob = new Blob([JSON.stringify(userInfo)], {
-            type: 'application/json'
-        });
-
-        userForm.append('accountData', accountBlob);
-
-        console.log(userForm)
-
-        try {
-            // 비동기로 요청을 전송
-            const signupResult = await sendSignUpRequest(userForm);
-
-
-            if (!signupResult) throw Error('회원가입 실패')
-
-            router.replace(`/login`);
-        } catch (e) {
-            console.error('Signup failed:', e);
-        }
-    }
+    
 
     const stepRender = () => {
-        switch (onStep) {
-            case 0:
+        switch (currentSignUpStep) {
+            case '약관동의':
                 return <약관동의 />
-            case 1:
+            case '계정정보입력':
                 return <계정정보입력 />
-            case 2:
+            case '개인정보입력':
                 return <개인정보입력 />
         }
     }
@@ -102,16 +58,33 @@ export default function SignUpPage() {
         <div className="h-full w-full flex flex-col justifyd-center">
             <Header title="회원가입" />
             <div className="flex flex-col flex-grow flex-shrink-0">
-                <StepReveal step={onStep} />
+                <StepReveal />
                 {
                     stepRender()
                 }
                 <div className="w-full py-4"
-                    style={{ padding:'12px 36px'}}>
+                    style={{ padding: '12px 36px' }}>
                     <div className="w-full flex items-center justify-center text-white rounded"
-                        style={{ height: 48, backgroundColor: '#816DFF', cursor: 'pointer' }}
-                        onClick={() => { setStep(prev => prev+1) }}>
-                        {onStep != 2 ? `다음` : '회원 가입 하기'}
+                        style={{ height: 48, backgroundColor: canNextStep ? '#816DFF' : '#e2deff', cursor: canNextStep ? 'pointer' : 'not-allowed' }}
+                        onClick={() => {
+                            if (canNextStep) {
+                                switch (currentSignUpStep) {
+                                    case '약관동의':
+                                        setCurrentStep("계정정보입력");
+                                        return;
+                                    case '계정정보입력':
+                                        setCurrentStep("개인정보입력");
+                                        return;
+                                    case '개인정보입력':
+                                        sendSignUpRequest();
+                                       
+                                        router.push('/auth/sign-in');
+                                        return;
+                                }
+                                setCanNextStep(false)
+                            }
+                        }}>
+                        {currentSignUpStep != '개인정보입력' ? `다음` : '회원 가입 하기'}
                     </div>
                 </div>
             </div>
@@ -119,25 +92,26 @@ export default function SignUpPage() {
     )
 }
 
-const StepReveal = ({ step }: { step: number }) => {
+const StepReveal = () => {
 
+    const currentSignUpStep = useSignupStore((state) => state.currentStep);
     return (
         <div className="flex flex-row items-center" style={{ margin: '28px auto', padding: '0 12px', paddingTop: 4 }}>
             <div className="flex flex-col items-center overflow-visible" style={{ gap: 8, width: 48 }}>
-                <div className={`flex items-center justify-center ${step == 0 ? ' bg-[#816DFF]' : ' bg-[#D9D9D9]'}  rounded-full`} style={{ height: 36, width: 36 }}>
+                <div className={`flex items-center justify-center ${currentSignUpStep == "약관동의" ? ' bg-[#816DFF]' : ' bg-[#D9D9D9]'}  rounded-full`} style={{ height: 36, width: 36 }}>
                     <div className="text-white">1</div>
                 </div>
-                <div style={{ fontSize: 14, textAlign: 'center', color: step == 0 ? '#816DFF' : '#D9D9D9', lineHeight: '110%', width: 100 }}>
+                <div style={{ fontSize: 14, textAlign: 'center', color: currentSignUpStep == "약관동의" ? '#816DFF' : '#D9D9D9', lineHeight: '110%', width: 100 }}>
                     약관동의
                 </div>
             </div>
             <div className="border-dashed border border-[#D9D9D9]" style={{ width: 65, marginBottom: 28 }} />
 
             <div className="flex flex-col items-center overflow-visible" style={{ gap: 8, width: 48 }}>
-                <div className={`flex items-center justify-center ${step == 1 ? ' bg-[#816DFF]' : ' bg-[#D9D9D9]'}  rounded-full`} style={{ height: 36, width: 36 }}>
+                <div className={`flex items-center justify-center ${currentSignUpStep == "계정정보입력" ? ' bg-[#816DFF]' : ' bg-[#D9D9D9]'}  rounded-full`} style={{ height: 36, width: 36 }}>
                     <div className="text-white">2</div>
                 </div>
-                <div style={{ fontSize: 14, textAlign: 'center', color: step == 1 ? '#816DFF' : '#D9D9D9', lineHeight: '110%', width: 100 }}>
+                <div style={{ fontSize: 14, textAlign: 'center', color: currentSignUpStep == "계정정보입력" ? '#816DFF' : '#D9D9D9', lineHeight: '110%', width: 100 }}>
                     계정 정보 입력
                 </div>
             </div>
@@ -145,10 +119,10 @@ const StepReveal = ({ step }: { step: number }) => {
             <div className="border-dashed border border-[#D9D9D9]" style={{ width: 65, marginBottom: 28 }} />
 
             <div className="flex flex-col items-center overflow-visible" style={{ gap: 8, width: 48 }}>
-                <div className={`flex items-center justify-center ${step == 2 ? ' bg-[#816DFF]' : ' bg-[#D9D9D9]'}  rounded-full`} style={{ height: 36, width: 36 }}>
+                <div className={`flex items-center justify-center ${currentSignUpStep == "개인정보입력" ? ' bg-[#816DFF]' : ' bg-[#D9D9D9]'}  rounded-full`} style={{ height: 36, width: 36 }}>
                     <div className="text-white">3</div>
                 </div>
-                <div style={{ fontSize: 14, textAlign: 'center', color: step == 2 ? '#816DFF' : '#D9D9D9', lineHeight: '110%', width: 100 }}>
+                <div style={{ fontSize: 14, textAlign: 'center', color: currentSignUpStep == "개인정보입력" ? '#816DFF' : '#D9D9D9', lineHeight: '110%', width: 100 }}>
                     프로필 입력
                 </div>
             </div>
@@ -158,50 +132,152 @@ const StepReveal = ({ step }: { step: number }) => {
 
 const 개인정보입력 = () => {
 
+
+    const setCanNextStep = useSignupStore((state) => state.setCanNextStep);
+
     const [onClubSelect, setClubSelectState] = useState(false)
+
+    const [name, setName] = useState('');
+    const [nameValidation, setNameValidation] = useState<ValidationState>({ status: "before" })
+
+    const [nickname, setNickname] = useState('');
+    const [nicknameValidation, setNicknameValidation] = useState<ValidationState>({ status: "confirm" })
+
+    const [club, setClub] = useState<{ clubId: number, school: string, clubName: string } | null | undefined>(undefined)
+    const [clubValidation, setClubValidation] = useState<ValidationState>({ status: "before" })
+
+    const [tellNumber, setTellNumber] = useState<string | undefined>(undefined)
+    const [tellNumberValidation, setTellNumberValidation] = useState<ValidationState>({ status: "confirm" })
+
+    const handleNicknameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+
+        const value = e.target.value;
+        const koreanRegex = /^[가-힣]+$/;
+
+        if (value === "" || koreanRegex.test(value)) {
+            setNickname(value);
+            setNicknameValidation({ status: 'confirm' });
+        } else {
+            setNameValidation({ status: 'error', errorText: '올바른 형식의 한글 패명을 입력하세요.' });
+        }
+    };
+
+    const handleNameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+
+        const value = e.target.value;
+        if (value == "") {
+            setNameValidation({ status: 'error', errorText: '이름을 입력해주세요.' });
+            return;
+        }
+
+        const koreanRegex = /^[가-힣]+$/;
+
+        if (koreanRegex.test(value)) {
+            setName(value);
+            setNameValidation({ status: 'confirm' });
+        } else {
+            setNameValidation({ status: 'error', errorText: '올바른 형식의 한글 이름을 입력하세요.' });
+        }
+    };
+
+    const formatPhoneNumber = (value: string): string => {
+        const numericValue = value.replace(/\D/g, "");
+
+        if (numericValue.length <= 3) return numericValue;
+        if (numericValue.length <= 7) return `${numericValue.slice(0, 3)}-${numericValue.slice(3)}`;
+        if (numericValue.length <= 10) return `${numericValue.slice(0, 3)}-${numericValue.slice(3, 6)}-${numericValue.slice(6)}`;
+        if (numericValue.length <= 11) return `${numericValue.slice(0, 3)}-${numericValue.slice(3, 7)}-${numericValue.slice(7)}`;
+        return `${numericValue.slice(0, 11)}`;
+    };
+
+    const handleTellNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const numericValue = e.currentTarget.value.replace(/[^0-9]/g, "");
+        e.currentTarget.value = formatPhoneNumber(numericValue);
+    };
+
+    const handleTellNumberBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const telNumberRegex = /^(01[0-9]-?\d{3,4}-?\d{4}|0\d{2,3}-?\d{3,4}-?\d{4})$/;
+
+        if (value === "" || telNumberRegex.test(value)) {
+            setTellNumber(value);
+            setTellNumberValidation({ status: 'confirm' });
+        } else {
+            setTellNumberValidation({ status: 'error', errorText: '올바른 형식의 전화번호를를 입력하세요.' });
+        }
+    };
+
+
+    useEffect(() => {
+        const notConfirmValidation = [nameValidation, nicknameValidation, clubValidation, tellNumberValidation].filter((value) => (value.status != 'confirm'));
+        if (notConfirmValidation.length > 0)
+            setCanNextStep(false)
+        else
+            setCanNextStep(true);
+
+    },
+        [nameValidation, nicknameValidation, clubValidation, tellNumberValidation])
 
     return (
         <div className="flex flex-col flex-grow overflow-y-auto" style={{ gap: 20 }}>
             <div className="w-full" style={{ padding: '0 36px' }}>
                 <div className="flex flex-col" style={{ gap: 4 }}>
-                    <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>이름</div>
+                    <div className="flex flex-row">
+                        <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>이름</div>
+                        <div className="text-red-500" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>*</div>
+                    </div>
                     <div className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
-                        <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="이름을 입력해주세요." style={{ padding: '' }} />
+                        <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="이름을 입력해주세요." style={{ padding: '' }}
+                            onFocus={() => setNameValidation({ status: 'pending' })}
+                            onBlur={handleNameBlur} />
                     </div>
-                    <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                    {nameValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
                         <Image src={WarningCircleIcon} width={12} alt="" />
-                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>이미 사용중인 이메일 입니다.</div>
-                    </div>
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{nameValidation.errorText}</div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full" style={{ padding: '0 36px' }}>
                 <div className="flex flex-col" style={{ gap: 4 }}>
                     <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>패명</div>
                     <div className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
-                        <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="패명을 입력해주세요." style={{ padding: '' }} />
+                        <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="패명을 입력해주세요." style={{ padding: '' }}
+                            onFocus={() => setNicknameValidation({ status: 'pending' })}
+                            onBlur={handleNicknameBlur} />
                     </div>
-                    <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                    {nicknameValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
                         <Image src={WarningCircleIcon} width={12} alt="" />
-                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>이미 사용중인 이메일 입니다.</div>
-                    </div>
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{nicknameValidation.errorText}</div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full" style={{ padding: '0 36px' }}>
                 <div className="flex flex-col" style={{ gap: 4 }}>
-                    <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>동아리리</div>
-                    <div className="flex flex-row items-center border justify-between border-[#CDC5FF] cursor-pointer" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}
-                        onClick={() => { if (!onClubSelect) setClubSelectState(true); else setClubSelectState(false) }}>
-                        <div className="flex-grow text-[#CDC5FF]" style={{ padding: '' }} >
-                            동아리를 선택해주세요.
-                        </div>
-                        <Image src={WarningCircleIcon} width={12} alt="" />
+                    <div className="flex flex-row">
+                        <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>동아리</div>
+                        <div className="text-red-500" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>*</div>
                     </div>
-                    {/* <div className="flex flex-row items-center" style={{ gap: 4 }}>
-                                <Image src={WarningCircleIcon} width={12} alt="" />
-                                <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>이미 사용중인 이메일 입니다.</div>
-                            </div> */}
+                    <div className="flex flex-row items-center border justify-between border-[#CDC5FF] cursor-pointer" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}
+                        onClick={() => {
+                            if (clubValidation.status != 'pending')
+                                setClubValidation({ status: 'pending' });
+                            else if (club === undefined)
+                                setClubValidation({ status: 'error', errorText: '클럽을 선택해주세요' })
+                            else {
+                                setClubValidation({ status: "confirm" })
+                            }
+                        }}>
+                        <div className={`flex-grow ${club === undefined ? 'text-[#CDC5FF]' : 'text-[#816DFF] '}`} style={{ padding: '' }} >
+                            {club === undefined ? '동아리를 선택해주세요.' : club ? `${club.school}-${club.clubName}` : '동아리 없음'}
+                        </div>
+                        {/* <Image src={WarningCircleIcon} width={12} alt="" /> */}
+                    </div>
+                    {clubValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                        <Image src={WarningCircleIcon} width={12} alt="" />
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{clubValidation.errorText}</div>
+                    </div>}
                 </div>
-                {onClubSelect && <div className="w-full relative" style={{ marginTop: 6 }}>
+                {clubValidation.status == 'pending' && <div className="w-full relative" style={{ marginTop: 6 }}>
                     <div className="absolute w-full bg-white border overflow-y-auto" style={{ height: 180, borderRadius: 5, scrollbarWidth: 'thin' }}>
                         <div className="flex flex-col w-full">
                             <div className="w-full flex-shrink-0 bg-[#F4F2FF] sticky top-0" style={{ padding: '6px 12px' }}>
@@ -211,10 +287,26 @@ const 개인정보입력 = () => {
                                 </div>
                             </div>
                             <div className="flex flex-col flex-grow" style={{ gap: 8, padding: '8px' }}>
+                                <div key={'no-club'}
+                                    className={`w-full ${club === null ? 'text-[#816DFF] font-semibold' : 'text-[#CDC5FF]'}  cursor-pointer`}
+                                    style={{ padding: '4px' }}
+                                    onClick={() => {
+                                        setClubSelectState(false);
+                                        setClub(null)
+                                        setClubValidation({ status: 'confirm' })
+                                    }}
+                                >동아리 없음
+                                </div>
                                 {Array.from({ length: 8 }).map((_, index) =>
-                                    <div key={index + 'club'} className="w-full text-[#CDC5FF] cursor-pointer" style={{ padding: '4px' }}
-                                        onClick={() => setClubSelectState(false)}
-                                    >동아리 이름 어쩌구구
+                                    <div key={index + 'club'}
+                                        className={`w-full ${club?.clubId == index ? 'text-[#816DFF] font-semibold' : 'text-[#CDC5FF]'}  cursor-pointer`}
+                                        style={{ padding: '4px' }}
+                                        onClick={() => {
+                                            setClubSelectState(false);
+                                            setClub({ clubId: index, school: '실험', clubName: (index + 1) + '번 동아리' })
+                                            setClubValidation({ status: 'confirm' })
+                                        }}
+                                    >{'실험-' + (index + 1) + '번 동아리'}
                                     </div>
                                 )}
                             </div>
@@ -226,56 +318,176 @@ const 개인정보입력 = () => {
                 <div className="flex flex-col" style={{ gap: 4 }}>
                     <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>전화번호</div>
                     <div className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
-                        <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="전화번호를 입력해주세요." style={{ padding: '' }} />
+                        <input type="tel" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]"
+                            placeholder="전화번호를 입력해주세요."
+                            onFocus={() => setTellNumberValidation({ status: 'pending' })}
+                            onChange={handleTellNumberChange}
+                            onBlur={handleTellNumberBlur} />
                     </div>
-                    <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                    {tellNumberValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
                         <Image src={WarningCircleIcon} width={12} alt="" />
-                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>이미 사용중인 이메일 입니다.</div>
-                    </div>
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{tellNumberValidation.errorText}</div>
+                    </div>}
                 </div>
             </div>
         </div>
     )
 }
 
+type ValidationStatus = "before" | "pending" | "confirm" | "error";
+
+type ValidationState =
+    | { status: "error"; errorText: string } // "error"일 때만 errorText 포함
+    | { status: Exclude<ValidationStatus, "error"> }; // 다른 상태일 때 errorText 없음
+
 const 계정정보입력 = () => {
+
+
+    const setCanNextStep = useSignupStore((state) => state.setCanNextStep);
+
+    const [email, setEmail] = useState('')
+    const [emailValidation, setEmailValidation] = useState<ValidationState>({ status: 'before' });
+
+    const [password, setPassword] = useState('')
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [passwordValidation, setPasswordValidation] = useState<ValidationState>({ status: 'before' });
+
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+    const [confirmPasswordValidation, setConfirmPasswordValidation] = useState<ValidationState>({ status: 'before' });
+
+    const debounceCheckEmailValidation = useCallback(
+        debounce((newValue: string) => checkEmailValidation(newValue), 500),
+        []
+    );
+
+    const checkEmailValidation = (newValue: string) => {
+        const EmailRegEx = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+        const EmailFormmatvalidation = EmailRegEx.test(newValue)
+        if (!EmailFormmatvalidation)
+            setEmailValidation({ status: 'error', errorText: '이메일 형식이 올바르지 않습니다.' });
+        else {
+            //여기에 이메일 중복 확인 로직 처리
+            setEmailValidation({ status: 'confirm' })
+        }
+    }
+
+
+    const checkPasswordValidation = (newValue: string) => {
+
+        if (newValue.length < 8 || newValue.length > 12) {
+            setPasswordValidation({ status: 'error', errorText: '비밀번호는 8~12자로 이루어져야합니다.' });
+        } else {
+            const passwordRegEx = /[A-Za-z\d!@#$%^&*]{8,12}$/;
+            const passwordValidation = passwordRegEx.test(newValue)
+            if (!passwordValidation)
+                setPasswordValidation({ status: 'error', errorText: '특수 문자는 (!, @, #, $, %, ^, &, *)만 가능합니다.' });
+            else {
+                //여기에 이메일 중복 확인 로직 처리
+                setPasswordValidation({ status: 'confirm' })
+            }
+        }
+        console.log(newValue, confirmPassword, newValue != confirmPassword)
+        if (newValue != confirmPassword)
+            setConfirmPasswordValidation({ status: 'error', errorText: '비밀번호가 일치하지 않습니다.' });
+        else {
+            setConfirmPasswordValidation({ status: 'confirm' })
+        }
+
+    }
+
+    const checkConfirmPasswordValidation = (newValue: string) => {
+        console.log(password, newValue, password != newValue)
+        if (newValue != password)
+            setConfirmPasswordValidation({ status: 'error', errorText: '비밀번호가 일치하지 않습니다.' });
+        else {
+            setConfirmPasswordValidation({ status: 'confirm' })
+        }
+
+    }
+
+
+    useEffect(() => {
+        debounceCheckEmailValidation(email)
+    }, [email])
+
+
+
+    useEffect(() => {
+        const notConfirmValidation = [emailValidation, passwordValidation, confirmPasswordValidation].filter((value) => (value.status != 'confirm'));
+        if (notConfirmValidation.length > 0)
+            setCanNextStep(false)
+        else
+            setCanNextStep(true);
+    }, [emailValidation, passwordValidation, confirmPasswordValidation])
+
     return (
         <div className="flex flex-col flex-grow overflow-y-auto" style={{ gap: 20 }}>
             <div className="w-full" style={{ padding: '0 36px' }}>
                 <div className="flex flex-col" style={{ gap: 4 }}>
                     <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>ID</div>
-                    <div className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
-                        <input type="email" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="ID를 입력해주세요." style={{ padding: '' }} />
+                    <div className={`flex flex-row items-center border ${emailValidation.status == 'error' ? 'border-red-500 border-2' : emailValidation.status == 'before' ? 'border-[#CDC5FF]' : 'border-[#816DFF] border'}`}
+                        style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
+                        <input type="email"
+                            className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]"
+                            placeholder="ID를 입력해주세요." style={{ padding: '' }}
+                            value={email}
+                            onChange={e => {
+                                setEmailValidation({ status: 'pending' })
+                                const newValue = e.currentTarget.value;
+                                setEmail(newValue);
+                            }}
+                        />
                     </div>
-                    <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                    {emailValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
                         <Image src={WarningCircleIcon} width={12} alt="" />
-                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>이미 사용중인 이메일 입니다.</div>
-                    </div>
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{emailValidation.errorText}</div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full" style={{ padding: '0 36px' }}>
                 <div className="flex flex-col" style={{ gap: 4 }}>
                     <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>비밀번호</div>
-                    <label htmlFor="password" className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
-                        <input type="password" id="password" name="password" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="비밀번호를 입력해주세요." style={{ padding: '' }} />
-                    </label>
-                    <div className="flex flex-row items-center" style={{ gap: 4 }}>
-                        <Image src={WarningCircleIcon} width={12} alt="" />
-                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>비밀번호는 영문,숫자,특수문자를 포함한 8~20자 입니다.</div>
+                    <div className={`flex flex-row items-center border ${passwordValidation.status == 'error' ? 'border-red-500 border-2' : passwordValidation.status == 'before' ? 'border-[#CDC5FF]' : 'border-[#816DFF] border'}`}
+                        style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
+                        <input type={passwordVisible ? "text" : "password"} id="password" name="password"
+                            className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="비밀번호를 입력해주세요." style={{ padding: '' }}
+                            onFocus={() =>
+                                setPasswordValidation({ status: 'pending' })
+                            }
+                            onBlur={e => {
+                                const newValue = e.currentTarget.value;
+                                setPassword(newValue)
+                                checkPasswordValidation(newValue);
+                            }} />
+                        <div className={`w-4 h-4 ${passwordVisible ? 'border bg-white' : 'bg-black'} rounded-md cursor-pointer`} onClick={() => setPasswordVisible(!passwordVisible)} />
                     </div>
+                    {passwordValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                        <Image src={WarningCircleIcon} width={12} alt="" />
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{passwordValidation.errorText}</div>
+                    </div>}
                 </div>
             </div>
             <div className="w-full" style={{ padding: '0 36px' }}>
                 <div className="flex flex-col" style={{ gap: 4 }}>
                     <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>비밀번호 확인</div>
-                    <label
-                        htmlFor="password-confirm" className="flex flex-row items-center border  border-[#CDC5FF] peer-focus-within:border-[#816DFF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
-                        <input type="password" id="password-confirm" name="password-confirm" className="peer flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="비밀번호를 다시 입력해주세요." style={{ padding: '' }} />
-                    </label>
-                    <div className="flex flex-row items-center" style={{ gap: 4 }}>
-                        <Image src={WarningCircleIcon} width={12} alt="" />
-                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>비밀번호와 일치하지 않습니다.</div>
+                    <div className={`flex flex-row items-center border ${confirmPasswordValidation.status == 'error' ? 'border-red-500 border-2' : confirmPasswordValidation.status == 'before' ? 'border-[#CDC5FF]' : 'border-[#816DFF] border'}`}
+                        style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
+                        <input type={confirmPasswordVisible ? "text" : "password"} id="password-confirm" name="password-confirm" className="peer flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="비밀번호를 다시 입력해주세요." style={{ padding: '' }}
+                            onFocus={() =>
+                                setConfirmPasswordValidation({ status: 'pending' })
+                            }
+                            onBlur={e => {
+                                const newValue = e.currentTarget.value;
+                                setConfirmPassword(newValue)
+                                checkConfirmPasswordValidation(newValue);
+                            }} />
+                        <div className={`w-4 h-4 ${confirmPasswordVisible ? 'border bg-white' : 'bg-black'} rounded-md cursor-pointer`} onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)} />
                     </div>
+                    {confirmPasswordValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                        <Image src={WarningCircleIcon} width={12} alt="" />
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{confirmPasswordValidation.errorText}</div>
+                    </div>}
                 </div>
             </div>
         </div>
@@ -283,6 +495,32 @@ const 계정정보입력 = () => {
 }
 
 const 약관동의 = () => {
+
+
+    const setCanNextStep = useSignupStore((state) => state.setCanNextStep);
+
+    const [allAgree, setAllAgree] = useState(false)
+    const [usingTermAgree, setUsingTermAgree] = useState(false)
+    const [personalInfoAgree, setPersonalInfoAgree] = useState(false)
+
+    useEffect(() => {
+        if (allAgree) {
+            setUsingTermAgree(true)
+            setPersonalInfoAgree(true)
+        } else if (usingTermAgree && personalInfoAgree) {
+            setUsingTermAgree(false)
+            setPersonalInfoAgree(false)
+        }
+    }, [allAgree])
+
+    useEffect(() => {
+        if (usingTermAgree && personalInfoAgree) {
+            setAllAgree(true)
+            setCanNextStep(true)
+        } else if (allAgree) {
+            setAllAgree(false)
+        }
+    }, [usingTermAgree, personalInfoAgree])
     return (
         <div className="flex flex-col flex-grow">
             <div style={{ padding: '0 24px', width: '100%' }}>
@@ -293,7 +531,10 @@ const 약관동의 = () => {
                 >
                     <input
                         type="checkbox"
-                        defaultChecked={false}
+                        checked={allAgree}
+                        onClick={() => {
+                            setAllAgree(!allAgree)
+                        }}
                         name="all_check"
                         id="all_check"
                         className="hidden peer"
@@ -326,7 +567,10 @@ const 약관동의 = () => {
                     >
                         <input
                             type="checkbox"
-                            defaultChecked={false}
+                            checked={usingTermAgree}
+                            onClick={() => {
+                                setUsingTermAgree(!usingTermAgree)
+                            }}
                             name="약관"
                             id="약관"
                             className="hidden peer"
@@ -359,7 +603,10 @@ const 약관동의 = () => {
                     >
                         <input
                             type="checkbox"
-                            defaultChecked={false}
+                            checked={personalInfoAgree}
+                            onClick={() => {
+                                setPersonalInfoAgree(!personalInfoAgree)
+                            }}
                             name="개인정보"
                             id="개인정보"
                             className="hidden peer"

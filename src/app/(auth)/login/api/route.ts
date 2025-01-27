@@ -8,7 +8,7 @@ export async function POST(req: Request) {
                 { status: 500 });
 
     try {
-        const proxyUrl = `${process.env.BASE_URL}/member/login`;
+        const proxyUrl = `${process.env.BASE_URL}/api/member/login`;
 
         console.log({ loginId, password });
 
@@ -29,13 +29,13 @@ export async function POST(req: Request) {
         const { accessToken, expiresIn, refreshToken, refreshTokenExpiresIn } = proxyResponse.response;
 
         if (!accessToken || !refreshToken) throw Error('Token is not valid!')
-            
+
         const headers = new Headers();
 
         headers.append('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${expiresIn}`)
         headers.append('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${refreshTokenExpiresIn}`)
         // 클라이언트에 프록시 응답 반환
-        return Response.json({ message: 'success to Login!' }, { headers });
+        return Response.json({ message: 'success to Login!', token: accessToken }, { headers });
 
     } catch (error) {
         console.error('프록시 처리 중 에러:', error);
