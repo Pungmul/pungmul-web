@@ -31,7 +31,7 @@ const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT
 
 export function mySocketFactory() {
   // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL // || 'http://3.37.163.10:8080';
-  
+
   return new SockJS(`http://pungmul.site/ws/api/lightning/nearby`);
 }
 
@@ -121,12 +121,13 @@ export default function Lightning() {
     }
 
     // 사용자의 위치가 변경될 때마다 실행되는 함수
+
     const loadLocation = (position: { coords: LocationType }) => {
       const newLocation = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
       };
-      console.log('호출됨')
+      console.log('load location complete')
       setLocation(newLocation); // 위치 상태 업데이트
     };
 

@@ -15,28 +15,39 @@ import ChatIconOutline from '@public/Chat-icon-outline.svg';
 import ChatIconFilled from '@public/Chat-icon-filled.svg';
 
 export default function BottomTabs() {
-    const router = useRouter();
+
+    const router = useRouter();// 라우터 가져오기
     const pathname = usePathname(); // 현재 경로 가져오기
 
     return (
-        <div className="w-full justify-between bg-white flex-shrink-0 flex flex-row bottom-0 items-center sticky" style={{ height: 74 , padding:'0 24px'}}>
+        <div className="w-full justify-between bg-white flex-shrink-0 flex flex-row bottom-0 items-center sticky" style={{ height: 74, padding: '0 24px' }}>
 
+            {/* home page button */}
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/home')}>
                 {pathname == '/home' ? <Image src={HomeIconFilled} width={32} alt="" /> : <Image src={HomeIconOutline} width={32} alt="" />}
             </div>
+            {/* newsfeed page button  */}
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/newsfeed')}>
                 {pathname == '/newsfeed' ? <Image src={NewsFeedIconFilled} width={32} alt="" /> : <Image src={NewsFeedIconOutline} width={32} alt="" />}
             </div>
+            {/* lightning page button */}
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/lightning')}>
                 {pathname == '/lightning' ? <Image src={ThunderIconFilled} width={32} alt="" /> : <Image src={ThunderIconOutline} width={32} alt="" />}
             </div>
+            {/* board page button */}
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/board/main')}>
                 {pathname == '/board/main' ? <Image src={BoardIconFilled} width={32} alt="" /> : <Image src={BoardIconOutline} width={32} alt="" />}
             </div>
+            {/* chat page button */}
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/chats')}>
                 {pathname == '/chats' ? <Image src={ChatIconFilled} width={32} alt="" /> : <Image src={ChatIconOutline} width={32} alt="" />}
             </div>
-           
+
+            {/* my page button */}
+            <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/mypage')}>
+                {/* {pathname == '/mypage' ? <Image src={MyPageIconFilled} width={32} alt="" /> : <Image src={MyPageIconOutline} width={32} alt="" />} */}
+            </div>
+
         </div>
     )
 }
