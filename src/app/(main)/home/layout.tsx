@@ -1,0 +1,19 @@
+import type { Metadata } from "next";
+import "@pThunder/app/globals.css";
+
+export const metadata: Metadata = {
+    title: "풍물 머시기 | 홈",
+    description: "풍물 머시기의 메인화면 입니다.",
+};
+
+export default function HomeLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <>
+            {children}
+        </>
+    );
+}

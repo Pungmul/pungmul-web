@@ -42,12 +42,6 @@ export default function BottomTabs() {
             <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/chats')}>
                 {pathname == '/chats' ? <Image src={ChatIconFilled} width={32} alt="" /> : <Image src={ChatIconOutline} width={32} alt="" />}
             </div>
-
-            {/* my page button */}
-            <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/mypage')}>
-                {/* {pathname == '/mypage' ? <Image src={MyPageIconFilled} width={32} alt="" /> : <Image src={MyPageIconOutline} width={32} alt="" />} */}
-            </div>
-
         </div>
     )
 }

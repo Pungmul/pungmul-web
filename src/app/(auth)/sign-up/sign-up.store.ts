@@ -11,6 +11,7 @@ interface PersonalInfo {
     nickname?: string;
     club?: number | null;
     tellNumber?: string;
+    inviteCode: string;
 }
 
 interface SignupState {
@@ -46,7 +47,8 @@ const useSignupStore = create<SignupState>((set, get) => ({
         name: undefined,
         nickname: undefined,
         club: null,
-        tellNumber: undefined
+        tellNumber: undefined,
+        inviteCode: ''
     },
     setPersonalInfo: (info: Partial<PersonalInfo>) => set((state) => ({ personalInfo: { ...state.personalInfo, ...info } })),
 
@@ -60,8 +62,8 @@ const useSignupStore = create<SignupState>((set, get) => ({
         }
 
         // Validate personalInfo
-        if (!personalInfo.name || !personalInfo.nickname || !personalInfo.tellNumber) {
-            console.error('이름, 닉네임, 전화번호를 모두 입력해주세요.');
+        if (!personalInfo.name || !personalInfo.tellNumber || personalInfo.inviteCode.length == 0) {
+            console.error('이름, 전화번호, 초대 코드를 모두 입력해주세요.');
             return;
         }
         try {

@@ -28,9 +28,6 @@
       "@asset/*": [
         "./src/app/assets*"
       ],
-      "@mock/*":[
-        "./src/mocks"
-      ],
       "@public/*": [
         "./public/*"
       ]

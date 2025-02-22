@@ -3,16 +3,18 @@ import { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
     // return NextResponse.next();
-    const accessToken = req.cookies.get('accessToken')?.value;
+    // const accessToken = req.cookies.get('accessToken')?.value;
 
-    console.log(req.nextUrl.pathname)
+    // console.log(req.nextUrl.pathname)
 
-    if (accessToken === 'invalid' || !accessToken) {
-        if (req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up'))) return NextResponse.next();
-        return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트
-    }
+    // if (accessToken === 'invalid' || !accessToken) {
+    //     if (req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up'))) return NextResponse.next();
+    //     return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트
+    // }
 
-    if (req.nextUrl.pathname.startsWith('/logout')&&accessToken) {
+    if (req.nextUrl.pathname.startsWith('/logout')
+        // &&accessToken
+    ) {
 
         const response = NextResponse.redirect(new URL('/login', req.url));
         response.cookies.set('accessToken', '', {

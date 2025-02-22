@@ -272,6 +272,7 @@ export default function Lightning() {
             modules={[Pagination]}
             className="w-full h-full"
           >
+            {/* 스와이프 영역 */}
             <>
               {[1, 2, 3].map(element =>
                 <SwiperSlide style={{ width: 270, height: 160 }}>
@@ -285,6 +286,7 @@ export default function Lightning() {
               )}
               <SwiperSlide style={{ width: 270, height: 160 }}>
                 <div className="flex-shrink-0 h-full">
+                  {/* 카드 추가하기 버튼 */}
                   <Card>
                     <div onClick={() => router.push('lightning/create')}>추가하기</div>
                   </Card>
@@ -294,6 +296,7 @@ export default function Lightning() {
           </Swiper>
         </div>
       </div>
+      {/* 바텀탭 영역역 */}
       <BottomTabs />
     </div>
   );

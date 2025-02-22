@@ -22,26 +22,17 @@ export default function SignUpPage() {
     const currentSignUpStep = useSignupStore((state) => state.currentStep);
     const setCurrentStep = useSignupStore((state) => state.setCurrentStep);
 
-    
+
     const canNextStep = useSignupStore((state) => state.canNextStep);
     const setCanNextStep = useSignupStore((state) => state.setCanNextStep);
-    
+
     const sendSignUpRequest = useSignupStore((state) => state.sendSignUpRequest);
-    
-    const formatPhoneNumber = (value: string) => {
-        const cleaned = value.replace(/\D/g, '');
-        const match = cleaned.match(/^(\d{3})(\d{3,4})(\d{4})$/);
-        if (match) {
-            return `${match[1]}-${match[2]}-${match[3]}`;
-        }
-        return cleaned;
-    };
 
     useEffect(() => {
         setCurrentStep('약관동의')
     }, [])
 
-    
+
 
     const stepRender = () => {
         switch (currentSignUpStep) {
@@ -77,7 +68,7 @@ export default function SignUpPage() {
                                         return;
                                     case '개인정보입력':
                                         sendSignUpRequest();
-                                       
+
                                         router.push('/auth/sign-in');
                                         return;
                                 }
@@ -320,6 +311,22 @@ const 개인정보입력 = () => {
                     <div className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
                         <input type="tel" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]"
                             placeholder="전화번호를 입력해주세요."
+                            onFocus={() => setTellNumberValidation({ status: 'pending' })}
+                            onChange={handleTellNumberChange}
+                            onBlur={handleTellNumberBlur} />
+                    </div>
+                    {tellNumberValidation.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                        <Image src={WarningCircleIcon} width={12} alt="" />
+                        <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{tellNumberValidation.errorText}</div>
+                    </div>}
+                </div>
+            </div>
+            <div className="w-full" style={{ padding: '0 36px' }}>
+                <div className="flex flex-col" style={{ gap: 4 }}>
+                    <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>초대코드</div>
+                    <div className="flex flex-row items-center border border-[#CDC5FF]" style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
+                        <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]"
+                            placeholder="초대코드를 입력해주세요."
                             onFocus={() => setTellNumberValidation({ status: 'pending' })}
                             onChange={handleTellNumberChange}
                             onBlur={handleTellNumberBlur} />
@@ -633,6 +640,32 @@ const 약관동의 = () => {
     )
 }
 
+interface inputProps {
+    onFocus: () => void
+    onBlur: () => void
+    onChange: () => void
+    validationState: ValidationState
+    value: string
+}
+
+const inputBaseComponent: React.FC<inputProps> = ({ onFocus, onBlur, onChange, validationState }) => {
+    return (
+        <div className="w-full" style={{ padding: '0 36px' }}>
+            <div className="flex flex-col" style={{ gap: 4 }}>
+                <div className="text-[#816DFF]" style={{ fontSize: 14, marginLeft: 4, lineHeight: '15px' }}>패명</div>
+                <div className={`flex flex-row items-center border ${validationState.status === 'error' ? 'border-red-500' : 'border-[#CDC5FF]'}`} style={{ gap: 8, padding: '8px 8px', borderRadius: 5 }}>
+                    <input type="text" className="flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF]" placeholder="패명을 입력해주세요." style={{ padding: '' }}
+                        onFocus={onFocus}
+                        onBlur={onBlur} />
+                </div>
+                {validationState.status == 'error' && <div className="flex flex-row items-center" style={{ gap: 4 }}>
+                    <Image src={WarningCircleIcon} width={12} alt="" />
+                    <div style={{ color: '#FF0000', fontSize: 12, lineHeight: '13px' }}>{validationState.errorText}</div>
+                </div>}
+            </div>
+        </div>
+    )
+}
 
 
 {/* <form onSubmit={submitHandler} className="w-full flex flex-col gap-2 py-4">

@@ -1,12 +1,5 @@
 import "@pThunder/app/globals.css";
 import localFont from 'next/font/local';
-import { initMocks } from "@pThunder/mocks/index";
-import { MockProvider } from "./MockProviders";
-
-if (process.env.NODE_ENV !== "production") {
-  initMocks();
-}
-// 로컬 폰트 설정
 
 const nanumSquareNeo = localFont({
   src: [
@@ -25,10 +18,8 @@ export default function Layout({
 }>) {
   return (
     <html lang="ko" className={nanumSquareNeo.variable}>
-      <body className="mx-auto h-svh overflow-hidden" style={{ maxWidth: 400, minWidth: 386 }}>
-        <MockProvider>
+      <body className="mx-auto h-svh overflow-hidden" style={{ maxWidth: 560, minWidth: 386 }}>
           {children}
-        </MockProvider>
       </body>
     </html>
   );
