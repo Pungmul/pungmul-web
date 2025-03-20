@@ -1,5 +1,3 @@
-import "@pThunder/app/globals.css";
-
 
 export default function AuthLayout({
     children,

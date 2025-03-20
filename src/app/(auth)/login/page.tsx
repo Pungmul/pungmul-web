@@ -3,8 +3,6 @@ import { useRouter } from "next/navigation";
 import sendLoginRequest from "./utils";
 import { useState } from "react";
 
-import "@pThunder/app/globals.css";
-
 export default function LoginPage() {
     const router = useRouter();
 
@@ -18,6 +16,7 @@ export default function LoginPage() {
             if (!loginResponse) throw Error('로그인 실패');
 
             router.replace(`/home`);
+
         } catch (e) {
             console.log(e);
             setFail(true);

@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation"
 
 export function Header({ title, rightBtn }: { title: string, rightBtn?: React.ReactNode }) {
+    // const router = useRouter()
     const router = useRouter()
     return (
         <div style={{ height: 50 }} className="w-full bg-white flex flex-col justify-center items-center sticky flex-shrink-0 top-0" >

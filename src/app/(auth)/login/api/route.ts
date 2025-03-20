@@ -15,8 +15,9 @@ export async function POST(req: Request) {
         const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({ loginId, password }),
         });
 
@@ -32,8 +33,8 @@ export async function POST(req: Request) {
 
         const headers = new Headers();
 
-        headers.append('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${expiresIn}`)
-        headers.append('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${refreshTokenExpiresIn}`)
+        headers.append('Set-Cookie', `accessToken=${accessToken}; Path=/; SameSite=Strict; Max-Age=${expiresIn}`)
+        headers.append('Set-Cookie', `refreshToken=${refreshToken}; Path=/; SameSite=Strict; Max-Age=${refreshTokenExpiresIn}`)
         // 클라이언트에 프록시 응답 반환
         return Response.json({ message: 'success to Login!', token: accessToken }, { headers });
 

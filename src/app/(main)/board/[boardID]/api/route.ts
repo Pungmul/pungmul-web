@@ -21,7 +21,8 @@ export async function GET(req: Request) {
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
 
         const { response } = await proxyResponse.json();
-        return Response.json(response, { status: 200 })
+        
+        return response
 
     } catch (error) {
 

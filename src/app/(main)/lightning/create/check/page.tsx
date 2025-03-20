@@ -1,5 +1,4 @@
 "use client"
-import "@pThunder/app/globals.css";
 import { Header } from "@pThunder/app/component/header";
 import { useEffect, useState } from "react";
 

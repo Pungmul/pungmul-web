@@ -1,4 +1,4 @@
-import "@pThunder/app/globals.css";
+
 import ClientComponent from "./clientComponent";
 import { GET as LoadList } from "./load/route";
 

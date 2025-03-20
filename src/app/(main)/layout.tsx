@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import "@pThunder/app/globals.css";
-import BottomTabs from "./BottomTabs";
 import FCMClient from "./fcmComponent";
+import { AnimatePresence } from "framer-motion";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,7 +16,10 @@ export default function RootLayout({
     <div id="main-contents" className="flex flex-col-reverse w-full h-dvh">
       <FCMClient />
       <div className="relative flex-grow overflow-y-auto overflow-x-hidden">
-            {children}
+
+        <AnimatePresence mode="wait" initial={false}>
+          {children}
+        </AnimatePresence>
       </div>
     </div>
   );

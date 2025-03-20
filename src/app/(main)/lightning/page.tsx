@@ -1,5 +1,4 @@
 'use client'
-import "@pThunder/app/globals.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { throttle } from "lodash";
 import Image from "next/image";

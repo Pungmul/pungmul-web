@@ -1,7 +1,4 @@
 'use client'
-import { useEffect, useState } from "react"
-
-import "@pThunder/app/globals.css";
 import { Header } from "@pThunder/app/component/header";
 import { useRouter } from "next/navigation";
 

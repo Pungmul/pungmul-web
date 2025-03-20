@@ -2,18 +2,21 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
-    // return NextResponse.next();
-    // const accessToken = req.cookies.get('accessToken')?.value;
 
-    // console.log(req.nextUrl.pathname)
+    const accessToken = req.cookies.get('accessToken');
 
-    // if (accessToken === 'invalid' || !accessToken) {
-    //     if (req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up'))) return NextResponse.next();
-    //     return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트
-    // }
+    if (accessToken) {
+        if(req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up'))) 
+            return NextResponse.redirect(new URL('/home', req.url));
+    }
+    
+    if (!accessToken) {
+        if (req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up')) || req.nextUrl.pathname.startsWith('/cookie')) return NextResponse.next();
+        return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트
+    }
 
     if (req.nextUrl.pathname.startsWith('/logout')
-        // &&accessToken
+        && accessToken
     ) {
 
         const response = NextResponse.redirect(new URL('/login', req.url));

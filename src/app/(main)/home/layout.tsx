@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "@pThunder/app/globals.css";
 
 export const metadata: Metadata = {
     title: "풍물 머시기 | 홈",

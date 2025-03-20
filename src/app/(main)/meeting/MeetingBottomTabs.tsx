@@ -1,6 +1,5 @@
 'use client'
 import { usePathname, useRouter } from "next/navigation";
-import "@pThunder/app/globals.css";
 import Image from "next/image";
 
 import HomeIconOutline from '@public/Home-icon-outline.svg';

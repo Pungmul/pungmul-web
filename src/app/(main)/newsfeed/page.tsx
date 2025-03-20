@@ -1,5 +1,4 @@
 'use client'
-import "@pThunder/app/globals.css";
 
 import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import { ReactElement, useEffect, useRef, useState } from "react";

@@ -1,10 +1,6 @@
-'use client'
-
-import { useEffect, useState } from "react"
-import { useRouter, useSelectedLayoutSegments } from "next/navigation";
-import { loadPosts } from "./utils";
 import { Header } from "@pThunder/app/component/header";
 import PostingButton from "./PostingButton";
+import Link from "next/link";
 
 interface BoardInfo {
     rootCategoryName: string;
@@ -51,36 +47,19 @@ export interface BoardData {
 }
 
 
-export default function PostList({ params }: { params: { boardID: number } }) {
-    const router = useRouter();
-    const { boardID } = params
+export default function PostList({ boardData, boardId }: { boardData: BoardData,boardId:number }) {
 
-    const segments = useSelectedLayoutSegments();
-    const [BoardData, setData] = useState<BoardData | null>(null);
-
-    useEffect(() => {
-        const loadPage = async () => {
-            try {
-                const data = await loadPosts(boardID) as BoardData;
-                console.log(data)
-                setData(data);
-            } catch (e) { console.error(e) }
-        }
-
-        loadPage();
-    }, [])
-
-    if (!BoardData)
+    if (!boardData)
         return (
             <>로딩중</>)
+
     return (
         <>
-            <Header title={BoardData.boardInfo.rootCategoryName} rightBtn={<PostingButton boardID={boardID} />} />
-            {BoardData?.recentPostList?.list.map(post => (
-                <div key={post.postId} style={{ gap: 12, paddingTop: 16, paddingBottom: 16, paddingLeft: 28, paddingRight: 28 }} className={`w-full bg-white flex flex-col px-6 border-b cursor-pointer ${Number(segments.join('/')) == post.postId ? 'bg-gray-100' : ''}`}
-                    onClick={() => {
-                        router.push(`/board/${boardID}/${post.postId}`)
-                    }}>
+            <Header title={boardData.boardInfo.rootCategoryName} rightBtn={<PostingButton boardID={boardId} />} />
+            {boardData?.recentPostList?.list.map(post => (
+                <Link href={`/board/${boardId}/${post.postId}`} key={post.postId} style={{ gap: 12, paddingTop: 16, paddingBottom: 16, paddingLeft: 28, paddingRight: 28 }} className={`w-full bg-white flex flex-col px-6 border-b cursor-pointer`}
+                    prefetch={true}
+                >
                     <div className="flex justify-between flex-col items-start">
                         <div style={{ fontSize: 14 }} className="w-full truncate">{post.title}</div>
                         <div style={{ fontSize: 12 }} className="text-gray-300 max-w-24 truncate">{post.author == 'Anonymous' ? '익명' : post.author}</div>
@@ -106,7 +85,7 @@ export default function PostList({ params }: { params: { boardID: number } }) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </Link>
             ))}
         </>
     )

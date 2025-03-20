@@ -1,5 +1,4 @@
 'use client'
-import "@pThunder/app/globals.css";
 import { useCallback, useEffect, useState } from "react";
 import { acceptFriendRequest, findFriends, rejectFriendRequest, requestFriend } from "./utils";
 import { debounce } from 'lodash';

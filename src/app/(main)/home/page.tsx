@@ -1,5 +1,4 @@
 'use client'
-import "@pThunder/app/globals.css";
 
 import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import { useRouter } from "next/navigation";
@@ -14,6 +13,7 @@ import LocationIcon from '@public/Location-icon.svg'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FreeMode } from "swiper/modules";
+import { useEffect } from "react";
 
 interface RecentPost {
   postId: number;
@@ -73,6 +73,67 @@ export default function Home() {
     },
   ]
 
+  useEffect(() => {
+
+    const issueToken = async (tokens: { accessToken: string, refreshToken: string }) => {
+
+      try {
+        const res = await fetch('/cookie', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(tokens),
+        });
+
+        if (res.ok) {
+          console.log('✅ 쿠키 설정 완료');
+          if (typeof window === "undefined" || !window?.ReactNativeWebView) {
+            return;
+          }
+          window?.ReactNativeWebView.postMessage(JSON.stringify('Cookie issued'));
+        }
+        else throw Error('Failed to issue cookies')
+      }
+      catch {
+        console.log('⛔ 쿠키 설정 실패');
+          if (typeof window === "undefined" || !window?.ReactNativeWebView) {
+            return;
+          }
+          window?.ReactNativeWebView.postMessage(JSON.stringify('Cookie didn\'t issue'));
+      }
+
+    }
+
+    const handleMessage = (event: MessageEvent) => {
+      
+      const isReactNativeWebView = () => {
+        if (typeof window !== 'undefined') {
+          return /React-Native/i.test(window.navigator.userAgent);
+        }
+        return false;
+      }
+
+      const isWebView = isReactNativeWebView()
+
+      if (isWebView) {
+        const { accessToken, refreshToken } = JSON.parse(event.data);
+        if (!accessToken || !refreshToken) return;
+
+        issueToken({ accessToken, refreshToken })
+      }
+
+    };
+
+    document.addEventListener('message', handleMessage as EventListener);
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+
+      document.addEventListener('message', handleMessage as EventListener);
+      window.removeEventListener('message', handleMessage);
+
+    }
+  }, []);
+
   return (
     <div className="flex flex-col h-full w-full">
       <div className="w-full h-full flex-grow flex flex-col overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
@@ -96,8 +157,8 @@ export default function Home() {
               <SwiperSlide style={{ width: 12 }} className="flex-shrink-0">
               </SwiperSlide>
               {Array.from({ length: 8 }).map((_, index) => (
-                <SwiperSlide style={{ width: 140, height: 120 }} className="cursor-pointer" 
-                onClick={()=>router.push('/meeting')}>
+                <SwiperSlide style={{ width: 140, height: 120 }} className="cursor-pointer"
+                  onClick={() => router.push('/meeting')}>
                   <div key={index + 'moim'} className="w-full h-full rounded-md flex-shrink-0 bg-gray-400 overflow-hidden flex flex-col shadow-md" >
                     <div className="flex-grow">
                     </div>

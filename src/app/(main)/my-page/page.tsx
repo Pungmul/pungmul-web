@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react"
 import { getInstrumentsInfomation, addInstrumentSkill } from "./utils";
 
-import "@pThunder/app/globals.css";
 import { Header } from "@pThunder/app/component/header";
 import { useRouter } from "next/navigation";
 

@@ -1,6 +1,4 @@
 'use client'
-import "@pThunder/app/globals.css";
-
 import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import Image from "next/image";
 import SockJS from 'sockjs-client';
