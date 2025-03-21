@@ -1,9 +1,10 @@
-const postContext = async (title: string, text: string, anonymity: boolean, boardId: number) => {
+const postContext = async (boardId: number, formData: FormData) => {
     try {
+
+
         const response = await fetch(`post/api?boardId=${boardId}`, {
             method: 'POST',
-            body: JSON.stringify({ text, title, anonymity })
-            ,
+            body: formData,
             credentials: 'include'
         })
 

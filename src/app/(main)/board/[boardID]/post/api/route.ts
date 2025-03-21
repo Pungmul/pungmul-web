@@ -7,33 +7,20 @@ export async function POST(req: Request) {
         const boardId = url.searchParams.get('boardId');
 
 
-        const { title, text, anonymity, imgFiles } = await req.json();
+        const formData = await req.formData();
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 
-        const userForm = new FormData();
-
-        if (imgFiles) {
-            userForm.append('files', imgFiles);
-        }
-
-        const postBlob = new Blob([JSON.stringify({ title, text, anonymity })], {
-            type: 'application/json'
-        });
-
-        userForm.append('postData', postBlob);
-
-        userForm.append('categoryId', boardId!.toString());
         const proxyUrl = `${process.env.BASE_URL}/api/posts?categoryId=${boardId}`;
 
-        console.log(proxyUrl, userForm)
+        console.log(formData)
+        
         const proxyResponse = await fetch(proxyUrl, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
             }
-            , body: userForm
+            , body: formData
         });
 
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)

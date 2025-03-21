@@ -1,6 +1,9 @@
+'use client'
+
 import { Header } from "@pThunder/app/component/header";
 import PostingButton from "./PostingButton";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface BoardInfo {
     rootCategoryName: string;
@@ -47,7 +50,12 @@ export interface BoardData {
 }
 
 
-export default function PostList({ boardData, boardId }: { boardData: BoardData,boardId:number }) {
+export default function PostList({ boardData, boardId }: { boardData: BoardData, boardId: number }) {
+
+    const [boardList, setBoardList] = useState<RecentPost[]>(boardData.recentPostList.list)
+    const [pageNum, setPageNum] = useState(0)
+
+    useEffect(() => { }, [pageNum])
 
     if (!boardData)
         return (
@@ -56,7 +64,7 @@ export default function PostList({ boardData, boardId }: { boardData: BoardData,
     return (
         <>
             <Header title={boardData.boardInfo.rootCategoryName} rightBtn={<PostingButton boardID={boardId} />} />
-            {boardData?.recentPostList?.list.map(post => (
+            {boardList.map(post => (
                 <Link href={`/board/${boardId}/${post.postId}`} key={post.postId} style={{ gap: 12, paddingTop: 16, paddingBottom: 16, paddingLeft: 28, paddingRight: 28 }} className={`w-full bg-white flex flex-col px-6 border-b cursor-pointer`}
                     prefetch={true}
                 >

@@ -1,12 +1,10 @@
 import { Header } from "@pThunder/app/component/header";
 
-// import sendIcon from '@public/sendIcon.svg';
-// import checkMark from '@public/checkMark.svg';
-// import Image from "next/image";
 import FriendsAddButton from "./FriendsAddButton";
 import CommentList from "./CommentsList";
 import PostLikeButton from "./PostLikeButton";
 import { loadPost } from "./serverSide";
+import Image from "next/image";
 
 interface Post {
     postId: number;                // 게시물 ID (Long 타입, TypeScript에서는 number로 사용)
@@ -53,80 +51,15 @@ interface Comment {
     replies: Comment[];
 }
 
-export default async function Page({ params }: { params: { pageID: number } }) {
+export default async function Page({ params }: { params: { postId: number } }) {
 
-    const { pageID } = params;
+    const { postId } = params;
 
     // const [Post, setPost] = useState<Post | null>(null);
 
-    const Post:Post = await loadPost(pageID);
-
-    // useEffect(() => {
-    //     const loadingPost = async () => {
-    //         try {
-    //             const data = await loadPost(pageID) as Post;
-
-    //             // setPost({ ...data })
-
-    //         } catch (e) {
-    //             console.error(e)
-    //         }
-    //     }
-    //     loadingPost();
-    // }, [])
+    const Post: Post = await loadPost(postId);
 
     
-
-    // const CommentHandler = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    //     const form = e.currentTarget;
-    //     const comment = (new FormData(form).get('comment')) as string;
-
-    //     try {
-    //         const data = await addComment(pageID, comment) as Comment;
-
-    //         if (!data) throw Error('댓글 작성 실패')
-
-    //         const currentPost = Post;
-
-
-    //         if (currentPost) {
-    //             console.log(buildCommentTree([...currentPost!.commentList, data]))
-    //             setPost({ ...currentPost, commentList: buildCommentTree([...currentPost.commentList, data]) })
-    //             wholeRef.current?.scrollIntoView({ behavior: 'smooth', scrollY: 10000 });
-    //             (form.elements.namedItem('comment') as HTMLInputElement).value = '';
-    //         }
-
-
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }, [Post])
-
-    // const ReplyHandler = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    //     const comment = (new FormData(e.currentTarget).get('comment')) as string;
-
-    //     try {
-    //         if (!isReplying) throw Error('is not reply')
-    //         const data = await addReply(pageID, comment, isReplying.commentId)
-
-    //         if (!data) throw Error('댓글 작성 실패')
-
-    //         const currentPost = Post;
-
-    //         if (currentPost) {
-    //             setReply(null);
-    //             setPost({ ...currentPost, commentList: buildCommentTree([...currentPost.commentList, data]) })
-
-    //             e.currentTarget.reset();
-    //         }
-
-
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }, [Post, isReplying])
 
 
     return (
@@ -136,19 +69,19 @@ export default async function Page({ params }: { params: { pageID: number } }) {
                 <Header title={Post?.title || ''} />
             </div>
             <div className="flex flex-col flex-grow overflow-y-auto">
-                <div style={{ backgroundColor: '#F9F9F9' }} className="">
+                <div style={{ backgroundColor: '#F9F9F9' }} className="flex-grow flex flex-col">
                     <div className="flex flex-col gap-4 px-6 py-5 mt-2  bg-white">
                         <div className="flex flex-col gap-2">
                             <div className="font-semibold" style={{ fontSize: 17 }}>
-                                {Post?.title}
+                                {Post.title}
                             </div>
                             <div className="flex flex-row justify-between items-start">
                                 <div className="flex flex-row gap-2 items-center">
                                     <div className="text-gray-400" style={{ fontSize: 14 }}>
-                                        {Post?.author == 'Anonymous' ? '익명' : Post?.author}
+                                        {Post.author == 'Anonymous' ? '익명' : Post.author}
                                     </div>
 
-                                    {Post?.author !== 'Anonymous' && Post?.author &&
+                                    {Post.author !== 'Anonymous' && Post.author &&
                                         <FriendsAddButton friendName={Post.author.name} friendId={Post.author.username} />
                                     }
                                     <div className="text-gray-300" style={{ fontSize: 11 }}>
@@ -163,24 +96,28 @@ export default async function Page({ params }: { params: { pageID: number } }) {
                         </div>
 
                         <div style={{ fontSize: 14 }}>
-                            {Post?.content}
+                            {Post.content}
                         </div>
 
                         <div className="w-full overflow-x-auto">
                             <div className="flex flex-row w-full gap-2">
-                                {Post?.imageList?.map((image) => (
-                                    <img
+                                {Post.imageList?.map((image) => (
+                                    <Image
                                         key={image.id}
                                         src={image.fullFilePath} // 이미지의 경로를 사용하여 렌더링
-                                        alt={image.originalFilename}
-                                        style={{ width: '100px', height: 'auto', }} // 스타일 적용
+                                        alt={image.convertedFileName}
+                                        style={{ width: 100, height: 'auto' }}
+                                        sizes="cover"
+                                        layout="intrinsic"
+                                        width={100}
+                                        height={0}
                                     />
                                 ))}
                             </div>
                         </div>
 
                         <div className="flex flex-row gap-4">
-                            <PostLikeButton isLiked={Post?.isLiked} postId={Post?.postId} likedNum={Post?.likedNum}/>
+                            <PostLikeButton isLiked={Post.isLiked} postId={Post.postId} likedNum={Post.likedNum} />
                             <div className="flex items-center flex-row gap-1">
                                 <div className="w-6 h-6 bg-blue-200" />
                                 <div className="text-blue-300">{Post?.commentList?.length ?? 0}</div>
@@ -188,11 +125,9 @@ export default async function Page({ params }: { params: { pageID: number } }) {
                         </div>
                     </div>
 
-                    {Post?.commentList!.length! > 0 && <CommentList comments={Post?.commentList!} />}
-
+                    {Post.commentList!.length! > 0 && <CommentList comments={Post.commentList} postId={Post.postId} />}
                 </div>
             </div>
-            
         </div>
 
     )

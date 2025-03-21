@@ -15,6 +15,7 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [hasScroll, setHasScroll] = useState(false);
     const [anonymity, setAnonymity] = useState(true)
+    const [imageFiles, setImageFiles] = useState<Blob[] | null>(null)
     const scrollableRef = useRef<HTMLDivElement | null>(null)
     const editorRef = useRef<EditorComponent | null>(null)
 
@@ -40,7 +41,23 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
         if (text.length == 0 || text.length == 0) { console.log('write down something!'); return }
         console.log({ title, text, anonymity })
 
-        postContext(title, text, anonymity, boardID);
+        const userForm = new FormData();
+
+        if (imageFiles && imageFiles.length > 0) {
+            Array.from(imageFiles).forEach(file => {
+                userForm.append('files', file);
+            });
+        }else {
+            userForm.append('files', new Blob()); // 빈 파일 추가
+        }
+
+        const postBlob = new Blob([JSON.stringify({ title, text, anonymity })], {
+            type: 'application/json'
+        });
+
+        userForm.append('postData', postBlob);
+
+        postContext(boardID, userForm);
     }
 
     return (
@@ -56,7 +73,7 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
                         className={`flex-grow overflow-y-auto ${hasScroll ? 'pl-4 pr-1' : 'px-4'}`}
                     >
                         <Editor
-                            
+
                             editorState={editorState}
                             placeholder="글을 작성하세요"
                             onChange={handleEditorChange}
