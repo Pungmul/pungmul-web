@@ -4,12 +4,19 @@ import { NextRequest } from 'next/server';
 export function middleware(req: NextRequest) {
 
     const accessToken = req.cookies.get('accessToken');
+    const hostname = req.headers.get("host") || "";
+    console.log({ hostname })
+
+    // if (hostname.startsWith("192.168.0.5")) {
+    //     return NextResponse.rewrite(new URL("/404", req.url)); // 404 페이지로 강제 이동
+    // }
+    
 
     if (accessToken) {
-        if(req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up'))) 
+        if (req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up')))
             return NextResponse.redirect(new URL('/home', req.url));
     }
-    
+
     if (!accessToken) {
         if (req.nextUrl.pathname.startsWith('/login') || (req.nextUrl.pathname.startsWith('/sign-up')) || req.nextUrl.pathname.startsWith('/cookie')) return NextResponse.next();
         return NextResponse.redirect(new URL('/login', req.url));  // 로그인 페이지로 리다이렉트

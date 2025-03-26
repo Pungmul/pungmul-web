@@ -1,5 +1,7 @@
 import "@pThunder/app/globals.css";
+import { Viewport } from "next";
 import localFont from 'next/font/local';
+import { PinchZoomPreventionScript } from "./PreventPinchZoom";
 
 const nanumSquareNeo = localFont({
   src: [
@@ -11,15 +13,21 @@ const nanumSquareNeo = localFont({
   variable: '--font-nanum-neo',
 });
 
+export const viewport: Viewport = {
+  userScalable: false,
+}
+
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="ko" className={nanumSquareNeo.variable}>
-      <body className="mx-auto h-svh overflow-hidden" style={{ maxWidth: 560, minWidth: 386 }}>
-          {children}
+      <PinchZoomPreventionScript/>
+      <body className="mx-auto h-dvh overflow-x-hidden" style={{ maxWidth: 560, minWidth: 386 }}>
+        {children}
       </body>
     </html>
   );

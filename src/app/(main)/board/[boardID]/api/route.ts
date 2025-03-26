@@ -1,14 +1,22 @@
 import { cookies } from "next/headers";
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params }: { params: { boardID: string } }) {
 
     try {
         const url = new URL(req.url);
-        const boardId = url.searchParams.get('boardId'); 
+        const { boardID } = params;
 
-        const proxyUrl = `${process.env.BASE_URL}/api/boards/${boardId}`;
+        const page = url.searchParams.get('page')
+        const size = url.searchParams.get('size')
 
+        const proxyUrl = new URL(`${process.env.BASE_URL}/api/boards/${boardID}`);
+
+        if (page)
+            proxyUrl.searchParams.set('page', page)
         
+        if (size)
+            proxyUrl.searchParams.set('size', size)
+
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -21,8 +29,8 @@ export async function GET(req: Request) {
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
 
         const { response } = await proxyResponse.json();
-        
-        return response
+
+        return Response.json(response, { status: 200 })
 
     } catch (error) {
 

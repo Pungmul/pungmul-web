@@ -1,7 +1,7 @@
-export const loadMorePosts = async (id: number) => {
+export const loadMorePosts = async (id: number, page: number = 0, size: number = 10) => {
     try {
 
-        const response = await fetch(`/board/${id}/api?boardId=${id}`, {
+        const response = await fetch(`/board/${id}/api?page=${page}&size=${size}`, {
             credentials: 'include'
         })
 

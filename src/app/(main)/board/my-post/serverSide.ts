@@ -1,11 +1,10 @@
 import { cookies } from "next/headers";
-import { BoardData } from "./PostList";
 
-export async function loadPostList(boardId: number): Promise<BoardData | null> {
+export async function loadPostList(): Promise<any | null> {
 
     try {
 
-        const proxyUrl = `${process.env.BASE_URL}/api/boards/${boardId}`;
+        const proxyUrl = `${process.env.BASE_URL}/api/posts/user`;
 
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
@@ -14,16 +13,17 @@ export async function loadPostList(boardId: number): Promise<BoardData | null> {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
-            cache:'no-cache'
+            cache: 'no-cache'
         });
 
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
 
         const { response } = await proxyResponse.json();
-
+        const { userPosts } = await response;
         // console.log(response);
-        
-        return response
+        console.log(userPosts)
+
+        return userPosts
 
     } catch (error) {
 

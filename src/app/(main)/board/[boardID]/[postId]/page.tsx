@@ -5,6 +5,7 @@ import CommentList from "./CommentsList";
 import PostLikeButton from "./PostLikeButton";
 import { loadPost } from "./serverSide";
 import Image from "next/image";
+import PostMenu from "./PostMenu";
 
 interface Post {
     postId: number;                // 게시물 ID (Long 타입, TypeScript에서는 number로 사용)
@@ -59,22 +60,29 @@ export default async function Page({ params }: { params: { postId: number } }) {
 
     const Post: Post = await loadPost(postId);
 
-    
+
 
 
     return (
         <div className="h-dvh w-full flex flex-col">
 
             <div className="grow-0">
-                <Header title={Post?.title || ''} />
+                <Header
+                    title={Post?.title || ''}
+                    rightBtn={
+                        <PostMenu />
+                    } />
             </div>
             <div className="flex flex-col flex-grow overflow-y-auto">
                 <div style={{ backgroundColor: '#F9F9F9' }} className="flex-grow flex flex-col">
                     <div className="flex flex-col gap-4 px-6 py-5 mt-2  bg-white">
                         <div className="flex flex-col gap-2">
-                            <div className="font-semibold" style={{ fontSize: 17 }}>
-                                {Post.title}
+                            <div className="flex flex-row justify-between">
+                                <div className="font-semibold" style={{ fontSize: 17 }}>
+                                    {Post.title}
+                                </div>
                             </div>
+
                             <div className="flex flex-row justify-between items-start">
                                 <div className="flex flex-row gap-2 items-center">
                                     <div className="text-gray-400" style={{ fontSize: 14 }}>
@@ -95,7 +103,7 @@ export default async function Page({ params }: { params: { postId: number } }) {
                             </div>
                         </div>
 
-                        <div style={{ fontSize: 14 }}>
+                        <div style={{ fontSize: 14}} className="break-words">
                             {Post.content}
                         </div>
 
@@ -125,7 +133,7 @@ export default async function Page({ params }: { params: { postId: number } }) {
                         </div>
                     </div>
 
-                    {Post.commentList!.length! > 0 && <CommentList comments={Post.commentList} postId={Post.postId} />}
+                    {Post.commentList && <CommentList comments={Post.commentList} postId={Post.postId} />}
                 </div>
             </div>
         </div>

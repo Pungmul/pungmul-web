@@ -32,10 +32,10 @@ const levelNamesMap: { [key in Level]: string } = {
 interface User {
     loginId: string;
     name: string;
+    groupName?:string;
     clubName?: string;
     birth: string; // "YYYY-MM-DD" 형식
     clubAge: number;
-    gender: 'M' | 'F';
     phoneNumber: string;
     email: string;
     area?: string;
@@ -103,13 +103,10 @@ export default function MyPagePage() {
             <Header title="마이 페이지" />
             <div className="px-6 py-4 flex-grow flex flex-col gap-4" style={{ paddingLeft: 24, paddingRight: 24, }}>
                 <div className="flex flex-row justify-between">
-                    <span className="text-gray-400">이름</span><span>{userData?.name}{`${userData?.clubName ? ` (${userData.clubName})` : ''}`}</span>
+                    <span className="text-gray-400">이름</span><span>{userData?.name}{`${userData?.groupName ? ` (${userData.groupName})` : ''}`}</span>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <span className="text-gray-400">동아리</span><span>{userData?.name}{` (${userData?.clubAge})`} </span>
-                </div>
-                <div className="flex flex-row justify-between">
-                    <span className="text-gray-400">성별</span><span>{userData?.gender == "M" ? "남" : "여"}</span>
+                    <span className="text-gray-400">동아리</span><span>{userData?.clubName}{userData?.clubAge?` (${userData?.clubAge})`:''} </span>
                 </div>
                 <div className="flex flex-row justify-between">
                     <span className="text-gray-400">이름</span><span>{userData?.phoneNumber}</span>
@@ -143,7 +140,7 @@ export default function MyPagePage() {
                     <div className="text-xl">악기 정보</div>
                     <div className="-right-0.5 top-0 p-0.5 absolute cursor-pointer text-gray-300"
                         onClick={() => setVisible(true)}>추가하기</div>
-                    <div className="flex flex-col gap-2 px-0.5 py-2 rounded border border-gray-200 my-2">
+                    <div className="flex flex-col gap-8 py-4 px-0.5 rounded border border-gray-200 my-2">
                         {instrumentsData.map((instrumentData: InstrumentData, index: number) =>
                             <div key={instrumentData.instrument} className="flex flex-row justify-between group">
                                 <div className="flex items-center flex-row gap-1">

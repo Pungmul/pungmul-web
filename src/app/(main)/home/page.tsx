@@ -1,6 +1,5 @@
 'use client'
 
-import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
@@ -135,8 +134,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="w-full h-full flex-grow flex flex-col overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+    <div className="flex flex-col w-full overflow-y-auto">
+      <div className="relative w-full h-full flex-grow flex flex-col overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
         <div className="flex flex-row justify-end" style={{ paddingTop: 36, paddingBottom: 4, paddingLeft: 24, paddingRight: 24, gap: 8 }}>
           <Image src={NotificationIcon} width={36} alt="" />
           <Image src={MyPageIcon} width={36} alt="" className="cursor-pointer" onClick={() => router.push('/my-page')} />
@@ -296,7 +295,6 @@ export default function Home() {
           </Swiper>
         </div>
       </div>
-      <BottomTabs />
     </div>
   );
 }

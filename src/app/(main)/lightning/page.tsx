@@ -10,10 +10,9 @@ import 'swiper/css/pagination';
 
 import GpsMark from '@public/Gps.svg';
 
-import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import { useRouter } from "next/navigation";
 import SockJS from "sockjs-client";
-import { Client, Stomp } from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
 
 declare global {
   interface Window {
@@ -296,7 +295,6 @@ export default function Lightning() {
         </div>
       </div>
       {/* 바텀탭 영역역 */}
-      <BottomTabs />
     </div>
   );
 }

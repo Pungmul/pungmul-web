@@ -84,7 +84,6 @@ export default function Chats() {
           <ChatComponent />
         ))}
       </div>
-      <BottomTabs />
     </div>
   );
 }

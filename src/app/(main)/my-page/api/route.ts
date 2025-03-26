@@ -4,7 +4,7 @@ export async function GET() {
 
     try {
 
-        const proxyUrl = `${process.env.BASE_URL}/member`;
+        const proxyUrl = `${process.env.BASE_URL}/api/member`;
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     try {
 
-        const proxyUrl = `${process.env.BASE_URL}/member/inst`;
+        const proxyUrl = `${process.env.BASE_URL}/api/member/inst`;
         const cookieStore = cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 
