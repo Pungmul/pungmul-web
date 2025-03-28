@@ -14,7 +14,8 @@ export async function loadPostList(boardId: number): Promise<BoardData | null> {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
-            cache:'no-cache'
+            cache: 'no-cache',
+            next: { revalidate: 10 }
         });
 
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
@@ -22,7 +23,7 @@ export async function loadPostList(boardId: number): Promise<BoardData | null> {
         const { response } = await proxyResponse.json();
 
         // console.log(response);
-        
+
         return response
 
     } catch (error) {

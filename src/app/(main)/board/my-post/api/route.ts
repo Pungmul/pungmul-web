@@ -18,8 +18,8 @@ export async function GET(req: Request) {
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
 
         const { response } = await proxyResponse.json();
-        
-        return response
+        console.log(response)
+        return Response.json(response)
 
     } catch (error) {
 

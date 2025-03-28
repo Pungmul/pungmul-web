@@ -7,7 +7,7 @@ import { EditorState, Editor, ContentState, convertFromRaw } from 'draft-js';
 import 'draft-js/dist/Draft.css'; // 기본 스타일 적용
 
 import checkMark from '@public/checkMark.svg';
-import { Header } from '@pThunder/app/component/header';
+import { Header } from '@pThunder/app/component/Header';
 import postContext from './utils';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';

@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from "react";
-import { Header } from "@pThunder/app/component/header";
+import { Header } from "@pThunder/app/component/Header";
 
 import Image from "next/image";
 import React from "react";

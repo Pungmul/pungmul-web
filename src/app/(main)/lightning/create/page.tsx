@@ -1,5 +1,5 @@
 "use client"
-import { Header } from "@pThunder/app/component/header";
+import { Header } from "@pThunder/app/component/Header";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 

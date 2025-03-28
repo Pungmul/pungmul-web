@@ -2,6 +2,7 @@ import "@pThunder/app/globals.css";
 import { Viewport } from "next";
 import localFont from 'next/font/local';
 import { PinchZoomPreventionScript } from "./PreventPinchZoom";
+import ViewDetector from "./ViewDetector";
 
 const nanumSquareNeo = localFont({
   src: [
@@ -26,6 +27,7 @@ export default function Layout({
   return (
     <html lang="ko" className={nanumSquareNeo.variable}>
       <PinchZoomPreventionScript/>
+      <ViewDetector/>
       <body className="mx-auto h-dvh overflow-x-hidden" style={{ maxWidth: 560, minWidth: 386 }}>
         {children}
       </body>

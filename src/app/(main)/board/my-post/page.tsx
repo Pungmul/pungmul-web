@@ -1,23 +1,15 @@
-import { loadPostList } from "./serverSide";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import PostList from "./PostList";
-import { headers } from "next/headers";
+import { Header } from "@pThunder/app/component/Header";
 
-export default async function MyPostsPage(req: Request) {
 
-    console.log(req.url, "url")
-    const boardData = await loadPostList();
-
-    if (!boardData) {
-        return notFound();
-    }
+export default function MyPostsPage() {
 
     return (
-        <div className="w-full h-full">
-            <Suspense fallback={<div style={{ flex: 1, backgroundColor: '#DDD' }}>Loading...</div>}>
-                <PostList boardData={boardData} />
-            </Suspense>
+        <div className="relative h-full flex flex-col">
+            <Header title={'내가 작성한 글'}/>
+            <div className="flex-grow overflow-y-auto">
+                    <PostList />
+            </div>
         </div>
-    )
+    )   
 }

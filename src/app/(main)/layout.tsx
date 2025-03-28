@@ -23,9 +23,7 @@ export default function RootLayout({
 
       <div className="relative overflow-y-auto flex-grow">
 
-        {/* <AnimatePresence mode="wait" initial={false}> */}
           {children}
-        {/* </AnimatePresence> */}
       </div>
       
     </div>

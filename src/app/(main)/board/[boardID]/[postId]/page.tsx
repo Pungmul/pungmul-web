@@ -1,11 +1,11 @@
-import { Header } from "@pThunder/app/component/header";
+import { Header } from "@pThunder/app/component/Header";
 
 import FriendsAddButton from "./FriendsAddButton";
 import CommentList from "./CommentsList";
 import PostLikeButton from "./PostLikeButton";
 import { loadPost } from "./serverSide";
-import Image from "next/image";
 import PostMenu from "./PostMenu";
+import PostImage from "./PostImage";
 
 interface Post {
     postId: number;                // 게시물 ID (Long 타입, TypeScript에서는 number로 사용)
@@ -57,11 +57,7 @@ export default async function Page({ params }: { params: { postId: number } }) {
     const { postId } = params;
 
     // const [Post, setPost] = useState<Post | null>(null);
-
     const Post: Post = await loadPost(postId);
-
-
-
 
     return (
         <div className="h-dvh w-full flex flex-col">
@@ -103,22 +99,16 @@ export default async function Page({ params }: { params: { postId: number } }) {
                             </div>
                         </div>
 
-                        <div style={{ fontSize: 14}} className="break-words">
+                        <div style={{ fontSize: 14 }} className="break-words">
                             {Post.content}
                         </div>
 
                         <div className="w-full overflow-x-auto">
                             <div className="flex flex-row w-full gap-2">
                                 {Post.imageList?.map((image) => (
-                                    <Image
+                                    <PostImage
                                         key={image.id}
-                                        src={image.fullFilePath} // 이미지의 경로를 사용하여 렌더링
-                                        alt={image.convertedFileName}
-                                        style={{ width: 100, height: 'auto' }}
-                                        sizes="cover"
-                                        layout="intrinsic"
-                                        width={100}
-                                        height={0}
+                                        imageData={image}
                                     />
                                 ))}
                             </div>
