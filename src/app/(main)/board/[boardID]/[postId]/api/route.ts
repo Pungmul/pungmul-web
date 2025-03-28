@@ -14,12 +14,14 @@ export async function GET(req: Request) {
         const proxyResponse = await fetch(proxyUrl, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
-            }
+            },
+            cache:'no-cache'
         });
 
         if (!proxyResponse.ok) throw Error('서버 불안정' + proxyResponse.status)
 
         const { response } = await proxyResponse.json();
+        console.log(response)
         
         return Response.json(response, { status: 200 })
 
