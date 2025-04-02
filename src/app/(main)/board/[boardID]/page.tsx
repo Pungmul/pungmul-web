@@ -24,14 +24,11 @@ export default async function BoardPage({
     return (
         <div className="relative h-full flex flex-col">
             <Header title={boardData.boardInfo.rootCategoryName} rightBtn={<PostingButton boardID={boardID} />} />
-
-            <div className="flex-grow overflow-y-auto">
-                <Suspense fallback={
-                        <PostBoxSkelleton length={5} />
-                }>
-                    <PostList boardData={boardData} boardId={params.boardID} />
-                </Suspense>
-            </div>
+            <Suspense fallback={
+                <PostBoxSkelleton length={5} />
+            }>
+                <PostList boardData={boardData} boardId={params.boardID} />
+            </Suspense>
         </div>
     )
 }

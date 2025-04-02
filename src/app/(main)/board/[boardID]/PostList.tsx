@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { loadMorePosts } from "./utils";
-import { debounce } from "lodash";
+import { debounce, throttle } from "lodash";
 import PostBox from "../../../component/PostBox";
 import PostBoxSkelleton from "../../../component/PostBoxSkelleton";
+import DragScroll from "@pThunder/app/component/DragScroll";
 
 interface BoardInfo {
     rootCategoryName: string;
@@ -57,6 +58,7 @@ export default function PostList({ boardData, boardId }: { boardData: BoardData,
     const [pageNum, setPageNum] = useState(0);
     const [isLoading, setLoading] = useState(false);
     const [isLast, setIsLast] = useState(false);
+
     const loaderRef = useRef(null); // 무한 스크롤을 감지할 마지막 요소
 
     useEffect(() => {
@@ -66,7 +68,6 @@ export default function PostList({ boardData, boardId }: { boardData: BoardData,
                     if (!isLast) {
                         setLoading(true)
                         nextPage(pageNum); // 마지막 항목이 보이면 데이터 로드
-                        console.log('터치', pageNum)
                     }
                 }
             },
@@ -118,16 +119,17 @@ export default function PostList({ boardData, boardId }: { boardData: BoardData,
         [isLast, isLoading]
     );
 
-
-
     if (!boardData)
         return (
             <>로딩중</>)
 
     return (
-        <div className="h-full"
-        >
-            <div>
+
+        <div className="flex flex-col overflow-hidden">
+            <div className="h-0">
+                <button >새로 고침</button>
+            </div>
+            <DragScroll>
                 {postList.map((post) => (
                     <PostBox
                         boardId={boardId}
@@ -135,10 +137,10 @@ export default function PostList({ boardData, boardId }: { boardData: BoardData,
                     />
                 ))}
                 {isLoading &&
-                    <PostBoxSkelleton length={3}/>
+                    <PostBoxSkelleton length={3} />
                 }
                 <div ref={loaderRef} className="h-[1px]" />
-            </div>
+            </DragScroll>
         </div>
     )
 }

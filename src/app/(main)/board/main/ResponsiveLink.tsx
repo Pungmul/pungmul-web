@@ -1,19 +1,20 @@
 "use client";
 
 import Link, { LinkProps } from "next/link";
-import {useView} from "@pThunder/app/utils/useView";
+import { useView } from "@pThunder/app/utils/useView";
 import { CSSProperties } from "react";
 
 interface CustomLinkProps extends LinkProps {
     className?: string;
+    draggable?: boolean;
     children: React.ReactNode;
     style: CSSProperties
 }
 
-export const WebViewLink: React.FC<CustomLinkProps> = ({ href, className, children,style, ...props }) => {
+export const WebViewLink: React.FC<CustomLinkProps> = ({ href, className, children, style, ...props }) => {
 
     const { view } = useView();
-
+    const { draggable = false } = props
     if (view === 'webview') {
 
         const handleClick = () => {
@@ -21,14 +22,14 @@ export const WebViewLink: React.FC<CustomLinkProps> = ({ href, className, childr
         };
 
         return (
-            <div className={className} onClick={handleClick} style={style}>
+            <div className={className} onClick={handleClick} draggable={draggable} style={style}>
                 {children}
             </div>
         );
     }
 
     return (
-        <Link href={href} className={className} style={style} {...props}>
+        <Link href={href} className={className} style={style} draggable={draggable} {...props}>
             {children}
         </Link>
     );
