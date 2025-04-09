@@ -41,7 +41,7 @@ export default function PostBox({ post, boardId }: { post: RecentPost, boardId: 
                 <div className="flex flex-row gap-2  items-end">
 
                     <div className="flex flex-row gap-1 items-center">
-                        <div className="text-gray-400 text-xs">{post.timeSincePostedText}</div>
+                        <div className="text-gray-400 text-xs">{post.timeSincePostedText === '0분 전' ? '방금' : post.timeSincePostedText}</div>
                     </div>
                 </div>
             </div>

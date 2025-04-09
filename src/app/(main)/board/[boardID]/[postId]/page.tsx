@@ -89,7 +89,7 @@ export default async function Page({ params }: { params: { postId: number } }) {
                                         <FriendsAddButton friendName={Post.author.name} friendId={Post.author.username} />
                                     }
                                     <div className="text-gray-300" style={{ fontSize: 11 }}>
-                                        {Post?.timeSincePostedText}
+                                        {Post.timeSincePostedText === '0분 전' ? '방금' : Post.timeSincePostedText}
                                     </div>
                                 </div>
                                 <div className="flex items-center flex-row gap-1">

@@ -27,7 +27,7 @@ type LocationType = {
 
 const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
-export function mySocketFactory() {
+function lightningSocketFactory() {
   // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL // || 'http://3.37.163.10:8080';
 
   return new SockJS(`http://pungmul.site/ws/api/lightning/nearby`);
@@ -43,7 +43,7 @@ const useLightningSocket = () => {
       console.error('Token is not found');
       return;
     }
-    const socket = mySocketFactory();
+    const socket = lightningSocketFactory();
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

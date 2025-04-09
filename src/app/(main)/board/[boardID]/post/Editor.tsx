@@ -9,7 +9,7 @@ import 'draft-js/dist/Draft.css'; // 기본 스타일 적용
 import checkMark from '@public/checkMark.svg';
 import { Header } from '@pThunder/app/component/Header';
 import postContext from './utils';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 const emptyContentState = convertFromRaw({
@@ -27,6 +27,7 @@ const emptyContentState = convertFromRaw({
 });
 const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
 
+    const router = useRouter();
     const [editorState, setEditorState] = useState(EditorState.createWithContent(emptyContentState))
     const [title, setTitle] = useState('');
 
@@ -57,7 +58,7 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
         checkForScrollThrottled();
     };
 
-    const handlePosting = (e: React.FormEvent<HTMLFormElement>) => {
+    const handlePosting = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const text = editorState.getCurrentContent().getPlainText();
@@ -82,7 +83,8 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
 
         userForm.append('postData', postBlob);
 
-        postContext(boardID, userForm);
+        const { postId } = await postContext(boardID, userForm);
+        router.replace(`/board/${boardID}/${postId}`);
     }
 
     if (editorState === undefined || editorRef.current === undefined) return notFound()
@@ -210,7 +212,7 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
                     </div>
                     <div className='flex flex-row w-full items-center justify-between bottom-0 px-4 z-10'>
                         <div className="flex">
-                            <input type="file" id="images" name="images" accept="image/jpg" className='hidden'
+                            <input type="file" id="images" name="images" accept="image/*" className='hidden'
                                 onChange={(e) => {
                                     if (e.target.files !== null && e.target.files.length > 0) {
                                         setImageFiles((prevFiles) => {

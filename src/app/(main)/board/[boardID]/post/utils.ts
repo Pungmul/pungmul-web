@@ -12,7 +12,7 @@ const postContext = async (boardId: number, formData: FormData) => {
 
         const data = await response.json();
 
-        return data.postId;
+        return data;
     } catch (e) {
         console.error(e);
     }

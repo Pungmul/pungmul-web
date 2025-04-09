@@ -35,9 +35,14 @@ export default function CommentList({ comments, postId }: { comments: Comment[],
     const commentInputRef = useRef<HTMLInputElement>(null)
 
     const CommentHandler = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+
         e.preventDefault();
+
         const form = e.currentTarget;
         const comment = (new FormData(form).get('comment')) as string;
+        const anonymity = (new FormData(form).get('anonymity')) as string;
+
+        console.log(comment, anonymity)
 
         try {
 
@@ -63,7 +68,10 @@ export default function CommentList({ comments, postId }: { comments: Comment[],
         e.preventDefault();
         const form = e.currentTarget;
         const comment = (new FormData(form).get('comment')) as string;
+        const anonymity = (new FormData(form).get('anonymity')) as string;
 
+        console.log(comment, anonymity)
+        
         try {
             if (!isReplying) throw Error('is not reply')
             const data = await addReply(postId, comment, isReplying.commentId)
@@ -211,14 +219,14 @@ export default function CommentList({ comments, postId }: { comments: Comment[],
                 <div className=" bg-white items-center px-2 py-2 ">
                     <div className="flex flex-row items-center px-4 py-1 rounded-full" style={{ backgroundColor: '#F9F9F9' }}>
                         <label
-                            htmlFor="anony"
+                            htmlFor="anonymity"
                             className="flex flex-row gap-2 items-center cursor-pointer"
                         >
                             <input
                                 type="checkbox"
                                 defaultChecked={true}
-                                name="anony"
-                                id="anony"
+                                name="anonymity"
+                                id="anonymity"
                                 className="hidden peer"
                             />
                             <div
