@@ -15,6 +15,8 @@ function PostLikeButton({ postId, isLiked, likedNum: initialLikedNum }: { postId
     const [likedNum, setLikedNumb] = useState(initialLikedNum)
     const LikeHandler = useCallback(async () => {
         try {
+            if (!confirm(isLikedState ? '추천을 취소하시겠습니까?' : '이 게시글을 추천하시겠습니까?')) return;
+
             const data: PostLikeResponse = await clickLike(postId)
 
             if (!data) throw Error('좋아요 업데이트 실패')
@@ -23,6 +25,7 @@ function PostLikeButton({ postId, isLiked, likedNum: initialLikedNum }: { postId
 
             setLikedNumb(data.likedNum)
             setIsLikedState(prev => !prev);
+            alert(isLikedState ? '추천이 취소 되었습니다.' : '게시글을 추천했습니다.')
         } catch (error) {
             console.log(error)
         }

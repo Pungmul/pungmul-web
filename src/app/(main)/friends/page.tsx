@@ -31,8 +31,9 @@ export default async function Page() {
 
     const response = await LoadList();
     const data = await response.json();
-    const { friendList, requestedFriendList }: { friendList: FriendList, requestedFriendList: FriendList } = await data ?? { friendList: [], requestedFriendList: [] };
+    const { friendList = [], requestedFriendList = [] }: { friendList: FriendList, requestedFriendList: FriendList } = await data;
 
+    console.log(friendList)
     return (
         <ClientComponent initFriendList={friendList} initRquestedFriendsList={requestedFriendList} />
     )

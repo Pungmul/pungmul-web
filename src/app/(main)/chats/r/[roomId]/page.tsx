@@ -52,7 +52,7 @@ interface Message {
 
 interface ChatMessage {
     messageLogId: number;
-    domainType: 'CHAT'|'IMAGE';
+    domainType: 'CHAT' | 'IMAGE';
     businessIdentifier: string;
     identifier: string;
     stompDest: string;
@@ -162,9 +162,9 @@ export default function Page() {
                 stompClient.subscribe(`/sub/chat/message/${roomId}`, (message) => {
 
                     const parsedMessage = JSON.parse(message.body) as ChatMessage;
-                    console.log(message)
+                    console.log(parsedMessage)
                     const chatMessage: Message = {
-                        id: parsedMessage.content.id,
+                        id: parsedMessage.messageLogId,
                         senderUsername: parsedMessage.content.senderUsername,
                         content: parsedMessage.content.content,
                         chatType: parsedMessage.content.chatType,
@@ -204,19 +204,29 @@ export default function Page() {
     }
 
     const rederLogItem = useCallback((item: Message, prevMessage?: Message) => {
+        
         const username = item.senderUsername;
-        const isUser = username === 'user';
+        const isUser = username === 'ajtwoddl1236@naver.com';
 
         const madeTime = new Date(item.createdAt)
         const timeStamp = TimeFormat(madeTime)
 
         const message = item.content;
 
-        if (!!prevMessage) {
-
+        if (!prevMessage || prevMessage.senderUsername !== username || TimeFormat(new Date(prevMessage.createdAt)) !== timeStamp) {
+            return (
+                <li className="flex flex-col gap-2">
+                    <div className={(isUser ? "self-end" : "self-start") + " px-[24px] font-light text-[#cdcdcd] text-[11px]"}>{username}</div>
+                    <ChatMessage key={item.id} message={message} timestamp={timeStamp} isUser={isUser} isRead={true} />
+                </li>
+            )
         }
 
-        return <ChatMessage message={message} timestamp={timeStamp} isUser={isUser} isRead={true} />;
+        return (
+            <li>
+                <ChatMessage key={item.id} message={message} timestamp={timeStamp} isUser={isUser} isRead={true} />
+            </li>
+        )
 
     }, [])
 
@@ -272,13 +282,13 @@ export default function Page() {
                     </div>
                     <div className="h-full flex flex-col-reverse flex-grow overflow-y-auto">
                         <div ref={wholeRef} style={{ backgroundColor: '#FFF', padding: '24px 0' }} className="flex-grow">
-                            <div className="flex flex-col" style={{ gap: 24 }}>
+                            <ul className="flex flex-col list-none" style={{ gap: 24 }}>
                                 {chatLog.map((chatItem, index) => {
                                     if (!!chatLog[index - 1])
                                         return rederLogItem(chatItem, chatLog[index - 1])
                                     return rederLogItem(chatItem)
                                 })}
-                            </div>
+                            </ul>
                         </div>
                     </div>
                 </>

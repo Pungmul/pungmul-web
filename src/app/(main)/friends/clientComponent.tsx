@@ -9,6 +9,27 @@ interface Friend {
     simpleUserDTO: SimpleUserDTO;
 }
 
+interface UserProfileImage {
+    id: number;
+    originalFilename: string;
+    convertedFileName: string;
+    fullFilePath: string;
+    fileType: string;
+    fileSize: number;
+    createdAt: string; // ISO Date string
+}
+
+interface User {
+    userId: number;
+    username: string;
+    name: string;
+    profileImage: UserProfileImage;
+}
+
+interface FriendData {
+    user: User;
+    friendRequestFrom: 'NONE' | 'SENT' | 'RECEIVED' | 'ACCEPTED'; // 필요한 경우 다른 상태 추가 가능
+}
 
 interface SimpleUserDTO {
     userId: number;
@@ -32,12 +53,11 @@ type FriendList = Friend[];
 export default function ClientComponent({ initFriendList, initRquestedFriendsList }: { initFriendList: FriendList, initRquestedFriendsList: FriendList }) {
 
     console.log(initFriendList, initRquestedFriendsList)
+
     const [myFreindsList, setFreindsList] = useState<FriendList>(initFriendList);
     const [myRequstedFreindsList, setRequstedFreindsList] = useState<FriendList>(initRquestedFriendsList);
     const [modalVisible, setModalVisible] = useState(false);
     const [contentType, setContentType] = useState<'MyFriends' | 'FindFriends' | 'RequsetedFriends' | null>(null);
-
-
 
     const AcceptRequest = useCallback(debounce(async (friendRequestId: number, friendName: string) => {
         try {
@@ -61,7 +81,7 @@ export default function ClientComponent({ initFriendList, initRquestedFriendsLis
             const response = await rejectFriendRequest(friendRequestId);
             if (!response) throw Error('거절 실패')
             alert(`${friendName}님의 요청을 거절했어요`);
-            const newList = myRequstedFreindsList.filter(user => user.friendRequestId != friendRequestId)as FriendList;
+            const newList = myRequstedFreindsList.filter(user => user.friendRequestId != friendRequestId) as FriendList;
             setRequstedFreindsList(newList)
         } catch (e: unknown) {
             console.error(e);
@@ -81,9 +101,9 @@ export default function ClientComponent({ initFriendList, initRquestedFriendsLis
             case 'MyFriends':
                 return (
                     <div className="w-80">
-                        {myFreindsList?.length > 0 ? myFreindsList?.map(Friend => {
+                        {myFreindsList?.length > 0 ? myFreindsList?.map((Friend) => {
                             return (
-                                <div key={Friend.friendRequestId} className="hover:bg-gray-100 flex h-16 py-1 px-2 flex-row items-center gap-4">
+                                <div key={(Friend as FriendData).user.userId} className="hover:bg-gray-100 flex h-16 py-1 px-2 flex-row items-center gap-4">
                                     <div className="w-12 h-full bg-slate-200">
                                         <img
                                             src={Friend.simpleUserDTO.profileImage.fullFilePath}

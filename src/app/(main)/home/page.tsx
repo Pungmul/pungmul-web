@@ -94,16 +94,16 @@ export default function Home() {
       }
       catch {
         console.log('⛔ 쿠키 설정 실패');
-          if (typeof window === "undefined" || !window?.ReactNativeWebView) {
-            return;
-          }
-          window?.ReactNativeWebView.postMessage(JSON.stringify('Cookie didn\'t issue'));
+        if (typeof window === "undefined" || !window?.ReactNativeWebView) {
+          return;
+        }
+        window?.ReactNativeWebView.postMessage(JSON.stringify('Cookie didn\'t issue'));
       }
 
     }
 
     const handleMessage = (event: MessageEvent) => {
-      
+
       const isReactNativeWebView = () => {
         if (typeof window !== 'undefined') {
           return /React-Native/i.test(window.navigator.userAgent);
