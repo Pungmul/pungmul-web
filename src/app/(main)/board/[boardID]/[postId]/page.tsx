@@ -1,11 +1,12 @@
-import { Header } from "@pThunder/app/component/Header";
+import { Header } from "@pThunder/component/shared/Header";
 
-import FriendsAddButton from "./FriendsAddButton";
-import CommentList from "./CommentsList";
-import PostLikeButton from "./PostLikeButton";
 import { loadPost } from "./serverSide";
-import PostMenu from "./PostMenu";
-import PostImage from "./PostImage";
+
+import FriendsAddButton from "@pThunder/component/post/FriendsAddButton";
+import CommentList from "@pThunder/component/comment/CommentsList";
+import PostLikeButton from "@pThunder/component/post/PostLikeButton";
+import PostMenu from "@pThunder/component/post/PostMenu";
+import PostImage from "@pThunder/component/post/PostImage";
 
 interface Post {
     postId: number;                // 게시물 ID (Long 타입, TypeScript에서는 number로 사용)

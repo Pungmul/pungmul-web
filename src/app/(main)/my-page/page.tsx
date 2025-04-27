@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { getInstrumentsInfomation, addInstrumentSkill } from "./utils";
 
-import { Header } from "@pThunder/app/component/Header";
+import { Header } from "@pThunder/component/shared/Header";
 import { useRouter } from "next/navigation";
 
 interface InstrumentData { instrument: Instrument, instrumentAbility: Level, major: boolean }

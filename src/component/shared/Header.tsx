@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation"
 import Image from "next/image";
 
-import CloseIcon from '@public/closeIcon.svg';
-import { useView } from "../utils/useView";
+import CloseIcon from '@public/icons/closeicon.svg';
+import { useView } from "@pThunder/lib/shared/useView";
 
 export function Header({ title, rightBtn }: { title: string, rightBtn?: React.ReactNode }) {
 

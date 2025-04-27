@@ -8,7 +8,7 @@ import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import GpsMark from '@public/Gps.svg';
+import GpsMark from '@public/icons/Gps.svg';
 
 import { useRouter } from "next/navigation";
 import SockJS from "sockjs-client";
@@ -222,9 +222,9 @@ export default function Lightning() {
 
   useEffect(() => {
     if (!isLoading && currentLocation && map) {
-      var imageSrc = '/gpsMarker.png', // 마커이미지의 주소입니다    
-        imageSize = new window.kakao.maps.Size(24, 24) // 마커이미지의 크기입니다
-      var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, { offset: new window.kakao.maps.Point(12, 12) })
+      var imageSrc = '/icons/gpsMarker.png', // 마커이미지의 주소입니다    
+        imageSize = new window.kakao.maps.Size(32, 32) // 마커이미지의 크기입니다
+      var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, { offset: new window.kakao.maps.Point(16, 16) })
 
       if (!GPSmarker) {
         const marker = new window.kakao.maps.Marker({

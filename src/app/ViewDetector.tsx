@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { useView } from './utils/useView';
+import { useView } from '../lib/shared/useView';
 
 export default function ViewDetector() {
    useView();

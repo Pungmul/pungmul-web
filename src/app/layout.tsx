@@ -7,7 +7,7 @@ import ViewDetector from "./ViewDetector";
 const nanumSquareNeo = localFont({
   src: [
     {
-      path: '/fonts/NanumSquareNeo-Variable.woff2',
+      path: '../../public/fonts/NanumSquareNeo-Variable.woff2',
       weight: '100 900', // 가변 폰트 범위 설정
     },
   ],

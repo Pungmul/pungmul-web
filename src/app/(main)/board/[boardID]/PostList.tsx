@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { loadMorePosts } from "./utils";
 import { debounce, throttle } from "lodash";
-import PostBox from "../../../component/PostBox";
-import PostBoxSkelleton from "../../../component/PostBoxSkelleton";
-import DragScroll from "@pThunder/app/component/DragScroll";
+import PostBox from "../../../../component/post/PostBox";
+import PostBoxSkelleton from "../../../../component/post/PostBoxSkelleton";
+import DragScroll from "@pThunder/component/shared/DragScroll";
 
 interface BoardInfo {
     rootCategoryName: string;

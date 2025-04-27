@@ -1,5 +1,5 @@
 "use client"
-import { Header } from "@pThunder/app/component/Header";
+import { Header } from "@pThunder/component/shared/Header";
 import { useEffect, useState } from "react";
 
 import Image from "next/image";

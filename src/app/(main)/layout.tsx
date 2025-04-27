@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import FCMClient from "./fcmComponent";
-import { AnimatePresence } from "framer-motion";
+import FCMClient from "./FCM";
 import BottomTabs from "./BottomTabs";
 
 export const metadata: Metadata = {

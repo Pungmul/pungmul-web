@@ -3,8 +3,8 @@ import BottomTabs from "@pThunder/app/(main)/BottomTabs";
 import Image from "next/image";
 import SockJS from 'sockjs-client';
 
-import MyPageIcon from '@public/MyPage-Icon.svg';
-import NotificationIcon from '@public/Notification-Icon.svg'
+import MyPageIcon from '@public/icons/MyPage-Icon.svg';
+import NotificationIcon from '@public/icons/Notification-Icon.svg'
 import { useRouter } from "next/navigation";
 import { Client } from "@stomp/stompjs";
 import { useEffect, useRef, useState } from "react";

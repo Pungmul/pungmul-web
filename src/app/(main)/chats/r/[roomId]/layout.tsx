@@ -1,9 +1,15 @@
 import React from 'react'
 import { cookies } from 'next/headers'
-import { TokenProvider } from './TokenProvider';
+import { TokenProvider } from '../TokenProvider';
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: '채팅',
+  description: '채팅 페이지 입니다.',
+}
 
 export const dynamic = 'force-dynamic';
+
 
 export default function ChatsLayout({
   children,

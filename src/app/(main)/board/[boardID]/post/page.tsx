@@ -1,4 +1,4 @@
-import DraftEditor from "./Editor";
+import DraftEditor from "@pThunder/component/post/Editor";
 
 export default function Posting({ params }: { params: { boardID: number } }) {
 

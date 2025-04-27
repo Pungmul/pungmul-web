@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 
-import MyPageIcon from '@public/MyPage-Icon.svg';
-import NotificationIcon from '@public/Notification-Icon.svg'
-import ChevronRightIcon from '@public/Chevron-right-icon.svg'
-import LocationIcon from '@public/Location-icon.svg'
+import MyPageIcon from '@public/icons/MyPage-Icon.svg';
+import NotificationIcon from '@public/icons/Notification-Icon.svg'
+import ChevronRightIcon from '@public/icons/Chevron-right-icon.svg'
+import LocationIcon from '@public/icons/Location-icon.svg'
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';

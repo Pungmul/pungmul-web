@@ -10,7 +10,7 @@ import ChevronRightIcon from '@public/Chevron-right-icon.svg'
 
 import WarningCircleIcon from '@public/Warning-circle-icon.svg'
 
-import { Header } from "@pThunder/app/component/Header";
+import { Header } from "@pThunder/component/shared/Header";
 import { debounce } from "lodash";
 import useSignupStore from "./sign-up.store";
 

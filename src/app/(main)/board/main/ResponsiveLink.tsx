@@ -1,7 +1,7 @@
 "use client";
 
 import Link, { LinkProps } from "next/link";
-import { useView } from "@pThunder/app/utils/useView";
+import { useView } from "@pThunder/lib/shared/useView";
 import { CSSProperties } from "react";
 
 interface CustomLinkProps extends LinkProps {

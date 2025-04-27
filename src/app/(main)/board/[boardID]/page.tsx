@@ -4,8 +4,8 @@ import { Suspense } from "react";
 
 import PostList from "./PostList";
 import PostingButton from "./PostingButton";
-import { Header } from "@pThunder/app/component/Header";
-import PostBoxSkelleton from "../../../component/PostBoxSkelleton";
+import { Header } from "@pThunder/component/shared/Header";
+import PostBoxSkelleton from "../../../../component/post/PostBoxSkelleton";
 
 export default async function BoardPage({
     params

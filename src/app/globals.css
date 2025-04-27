@@ -47,7 +47,7 @@ body {
 }
 
 .naverBtn {
-  background-image: url('./assets/icons/btnG_아이콘원형.png');
+  background-image: url('../../public/icons/btnG_아이콘원형.png');
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
@@ -58,7 +58,7 @@ body {
 }
 
 .kakaoBtn {
-  background-image: url('./assets/icons/Vector.png');
+  background-image: url('../../public/icons/Vector.png');
 
   background-position: center;
   background-size: contain;

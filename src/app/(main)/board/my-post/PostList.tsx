@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import PostBox from "../../../component/PostBox";
+import PostBox from "../../../../component/PostBox";
 import { loadPostList } from "./utils";
-import PostBoxSkelleton from "@pThunder/app/component/PostBoxSkelleton";
+import PostBoxSkelleton from "@pThunder/component/post/PostBoxSkelleton";
 
 interface RecentPost {
     postId: number;

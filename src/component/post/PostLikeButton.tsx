@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useState } from 'react'
-import { clickLike } from './utils'
+import { likePostRequest } from '@pThunder/api/post/likePostRequest'
 
 type PostLikeResponse = {
     postId: number
@@ -17,17 +17,12 @@ function PostLikeButton({ postId, isLiked, likedNum: initialLikedNum }: { postId
         try {
             if (!confirm(isLikedState ? '추천을 취소하시겠습니까?' : '이 게시글을 추천하시겠습니까?')) return;
 
-            const data: PostLikeResponse = await clickLike(postId)
-
-            if (!data) throw Error('좋아요 업데이트 실패')
-
-            if (postId != data.postId) throw Error('좋아요 업데이트 실패:잘못된 게시물')
-
+            const data: PostLikeResponse = await likePostRequest(postId)
             setLikedNumb(data.likedNum)
             setIsLikedState(prev => !prev);
             alert(isLikedState ? '추천이 취소 되었습니다.' : '게시글을 추천했습니다.')
         } catch (error) {
-            console.log(error)
+            alert(error)
         }
 
     }, [postId])

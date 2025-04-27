@@ -1,5 +1,5 @@
 import PostList from "./PostList";
-import { Header } from "@pThunder/app/component/Header";
+import { Header } from "@pThunder/component/shared/Header";
 
 
 export default function MyPostsPage() {

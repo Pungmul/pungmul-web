@@ -1,6 +1,5 @@
-const postContext = async (boardId: number, formData: FormData) => {
+const postContextRequest = async ({boardId, formData}: {boardId: number, formData: FormData}) => {
     try {
-
 
         const response = await fetch(`post/api?boardId=${boardId}`, {
             method: 'POST',
@@ -19,4 +18,4 @@ const postContext = async (boardId: number, formData: FormData) => {
     return false;
 }
 
-export default postContext
+export default postContextRequest

@@ -7,8 +7,8 @@ import { EditorState, Editor, ContentState, convertFromRaw } from 'draft-js';
 import 'draft-js/dist/Draft.css'; // 기본 스타일 적용
 
 import checkMark from '@public/checkMark.svg';
-import { Header } from '@pThunder/app/component/Header';
-import postContext from './utils';
+import { Header } from '@pThunder/component/shared/Header';
+import postContextRequest from '../../api/post/postContextRequest';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -83,9 +83,9 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
 
         userForm.append('postData', postBlob);
 
-        const { postId } = await postContext(boardID, userForm);
-        router.replace(`/board/${boardID}/${postId}`);
-    }
+    const { postId } = await postContextRequest({ boardId: boardID, formData: userForm });
+    router.replace(`/board/${boardID}/${postId}`);
+  };
 
     if (editorState === undefined || editorRef.current === undefined) return notFound()
     return (

@@ -1,4 +1,4 @@
-import { WebViewLink } from "../(main)/board/main/ResponsiveLink";
+import { WebViewLink } from "@pThunder/app/(main)/board/main/ResponsiveLink";
 
 interface RecentPost {
     postId: number;

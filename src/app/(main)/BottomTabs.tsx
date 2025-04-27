@@ -2,18 +2,18 @@
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-import HomeIconOutline from '@public/Home-icon-outline.svg';
-import HomeIconFilled from '@public/Home-icon-filled.svg';
-import ThunderIconOutline from '@public/Thunder-Icon-outline.svg';
-import ThunderIconFilled from '@public/Thunder-Icon-filled.svg';
-import BoardIconOutline from '@public/Board-icon-outline.svg';
-import BoardIconFilled from '@public/Board-icon-filled.svg';
+import HomeIconOutline from '@public/icons/Home-icon-outline.svg';
+import HomeIconFilled from '@public/icons/Home-icon-filled.svg';
+import ThunderIconOutline from '@public/icons/Thunder-Icon-outline.svg';
+import ThunderIconFilled from '@public/icons/Thunder-Icon-filled.svg';
+import BoardIconOutline from '@public/icons/Board-icon-outline.svg';
+import BoardIconFilled from '@public/icons/Board-icon-filled.svg';
 // import NewsFeedIconOutline from '@public/NewsFeed-icon-outline.svg';
 // import NewsFeedIconFilled from '@public/NewsFeed-icon-filled.svg';
-import ChatIconOutline from '@public/Chat-icon-outline.svg';
-import ChatIconFilled from '@public/Chat-icon-filled.svg';
+import ChatIconOutline from '@public/icons/Chat-icon-outline.svg';
+import ChatIconFilled from '@public/icons/Chat-icon-filled.svg';
 import Link from "next/link";
-import {useView} from "../utils/useView";
+import {useView} from "@pThunder/lib/shared/useView";
 
 
 export default function BottomTabs() {
