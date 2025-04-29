@@ -9,9 +9,9 @@ interface ChatMessageListProps {
 }
 
 const TimeFormat = (time: Date): string => {
-    const localDate = new Date(time.getUTCHours());
-    const Hours = localDate.getHours();
-    const Minutes = localDate.getMinutes();
+
+    const Hours = time.getHours();
+    const Minutes = time.getMinutes();
 
     if (Hours === 0) return '오전 12:00';
     if (Hours < 12) return `오전 ${Hours.toString().padStart(2, "0")}:${Minutes.toString().padStart(2, "0")}`;
@@ -24,6 +24,7 @@ export const ChatMessageList = React.memo(({ messages, userList, currentUserId }
         const isUser = message.senderUsername === currentUserId;
         const userName = userList.find(user => user.username === message.senderUsername)?.name;
         const timeStamp = TimeFormat(new Date(message.createdAt));
+        console.log(message.createdAt,TimeFormat(new Date(message.createdAt)), 'createdAt')
         console.log(message, prevMessage, userName);
         if (!prevMessage || prevMessage.senderUsername !== message.senderUsername || 
             TimeFormat(new Date(prevMessage.createdAt)) !== timeStamp) {

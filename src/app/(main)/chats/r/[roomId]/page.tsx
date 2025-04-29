@@ -42,13 +42,15 @@ export default function Page() {
       const messagePayload = {
         chatRoomUUID: roomId,
         content: trimmedContent,
-        chatType: "CHAT",
-        createdAt: Date.now().toString(),
+        chatType: "TEXT",
       };
+
+      console.log(messagePayload, 'messagePayload')
 
       client.publish({
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         destination: `/pub/chat/message/${roomId}`,
         body: JSON.stringify(messagePayload),
@@ -98,18 +100,22 @@ export default function Page() {
       onConnect: () => {
         console.log("✅ 연결 완료");
         setLoading(false);
-
+        console.log(roomId, 'roomId')
         stompClient.subscribe(`/sub/chat/message/${roomId}`, (message) => {
+
+          
           const parsedMessage = JSON.parse(message.body);
+          console.log(parsedMessage, 'message')
           const chatMessage: Message = {
-            id: parsedMessage.messageLogId,
-            senderUsername: parsedMessage.content.senderUsername,
-            content: parsedMessage.content.content,
-            chatType: parsedMessage.content.chatType,
-            imageUrl: parsedMessage.content.imageUrl,
-            chatRoomUUID: parsedMessage.content.chatRoomUUID,
-            createdAt: parsedMessage.content.createdAt || Date.now().toString(),
+            id: parsedMessage.id,
+            senderUsername: parsedMessage.senderUsername,
+            content: parsedMessage.content,
+            chatType: parsedMessage.chatType,
+            imageUrlList: parsedMessage.imageUrlList,
+            chatRoomUUID: parsedMessage.chatRoomUUID,
+            createdAt: parsedMessage.createdAt || Date.now().toString(),
           };
+          console.log(chatMessage, 'chatMessage')
           setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
         });
       },

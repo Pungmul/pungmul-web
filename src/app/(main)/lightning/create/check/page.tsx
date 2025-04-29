@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import LocationIcon from '@public/Location-icon.svg';
+import LocationIcon from '@public/icons/Location-icon.svg';
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -43,9 +43,10 @@ export default function LightningCreateCheckPage() {
             document.head.appendChild(kakaoMapScript);
 
             const getBuildingInfo = async () => {
+                console.log('getBuildingInfo')
                 const response = await fetch(`https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${position.coords.longitude}&y=${position.coords.latitude}`, {
                     headers: {
-                        "Authorization": `KakaoAK ${process.env.NEXT_PUBLIC_REST_API_KEY}`
+                        "Authorization": `KakaoAK ${process.env.NEXT_PUBLIC_KAKAO_REST_KEY}`
                     }
                 })
 
@@ -54,11 +55,14 @@ export default function LightningCreateCheckPage() {
                     console.log(documents)
                     if (documents.length == 0) return
                     const { road_address, address } = await documents[0];
+                    console.log(road_address, 'road_address')
                     if (!!road_address) {
                         const { building_name, address_name } = await road_address;
+                        console.log(building_name, 'building_name')
                         setLocation(building_name + ` (${address_name})`)
                     } else if (!!address) {
                         const { address_name } = await address;
+                        console.log(address_name, 'address_name')
                         setLocation(address_name)
                     }
                 }
@@ -115,7 +119,7 @@ export default function LightningCreateCheckPage() {
 
                     });
                     circle.setMap(mapInstance);
-                    var imageSrc = '/gpsMarker.png', // 마커이미지의 주소입니다    
+                    var imageSrc = '/icons/gpsMarker.png', // 마커이미지의 주소입니다    
                         imageSize = new window.kakao.maps.Size(24, 24) // 마커이미지의 크기입니다
                     var markerImage = new window.kakao.maps.MarkerImage(imageSrc, imageSize, { offset: new window.kakao.maps.Point(12, 12) })
                     const marker = new window.kakao.maps.Marker({

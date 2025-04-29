@@ -125,7 +125,7 @@ export default function PostList({ boardData, boardId }: { boardData: BoardData,
 
     return (
 
-        <div className="flex flex-col overflow-hidden">
+        <div className="flex flex-col overflow-y-auto">
             <div className="h-0">
                 <button >새로 고침</button>
             </div>

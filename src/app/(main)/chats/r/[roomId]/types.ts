@@ -27,7 +27,7 @@ export interface Message {
     senderUsername: string;
     content: string;
     chatType: 'CHAT' | 'IMAGE' | string;
-    imageUrl: string | null;
+    imageUrlList: string[] | null;
     chatRoomUUID: string;
     createdAt: string;
 }

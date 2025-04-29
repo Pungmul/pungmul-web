@@ -1,6 +1,6 @@
 'use client'
 
-import Modal from '@pThunder/app/Modal';
+import Modal from '@pThunder/component/shared/Modal';
 import React, { useState } from 'react'
 
 function PostMenu() {

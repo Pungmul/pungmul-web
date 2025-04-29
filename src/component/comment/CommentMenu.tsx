@@ -1,6 +1,6 @@
 'use client'
 
-import Modal from '@pThunder/app/Modal';
+import Modal from '@pThunder/component/shared/Modal';
 import { throttle } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 

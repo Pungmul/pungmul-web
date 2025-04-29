@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import PostBox from "../../../../component/PostBox";
+import PostBox from "@pThunder/component/post/PostBox";
 import { loadPostList } from "./utils";
 import PostBoxSkelleton from "@pThunder/component/post/PostBoxSkelleton";
 

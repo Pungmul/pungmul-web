@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { createChatRoom, loadChatRooms } from "./utils";
 
 export function mySocketFactory() {
-  return new SockJS(`${process.env.BASE_URL}/api/lightning/nearby`);
+  return new SockJS(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chats`);
 }
 
 interface ChatRoomDto {
@@ -83,6 +83,8 @@ export default function Chats() {
     };
   }, [])
 
+  console.log(chatRooms, 'chatRooms')
+
   const clickAddChatRoom = () => {
     const createChatRoomRequest = async () => {
       try {
@@ -114,7 +116,7 @@ export default function Chats() {
         </div>
       </div>
       <div className="relative w-full h-full flex-grow flex flex-col overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-        {chatRooms.map((room, index) => (
+        {chatRooms?.map((room, index) => (
           <ChatComponent key={'room-' + index} room={room} />
         ))}
       </div>

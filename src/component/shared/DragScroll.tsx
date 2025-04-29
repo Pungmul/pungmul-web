@@ -13,6 +13,7 @@ const DragScroll: React.FC<DragScrollProps> = ({ children, className }) => {
     const refreshRef = useRef<HTMLDivElement>(null)
 
     const handlePointerDown = useCallback((e: React.PointerEvent) => {
+
         if (!containerRef.current) return;
 
         // 초기 위치와 스크롤 위치 저장
@@ -23,6 +24,7 @@ const DragScroll: React.FC<DragScrollProps> = ({ children, className }) => {
         }
 
         setIsDragging(true);
+        
     }, []);
 
     const handlePointerMove = useCallback((e: React.PointerEvent) => {
@@ -65,7 +67,7 @@ const DragScroll: React.FC<DragScrollProps> = ({ children, className }) => {
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
             className={`
-                ${className} 
+                ${className? className : ''} 
                 overflow-auto 
                 cursor-grab 
                 ${isDragging ? 'cursor-grabbing' : ''}
