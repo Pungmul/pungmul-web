@@ -1,4 +1,5 @@
 "use client";
+import "@pThunder/app/globals.css";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -223,7 +224,7 @@ export default function CommentList({
                           commentId={reply.commentId}
                           commentContent={reply.content}
                           commentWriter={reply.userName}
-                        />
+                        />ƒ
                       </div>
                     </div>
                   </div>
@@ -306,7 +307,7 @@ export default function CommentList({
               name="comment"
               style={{ fontSize: 12 }}
               placeholder="댓글을 입력하세요..."
-              className="bg-transparent outline-none px-2 py-1  flex-grow"
+              className="bg-transparent outline-none px-2 py-1 flex-grow"
             />
             <button type="submit" className="w-6 h-6 p-1">
               <Image src={sendIcon} width={32} alt="" />

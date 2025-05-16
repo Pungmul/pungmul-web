@@ -34,7 +34,7 @@ export async function loadChatRooms() {
 
         if (!response.ok) throw Error('서버 불안정' + response.status)
 
-        const { simpleChatRoomDTOList: data } = await response.json();
+        const { list: data } = await response.json();
         console.log(data, 'data')
         return data;
 

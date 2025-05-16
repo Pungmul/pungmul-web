@@ -15,9 +15,25 @@ function CommentMenu({ commentId, commentContent, commentWriter }: CommentMenuPr
     const [isModalOpen, setModalOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isBelowHalf, setIsBelowHalf] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
     const targetRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+      const handleClick = (e: MouseEvent) => {
+        if (isOpen)
+          if (
+            targetRef.current &&
+            !targetRef.current.contains(e.target as Node)
+          ) {
+            setOpen(false);
+          }
+      };
+  
+      if (isOpen) {
+        document.addEventListener("mousedown", handleClick);
+      }
+  
+      return () => document.removeEventListener("mousedown", handleClick);
+    }, [isOpen]);
 
     const handleReportClick = () => {
         setModalOpen(true);  // 신고 클릭 시 모달 열기

@@ -4,7 +4,7 @@ const config: Config = {
   mode: 'jit', // Just-in-Time 모드 활성화
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/component/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {

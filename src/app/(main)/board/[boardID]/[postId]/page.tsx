@@ -20,6 +20,7 @@ interface Post {
     author: any;
     commentList: Comment[];
     isLiked: boolean;
+    isWriter: boolean;
 }
 
 interface ImageObject {
@@ -67,7 +68,7 @@ export default async function Page({ params }: { params: { postId: number } }) {
                 <Header
                     title={Post?.title || ''}
                     rightBtn={
-                        <PostMenu />
+                        <PostMenu isWriter={Post.isWriter ?? false} />
                     } />
             </div>
             <div className="flex flex-col flex-grow overflow-y-auto">

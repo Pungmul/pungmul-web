@@ -6,7 +6,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { Header } from "@pThunder/component/shared/Header";
 import { useToken } from "../TokenProvider";
-import { loadChatLogs } from "./utils";
+import { loadChatLogs, sendImageContent, sendTextConent } from "./utils";
 import { ChatRoomDto, Message, User } from "./types";
 import { ChatMessageList } from "./components/ChatMessageList";
 
@@ -27,36 +27,71 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   const onSendMessage = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    // (e: React.FormEvent<HTMLFormElement>) => {
+    //   e.preventDefault();
+
+    //   const client = clientRef.current;
+    //   if (!client || !client.connected) {
+    //     console.warn("WebSocket not connected");
+    //     return;
+    //   }
+
+    // const trimmedContent = inputValue.trim();
+    // if (!trimmedContent) return;
+
+    // const messagePayload = {
+    //   content: trimmedContent,
+    // };
+
+    //   client.publish({
+    //     headers: {
+    //       "Authorization": `Bearer ${token}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //     destination: `/pub/chat/message/${roomId}`,
+    //     body: JSON.stringify(messagePayload),
+    //   });
+
+    //   setInputValue("");
+    // },
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-
-      const client = clientRef.current;
-      if (!client || !client.connected) {
-        console.warn("WebSocket not connected");
-        return;
-      }
-
       const trimmedContent = inputValue.trim();
       if (!trimmedContent) return;
-
       const messagePayload = {
-        chatRoomUUID: roomId,
         content: trimmedContent,
-        chatType: "TEXT",
       };
+      try {
+        await sendTextConent(roomId as string, messagePayload);
+        setInputValue("");
+      } catch (error) {
+        alert("채팅 전송에 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [inputValue, roomId, token]
+  );
 
-      console.log(messagePayload, 'messagePayload')
-
-      client.publish({
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        destination: `/pub/chat/message/${roomId}`,
-        body: JSON.stringify(messagePayload),
-      });
-
-      setInputValue("");
+  const onSendImage = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      try {
+        const formData = new FormData();
+        const files: Blob[] | null = e.target.files as Blob[] | null;
+        if (!files) throw new Error("파일이 없습니다.");
+        Array.from(files).forEach((file) => {
+          formData.append("files", file);
+        });
+        await sendImageContent(roomId as string, formData);
+      } catch (error) {
+        if (error instanceof Error) {
+          alert("채팅 전송에 실패했습니다.\n" + error.message);
+        } else {
+          alert("채팅 전송에 실패했습니다.");
+        }
+      } finally {
+      }
     },
     [inputValue, roomId, token]
   );
@@ -100,23 +135,35 @@ export default function Page() {
       onConnect: () => {
         console.log("✅ 연결 완료");
         setLoading(false);
-        console.log(roomId, 'roomId')
+        console.log(roomId, "roomId");
         stompClient.subscribe(`/sub/chat/message/${roomId}`, (message) => {
-
-          
           const parsedMessage = JSON.parse(message.body);
-          console.log(parsedMessage, 'message')
-          const chatMessage: Message = {
-            id: parsedMessage.id,
-            senderUsername: parsedMessage.senderUsername,
-            content: parsedMessage.content,
-            chatType: parsedMessage.chatType,
-            imageUrlList: parsedMessage.imageUrlList,
-            chatRoomUUID: parsedMessage.chatRoomUUID,
-            createdAt: parsedMessage.createdAt || Date.now().toString(),
-          };
-          console.log(chatMessage, 'chatMessage')
-          setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
+          console.log(parsedMessage, "message");
+          if (parsedMessage.chatType === "TEXT") {
+            const chatMessage: Message = {
+              id: parsedMessage.id,
+              senderUsername: parsedMessage.senderUsername,
+              content: parsedMessage.content,
+              chatType: parsedMessage.chatType,
+              imageUrlList: parsedMessage.imageUrlList,
+              chatRoomUUID: parsedMessage.chatRoomUUID,
+              createdAt: parsedMessage.createdAt || Date.now().toString(),
+            };
+            console.log(chatMessage, "chatMessage");
+            setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
+          } else if (parsedMessage.chatType === "IMAGE") {
+            const chatMessage: Message = {
+              id: parsedMessage.id,
+              senderUsername: parsedMessage.senderUsername,
+              content: parsedMessage.content,
+              chatType: parsedMessage.chatType,
+              imageUrlList: parsedMessage.imageUrlList,
+              chatRoomUUID: parsedMessage.chatRoomUUID,
+              createdAt: parsedMessage.createdAt || Date.now().toString(),
+            };
+
+            setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
+          }
         });
       },
       onStompError: (frame) => {
@@ -164,9 +211,26 @@ export default function Page() {
             style={{ backgroundColor: "#F9F9F9" }}
           >
             {inputValue.length === 0 && (
-              <div className="h-9 px-4 bg-[#816DFF] rounded-full text-white justify-center flex flex-col">
+              <label
+                // type="image"
+                htmlFor="image-upload"
+                className="h-9 px-4 bg-[#816DFF] rounded-full text-white justify-center flex flex-col"
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="image-upload"
+                  multiple={true}
+                  onChange={(e) => {
+                    const files = e.target.files;
+                    if (files) {
+                      onSendImage(e);
+                    }
+                  }}
+                />
                 +
-              </div>
+              </label>
             )}
             <input
               ref={messageRef}
