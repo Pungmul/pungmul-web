@@ -12,7 +12,8 @@
 html {
 
   font-family: var(--font-nanum-neo);
-  touch-action: none; /* 상하 스크롤은 가능, 줌 방지 */
+  touch-action: none;
+  /* 상하 스크롤은 가능, 줌 방지 */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,7 +29,8 @@ body {
   font-family: var(--font-nanum-neo);
   /* font-family: Arial, Helvetica, sans-serif; */
   /* max-width: 420px; */
-  touch-action: none; /* 상하 스크롤은 가능, 줌 방지 */
+  touch-action: none;
+  /* 상하 스크롤은 가능, 줌 방지 */
 }
 
 @layer utilities {
@@ -37,7 +39,7 @@ body {
   }
 }
 
-.swiper-pagination-bullet-active{
+.swiper-pagination-bullet-active {
   background-color: #816DFF;
 }
 
@@ -117,26 +119,31 @@ body {
   transition: opacity 1000ms ease, transform 1000ms ease;
 }
 
-  @keyframes loading {
-    0% {
-      transform: translateX(-160px);
-    }
-    50%,
-    100% {
-      transform: translateX(600px);
-    }
+@keyframes loading {
+  0% {
+    transform: translateX(-160px);
   }
 
-  .skeleton-item {
-    position: absolute;
-    top: 0;
-    width: 128px;
-    height: 100%;
-    background: linear-gradient(to right, #E3E3E3, #f0f0f0, #E3E3E3);
-    animation: loading 3s infinite linear;
+  50%,
+  100% {
+    transform: translateX(600px);
   }
+}
 
-  .skeleton-container {
-    overflow: hidden;
-    position: relative;
-  }
+.skeleton-item {
+  position: absolute;
+  top: 0;
+  width: 128px;
+  height: 100%;
+  --bg-default: #E3E3E3;
+  --highlight: #f0f0f0;
+  /* background: linear-gradient(to right, var(--bg-default), var(--highlight), var(--bg-default)); */
+  animation: loading 3s infinite linear;
+}
+
+.skeleton-container {
+  overflow: hidden;
+  --bg-default: #E3E3E3;
+  background-color: var(--bg-default);
+  position: relative;
+}

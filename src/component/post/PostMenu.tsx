@@ -1,6 +1,7 @@
 "use client";
 
 import Modal from "@pThunder/component/shared/Modal";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 function PostMenu({ isWriter }: { isWriter: boolean }) {
@@ -37,6 +38,8 @@ function PostMenu({ isWriter }: { isWriter: boolean }) {
     setSelectedOption(event.currentTarget.id);
     console.log(event.currentTarget.id);
   };
+  const router = useRouter();
+
   return (
     <>
       <div
@@ -54,7 +57,24 @@ function PostMenu({ isWriter }: { isWriter: boolean }) {
               e.stopPropagation();
             }}
           >
-            {isWriter && <li className="w-12 text-right">수정</li>}
+            {isWriter && (
+              <li
+                className="w-12 text-right"
+                onClick={() => {
+                  const currentParams = new URLSearchParams(
+                    window.location.search
+                  ); // 현재 URL 쿼리 그대로 가져오기
+
+                  currentParams.set("isPosting", "true"); // isPosting 추가
+
+                  router.push(`?${currentParams.toString()}`, {
+                    scroll: false,
+                  });
+                }}
+              >
+                수정
+              </li>
+            )}
             <li className="w-12 text-right" onClick={handleReportClick}>
               신고
             </li>

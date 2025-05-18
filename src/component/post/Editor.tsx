@@ -31,7 +31,6 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
   const router = useRouter();
   const query = useSearchParams();
   const postId = query.get("postId") as number | null;
-  console.log("postId", postId);
   const isEdit = postId !== null;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -151,7 +150,11 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
     const changedImageFiles = imageFiles.filter((file) => {
       return file.id === undefined;
     });
-    console.log("changedImageFiles", changedImageFiles, changedImageFiles.length);
+    console.log(
+      "changedImageFiles",
+      changedImageFiles,
+      changedImageFiles.length
+    );
 
     if (changedImageFiles && changedImageFiles.length > 0) {
       Array.from(changedImageFiles).forEach((file) => {
@@ -178,12 +181,13 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
 
         userForm.append("postData", postBlob);
 
-        const { response } = await patchContextRequest({
+        await patchContextRequest({
           postId,
+          boardId: boardID,
           formData: userForm,
         });
-        const updatedPostId = response.postId;
-        router.replace(`/board/${boardID}/${updatedPostId}`);
+
+        router.back();
       } else {
         const postBlob = new Blob(
           [JSON.stringify({ title, text, anonymity })],
@@ -197,7 +201,7 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
           boardId: boardID,
           formData: userForm,
         });
-        router.replace(`/board/${boardID}/${createdPostId}`);
+        router.replace(`/board/${boardID}?postId=${createdPostId}`);
       }
     } catch (e) {
       console.error(e);
@@ -219,6 +223,13 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
       >
         <Header
           title={"글쓰기"}
+          onLeftClick={() => {
+            if (isEdit) {
+              router.replace(`/board/${boardID}?postId=${postId}`);
+            } else {
+              router.replace(`/board/${boardID}`);
+            }
+          }}
           rightBtn={
             title?.length > 0 &&
             editorState.getCurrentContent().getPlainText().length > 0 ? (

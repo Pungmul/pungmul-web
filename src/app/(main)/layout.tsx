@@ -13,18 +13,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    
-    <div id="main-contents" className="relative flex flex-col-reverse w-full h-full">
-
+    <div
+      id="main-contents"
+      className="relative flex flex-col-reverse w-full h-full"
+    >
       <FCMClient />
-      
+
       <BottomTabs />
 
-      <div className="relative overflow-y-auto flex-grow">
-
-          {children}
-      </div>
-      
+      <div className="relative overflow-hidden flex-grow">{children}</div>
     </div>
   );
 }

@@ -35,49 +35,49 @@ export default function FCMClient() {
         return false;
     }
 
-    useEffect(() => {
-        if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-            const firebaseApp = initializeApp(firebaseConfig);
-            const messaging = getMessaging(firebaseApp);
+    // useEffect(() => {
+    //     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+    //         const firebaseApp = initializeApp(firebaseConfig);
+    //         const messaging = getMessaging(firebaseApp);
 
-            // 서비스 워커 등록
-            navigator.serviceWorker
-                .register("/firebase-messaging-sw.js")
-                .then((registration) => {
-                    console.log("서비스 워커 등록 완료:", registration);
-                    // FCM 토큰 요청
-                    getToken(messaging, {
-                        vapidKey: 'BPT_AtdFFHu1mKtFhL-8kkQ2juF8qKcTnbZNCRMZw_J4WznExZeDfW8MqR1uXOd4zgMjzOwtYQZ9wkCZKzqlE5E',
-                        serviceWorkerRegistration: registration,
-                    })
-                        .then(async (currentToken) => {
-                            if (currentToken) {
-                                // await fetchFCMToken(currentToken);
-                                console.log("FCM 등록 토큰:", currentToken);
-                            } else {
-                                console.error("토큰을 가져오지 못했습니다.");
-                            }
-                        })
-                        .catch((err) => {
-                            console.error("토큰 가져오기 오류:", err);
-                        });
-                })
-                .catch((err) => console.error("서비스 워커 등록 오류:", err));
+    //         // 서비스 워커 등록
+    //         navigator.serviceWorker
+    //             .register("/firebase-messaging-sw.js")
+    //             .then((registration) => {
+    //                 console.log("서비스 워커 등록 완료:", registration);
+    //                 // FCM 토큰 요청
+    //                 getToken(messaging, {
+    //                     vapidKey: 'BPT_AtdFFHu1mKtFhL-8kkQ2juF8qKcTnbZNCRMZw_J4WznExZeDfW8MqR1uXOd4zgMjzOwtYQZ9wkCZKzqlE5E',
+    //                     serviceWorkerRegistration: registration,
+    //                 })
+    //                     .then(async (currentToken) => {
+    //                         if (currentToken) {
+    //                             // await fetchFCMToken(currentToken);
+    //                             console.log("FCM 등록 토큰:", currentToken);
+    //                         } else {
+    //                             console.error("토큰을 가져오지 못했습니다.");
+    //                         }
+    //                     })
+    //                     .catch((err) => {
+    //                         console.error("토큰 가져오기 오류:", err);
+    //                     });
+    //             })
+    //             .catch((err) => console.error("서비스 워커 등록 오류:", err));
 
-            // 메시지 수신 처리
-            onMessage(messaging, (payload) => {
-                console.log('메시지 수신:', payload);
-                if (payload.notification?.title && payload.notification?.body) {
-                    new Notification(payload.notification.title, {
-                        body: payload.notification.body,
-                        // icon: '/icon.png',  // 원하는 아이콘 경로
-                    });
-                } else {
-                    console.warn('잘못된 메시지 형식:', payload);
-                }
-            });
-        }
-    }, []);
+    //         // 메시지 수신 처리
+    //         onMessage(messaging, (payload) => {
+    //             console.log('메시지 수신:', payload);
+    //             if (payload.notification?.title && payload.notification?.body) {
+    //                 new Notification(payload.notification.title, {
+    //                     body: payload.notification.body,
+    //                     // icon: '/icon.png',  // 원하는 아이콘 경로
+    //                 });
+    //             } else {
+    //                 console.warn('잘못된 메시지 형식:', payload);
+    //             }
+    //         });
+    //     }
+    // }, []);
 
     return null; // 이 컴포넌트는 UI에 렌더링하지 않음
 }

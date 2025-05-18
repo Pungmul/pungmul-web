@@ -1,9 +1,11 @@
 import { cookies } from "next/headers";
 
-export async function POST(req: Request) {
+export async function POST(
+  req: Request,
+  { params }: { params: { boardID: string } }
+) {
   try {
-    const url = new URL(req.url);
-    const boardId = url.searchParams.get("boardId");
+    const boardId = params.boardID;
 
     const formData = await req.formData();
     const cookieStore = cookies();
@@ -11,7 +13,7 @@ export async function POST(req: Request) {
 
     const proxyUrl = `${process.env.BASE_URL}/api/posts?categoryId=${boardId}`;
 
-    console.log(formData);
+    console.log(formData, proxyUrl);
 
     const proxyResponse = await fetch(proxyUrl, {
       method: "POST",
@@ -32,10 +34,15 @@ export async function POST(req: Request) {
   }
 }
 
-export async function PATCH(req: Request) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: { boardID: string } }
+) {
   try {
     const { searchParams } = new URL(req.url);
     const postId = searchParams.get("postId");
+
+    const boardId = params.boardID;
     if (!postId) {
       return new Response("postId가 없습니다.", { status: 400 });
     }

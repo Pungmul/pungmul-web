@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 
 export async function GET(req: Request) {
   try {
+    console.log("프록시 처리 시작");
+    console.log("req.url", req.url);
     const { searchParams } = new URL(req.url);
     console.log(searchParams);
     const postId = searchParams.get("postId");
