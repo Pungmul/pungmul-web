@@ -14,7 +14,11 @@ import { useNearLightningQuery } from "@pThunder/features/home/utils";
 
 export default function NearLightningContent() {
   const { data: serverLocation } = useUserLocation();
-  if (!serverLocation) {
+  if (
+    !serverLocation ||
+    !serverLocation.latitude ||
+    !serverLocation.longitude
+  ) {
     use(updateLocation);
   }
   const { data: nearLightning, isError } = useNearLightningQuery();
@@ -61,7 +65,10 @@ export default function NearLightningContent() {
                           borderRadius: 16,
                         }}
                       >
-                        <LightningCard organizerName={lightning.organizerName}  {...lightningMeeting} />
+                        <LightningCard
+                          organizerName={lightning.organizerName}
+                          {...lightningMeeting}
+                        />
                       </SwiperSlide>
                     );
                   }

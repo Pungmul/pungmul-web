@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal } from "./ui";
 import dayjs from "dayjs";
 
@@ -27,13 +27,12 @@ export default function TimePicker({
 
   const nowTime = useMemo(() => dayjs().format("HH:mm"), []);
 
-  console.log(Number(nowTime.split(":")[0]));
-  const handleChange = (startTime: string, endTime: string) => {
+  const handleChange = useCallback((startTime: string, endTime: string) => {
     setStartTime(startTime);
     setEndTime(endTime);
     onChange(startTime, endTime);
     setIsOpen(false);
-  };
+  }, [onChange]);
 
   useEffect(() => {
     setStartTime(oldStartTime);
