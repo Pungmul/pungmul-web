@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-nanum-neo: 'NanumSquareNeo';
+  --swiper-theme-color: #816DFF !important;
+}
+
+html {
+
+  font-family: var(--font-nanum-neo);
+  touch-action: none;
+  /* 상하 스크롤은 가능, 줌 방지 */
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-nanum-neo);
+  /* font-family: Arial, Helvetica, sans-serif; */
+  /* max-width: 420px; */
+  touch-action: none;
+  /* 상하 스크롤은 가능, 줌 방지 */
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+#nprogress .bar {
+	@apply bg-[#816DFF] h-[2px] !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #816DFF;
+}
+
+
+.border-0\.5 {
+  border-width: 0.5px;
+}
+
+.naverBtn {
+  background-image: url('../../public/icons/btnG_아이콘원형.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.kakao-color {
+  background-color: #FEE500;
+}
+
+.kakaoBtn {
+  background-image: url('../../public/icons/Vector.png');
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* styles.css */
+.shadow-up-sm {
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-up-md {
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-up {
+  box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-up-lg {
+  box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.scroll-bar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-bar-hidden {
+  -ms-overflow-style: none;
+  /* IE and 엣지 */
+  scrollbar-width: none;
+  /* 파이어폭스 */
+}
+
+
+.slide-enter {
+  opacity: 1;
+  transform: translateX(100%);
+}
+
+.slide-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 1000ms ease, transform 1000ms ease;
+}
+
+/* Slide-out to right */
+.slide-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide-exit-active {
+  opacity: 1;
+  transform: translateX(100%);
+  transition: opacity 1000ms ease, transform 1000ms ease;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes rotateGradient {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.ligtning-card-sign {
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(154, 255, 65, 0.8) 0%,
+    rgba(26, 255, 68, 0.2) 50%,
+    rgba(179, 255, 28, 0.629) 60%
+  );
+  background-size: 100% 100%;
+  width: calc(100% + 128px);
+  height: calc(100% + 128px);
+  position: absolute;
+  top: -64px;
+  left: -64px;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.8;
+  z-index: 1;
+  pointer-events: none;
+  transition: none;
+  animation: rotateGradient 2s infinite linear;
+}
+
+.skeleton-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  --bg-default: #E3E3E3;
+  --highlight: #f0f0f0;
+  will-change: transform;
+  background: linear-gradient(to right, var(--bg-default), var(--highlight), var(--bg-default));
+  animation: loading 3s infinite linear;
+}
+
+.skeleton-container {
+  overflow: hidden;
+  --bg-default: #E3E3E3;
+  background-color: var(--bg-default);
+  position: relative;
+}
