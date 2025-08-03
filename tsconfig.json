@@ -1,0 +1,63 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "es6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@pThunder/*": ["./src/*"],
+      "@asset/*": ["./src/app/assets/*"],
+      "@public/*": ["./public/*"],
+      
+      "@/*": ["./src/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "@/core/*": ["./src/core/*"],
+      "@/app/*": ["./src/app/*"],
+      // 기능별 alias
+      "@/auth": ["./src/features/auth"],
+      "@/lightning": ["./src/features/lightning"],
+      "@/chat": ["./src/features/chat"],
+      "@/board": ["./src/features/board"],
+      "@/friends": ["./src/features/friends"],
+      "@/notification": ["./src/features/notification"],
+      // 공통 모듈 alias
+      "@/ui": ["./src/shared/components/ui"],
+      "@/components": ["./src/shared/components"],
+      "@/hooks": ["./src/shared/hooks"],
+      "@/utils": ["./src/shared/utils"],
+      "@/types": ["./src/shared/types"],
+      "@/constants": ["./src/shared/constants"],
+      "@/lib": ["./src/shared/lib"],
+      "@/step-flow": ["./step-flow"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+} 
