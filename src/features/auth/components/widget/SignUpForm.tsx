@@ -6,6 +6,7 @@ import { PersonalStep } from "./PersonalStep";
 import { useSignUpForm } from "../../hooks/useSignUpForm";
 import { SignUpStep } from "../../types/sign-up.types";
 import { match } from "ts-pattern";
+import { useMemo } from "react";
 
 export const SignUpForm = () => {
   const {
@@ -13,6 +14,7 @@ export const SignUpForm = () => {
     handleNextStep,
     isCurrentStepValid,
     isPending,
+    isProgressable,
     ...form
   } = useSignUpForm();
 
@@ -20,6 +22,16 @@ export const SignUpForm = () => {
     e.preventDefault();
     await handleNextStep();
   };
+
+  const buttonText = useMemo(() => {
+    if (isPending) {
+      return "처리 중...";
+    }
+    if (currentStep === "개인정보입력") {
+      return "회원 가입 하기";
+    }
+    return "다음";
+  }, [isPending, currentStep]);
 
   return (
     <div className="h-full w-full flex flex-col justify-center">
@@ -31,23 +43,19 @@ export const SignUpForm = () => {
           <div className="w-full py-4" style={{ padding: "12px 36px" }}>
             <button
               type="submit"
-              disabled={!isCurrentStepValid() || isPending}
+              disabled={!isProgressable || isPending}
               className="w-full flex items-center justify-center text-white rounded"
               style={{
                 height: 48,
                 backgroundColor:
-                  isCurrentStepValid() && !isPending ? "#816DFF" : "#e2deff",
+                  isProgressable && !isPending ? "#816DFF" : "#e2deff",
                 cursor:
-                  isCurrentStepValid() && !isPending
+                  isProgressable && !isPending
                     ? "pointer"
                     : "not-allowed",
               }}
             >
-              {isPending
-                ? "처리 중..."
-                : currentStep === "개인정보입력"
-                ? "회원 가입 하기"
-                : "다음"}
+              {buttonText}
             </button>
           </div>
         </form>
@@ -63,7 +71,7 @@ function SignUpStepForms({
   currentStep: SignUpStep;
   props: Omit<
     ReturnType<typeof useSignUpForm>,
-    "currentStep" | "handleNextStep" | "isCurrentStepValid" | "isPending"
+    "currentStep" | "handleNextStep" | "isCurrentStepValid" | "isPending" | "isProgressable"
   >;
 }) {
   const {

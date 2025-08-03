@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { reissueToken } from "@/features/auth/api/serverApi";
 import { cookies } from "next/headers";
-import { getQueryClient } from "./core";
 
 export async function middleware(req: NextRequest) {
   const cookieStore = await cookies();
@@ -20,9 +19,6 @@ export async function middleware(req: NextRequest) {
     ) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
-
-      const queryClient = getQueryClient();
-      queryClient.resetQueries();
 
       return NextResponse.redirect(new URL("/login", req.url));
     }else{
@@ -51,18 +47,6 @@ export async function middleware(req: NextRequest) {
         cookieStore.delete("refreshToken");
         return NextResponse.redirect(new URL("/login", req.url));
       });
-  }
-
-  // 로그아웃 처리
-  if (req.nextUrl.pathname.startsWith("/logout")) {
-    
-    cookieStore.delete("accessToken");
-    cookieStore.delete("refreshToken");
-
-    const queryClient = getQueryClient();
-    queryClient.clear();
-
-    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   

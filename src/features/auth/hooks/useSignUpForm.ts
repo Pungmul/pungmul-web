@@ -16,6 +16,7 @@ export const useSignUpForm = () => {
 
   const [usingTermAgree, setUsingTermAgree] = useState(false);
   const [personalInfoAgree, setPersonalInfoAgree] = useState(false);
+  const [isProgressable, setIsProgressable] = useState(false);
 
   // React Hook Form 설정
   const form = useForm<FullSignUpFormData>({
@@ -31,6 +32,7 @@ export const useSignUpForm = () => {
       tellNumber: "",
       inviteCode: "",
     },
+    reValidateMode: "onChange",
   });
 
   // API mutation
@@ -93,7 +95,7 @@ export const useSignUpForm = () => {
     const currentIndex = stepOrder.indexOf(currentStep);
 
     if (currentIndex < stepOrder.length - 1) {
-      
+
       const nextStep = stepOrder[currentIndex + 1];
 
       if (nextStep) {
@@ -102,24 +104,7 @@ export const useSignUpForm = () => {
     }
   };
 
-  // 현재 스텝이 유효한지 체크
-  const isCurrentStepValid = (): boolean => {
-    const values = form.getValues();
-
-    switch (currentStep) {
-      case "약관동의":
-        return usingTermAgree && personalInfoAgree;
-      case "계정정보입력":
-        return !!(values.email && values.password && values.confirmPassword);
-      case "개인정보입력":
-        return !!(values.name && values.tellNumber && values.inviteCode);
-      default:
-        return false;
-    }
-  };
-
-  // 다음 스텝 또는 제출 처리
-  const handleNextStep = async () => {
+  const validateCurrentStep = useCallback(async () => {
     let fieldsToValidate: (keyof FullSignUpFormData)[] = [];
 
     switch (currentStep) {
@@ -132,8 +117,47 @@ export const useSignUpForm = () => {
         fieldsToValidate = ["name", "tellNumber", "inviteCode"];
         break;
     }
-
     const isValid = await form.trigger(fieldsToValidate);
+
+    if (!isValid) {
+      setIsProgressable(false);
+      return false;
+    }
+    return true;
+  }, [form, currentStep]);
+
+  // 현재 스텝이 유효한지 체크
+  const isCurrentStepValid = useCallback(async () => {
+    const values = form.getValues();
+
+    switch (currentStep) {
+      case "약관동의":
+        if (usingTermAgree && personalInfoAgree) {
+          const isValid = validateCurrentStep();
+          return isValid;
+        }
+        return false;
+      case "계정정보입력":
+        if (!!values.email && !!values.password && !!values.confirmPassword) {
+          const isValid = await validateCurrentStep();
+          return isValid;
+        }
+        return false;
+      case "개인정보입력":
+        if (!!values.name && !!values.tellNumber && !!values.inviteCode) {
+          const isValid = await validateCurrentStep();
+          return isValid;
+        }
+        return false;
+      default:
+        return false;
+    }
+  }, [currentStep, usingTermAgree, personalInfoAgree, form.getValues()]);
+
+ 
+  // 다음 스텝 또는 제출 처리
+  const handleNextStep = async () => {
+    const isValid = await isCurrentStepValid();
 
     if (!isValid) {
       return false;
@@ -179,6 +203,7 @@ export const useSignUpForm = () => {
 
     // 검증 & 액션
     isCurrentStepValid,
+    isProgressable,
     handleNextStep,
 
     // 헬퍼

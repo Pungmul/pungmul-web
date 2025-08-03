@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useLayoutEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Spinner } from "@pThunder/shared";
 
 export default function SuspenseComponent(props: {
@@ -17,7 +17,7 @@ export default function SuspenseComponent(props: {
   } = props;
   const [isMounted, setIsMounted] = useState(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setIsMounted(true);
   }, []);
 
