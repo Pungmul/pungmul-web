@@ -10,9 +10,9 @@ export interface UseSharedSocketReturn {
   isConnected: boolean;
   connect: (config?: SocketConfig) => Promise<void>;
   disconnect: () => void;
-  subscribe: (topic: string, callback: (data: any) => void) => void;
+  subscribe: (topic: string, callback: (data: unknown) => void) => void;
   unsubscribe: (topic: string) => void;
-  sendMessage: (topic: string, message: any) => void;
+  sendMessage: (topic: string, message: unknown) => void;
 }
 
 export function useSharedSocket(options: UseSharedSocketOptions = {}): UseSharedSocketReturn {
@@ -42,7 +42,7 @@ export function useSharedSocket(options: UseSharedSocketOptions = {}): UseShared
     subscriptionsRef.current.clear();
   }, []);
 
-  const subscribe = useCallback((topic: string, callback: (data: any) => void) => {
+  const subscribe = useCallback((topic: string, callback: (data: unknown) => void) => {
     if (!isConnected) {
       console.warn('Cannot subscribe: WebSocket not connected');
       return;
@@ -57,7 +57,7 @@ export function useSharedSocket(options: UseSharedSocketOptions = {}): UseShared
     subscriptionsRef.current.delete(topic);
   }, []);
 
-  const sendMessage = useCallback((topic: string, message: any) => {
+  const sendMessage = useCallback((topic: string, message: unknown) => {
     if (!isConnected) {
       console.warn('Cannot send message: WebSocket not connected');
       return;

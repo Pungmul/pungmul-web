@@ -1,0 +1,1 @@
+export { fetchHotPostList } from './fetchHotPostList';

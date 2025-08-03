@@ -56,9 +56,9 @@ export const useLightningSocket = () => {
 
         // 전체 공개 채널 구독
         const wholeTopic = "/sub/lightning-meeting/search";
-        sharedSocketManager.subscribe(wholeTopic, (content: LightningMeeting[]) => {
+        sharedSocketManager.subscribe(wholeTopic, (content: unknown) => {
           console.log("wholeLightningList content", content);
-          setWholeLightningList([...content]);
+          setWholeLightningList([...content as LightningMeeting[]]);
         });
         subscriptionsRef.current.add(wholeTopic);
 
@@ -67,9 +67,9 @@ export const useLightningSocket = () => {
         // 학교별 채널 구독
         if (myInfo?.groupName) {
           const schoolTopic = `/sub/lightning-meeting/search/${mapClubToSchoolName(myInfo.groupName)}`;
-          sharedSocketManager.subscribe(schoolTopic, (content: LightningMeeting[]) => {
+            sharedSocketManager.subscribe(schoolTopic, (content: unknown) => {
             console.log("schoolLightningList content", content);
-            setSchoolLightningList([...content]);
+            setSchoolLightningList([...content as LightningMeeting[]]);
           });
           subscriptionsRef.current.add(schoolTopic);
         }

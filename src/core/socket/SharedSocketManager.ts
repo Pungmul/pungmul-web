@@ -8,13 +8,11 @@ export class SharedSocketManager {
   private static instance: SharedSocketManager;
   private worker: SharedWorker | Worker | null = null;
   private port: MessagePort | null = null;
-  private clientId: string;
-  private subscriptions = new Map<string, (data: any) => void>();
+  private subscriptions = new Map<string, (data: unknown) => void>();
   private isConnected = false;
   private isSharedWorkerSupported: boolean;
 
   private constructor() {
-    this.clientId = Date.now() + Math.random().toString(36);
     this.isSharedWorkerSupported = typeof SharedWorker !== 'undefined';
   }
 
@@ -39,7 +37,7 @@ export class SharedSocketManager {
       } else {
         // DedicatedWorker 사용 (폴백)
         this.worker = new Worker('/socket-worker.js');
-        this.port = this.worker as any;
+        this.port = this.worker as unknown as MessagePort;
         console.log('DedicatedWorker 모드로 폴백');
       }
 
@@ -85,7 +83,7 @@ export class SharedSocketManager {
     }
   }
 
-  subscribe(topic: string, callback: (data: any) => void): void {
+  subscribe(topic: string, callback: (data: unknown) => void): void {
     this.subscriptions.set(topic, callback);
     
     if (this.port && this.isConnected) {
@@ -107,7 +105,7 @@ export class SharedSocketManager {
     }
   }
 
-  sendMessage(topic: string, message: any): void {
+  sendMessage(topic: string, message: unknown): void {
     if (this.port && this.isConnected) {
       this.port.postMessage({
         type: 'SEND_MESSAGE',

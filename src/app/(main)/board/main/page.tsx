@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { fetchBoardInformations, type BoardInfo } from "@/features/board";
 import BoardMainPageContent from "@/features/board/board/components/BoardMainPageContent";
-import { prefetchMyPageInfo } from "@pThunder/features/my-page";
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
 export const metadata: Metadata = {
   title: "풍물 머시기 | 게시판",
@@ -10,16 +8,14 @@ export const metadata: Metadata = {
 };
 
 // ISR 설정: 15분마다 재생성
-export const revalidate = 900; // 15분
+export const dynamic = "force-dynamic";
 
 export default async function BoardMainPage() {
   // 서버에서 게시판 정보 fetching
-  const queryClient = prefetchMyPageInfo();
+  // const queryClient = prefetchMyPageInfo();  
   const boardList: BoardInfo[] = await fetchBoardInformations();
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <BoardMainPageContent boardList={boardList} />
-    </HydrationBoundary>
+    <BoardMainPageContent boardList={boardList} />
   );
 }
