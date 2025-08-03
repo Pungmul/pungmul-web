@@ -5,12 +5,7 @@ import { fetchBoardInfoAPI } from "@/features/board/api";
 import BoardListNav from "@/features/board/board/components/BoardListNav";
 import BoardHeader from "@/features/board/board/components/BoardHeader";
 import { BoardInfo, fetchBoardInformations } from "@pThunder/features";
-import { AnimatePresence } from "framer-motion";
-import { Responsive } from "@/shared/components/Responsive";
-import PostDetailOverlay from "@/features/board/post/components/PostDetailOverlay";
-import PostDetailModal from "@/features/board/post/components/PostDetailModal";
-import { PostingOverlay } from "@/features/board/post/components/PostingOverlay";
-import PostingModal from "@/features/board/post/components/PostingModal";
+
 
 export async function generateMetadata({
   params,
@@ -65,26 +60,7 @@ export default async function BoardPageLayout({
             <div className="w-full md:max-w-[768px] z-10">{children}</div>
           </div>
         </div>
-        <AnimatePresence mode="sync">
-          <Responsive
-            key="post-detail-overlay-responsive"
-            mobile={
-              <PostDetailOverlay
-                boardName={
-                  boardList.find((board) => board.id === Number(boardID))
-                    ?.name || "알 수 없는 게시판"
-                }
-              />
-            }
-            desktop={<PostDetailModal />}
-          />
-
-          <Responsive
-            key="posting-overlay-responsive"
-            mobile={<PostingOverlay boardId={Number(boardID)} />}
-            desktop={<PostingModal boardId={Number(boardID)} />}
-          />
-        </AnimatePresence>
+       
       </div>
     </HydrationBoundary>
   );

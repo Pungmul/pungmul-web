@@ -1,0 +1,1 @@
+export { usePatchLocation } from './usePatchLocation';

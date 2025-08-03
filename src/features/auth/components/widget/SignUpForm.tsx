@@ -12,7 +12,6 @@ export const SignUpForm = () => {
   const {
     currentStep,
     handleNextStep,
-    isCurrentStepValid,
     isPending,
     isProgressable,
     ...form

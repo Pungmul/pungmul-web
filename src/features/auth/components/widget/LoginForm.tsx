@@ -4,7 +4,7 @@ import { useLoginForm } from "../../hooks/useLoginForm";
 import { Input, Spinner } from "@/shared/components";
 
 function LoginForm() {
-  const { register, inputErrors, isValid, onSubmit, isPending, requestError } =
+  const { register, inputErrors, onSubmit, isPending, requestError } =
     useLoginForm();
 
   return (
