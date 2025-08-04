@@ -7,7 +7,6 @@ import { useView } from "@/shared/lib/useView";
 import LightningNameInput from "../element/LightningNameInput";
 import LightningAddressInput from "./LightningAddressInput";
 import TimePicker from "@pThunder/shared/components/TimePicker";
-import { LightningCreateContextProvider } from "./LightiningContext";
 
 export default function LightningCreateForm() {
   const view = useView();
@@ -49,7 +48,6 @@ export default function LightningCreateForm() {
   // };
 
   return (
-    <LightningCreateContextProvider>
       <div
         className="relative flex flex-col w-full overflow-visible"
         style={{ height: view === "desktop" ? "auto" : "calc(94vh - 8px)" }}
@@ -461,6 +459,5 @@ export default function LightningCreateForm() {
           </div>
         </div>
       </div>
-    </LightningCreateContextProvider> 
   );
 }
