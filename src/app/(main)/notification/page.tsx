@@ -1,9 +1,9 @@
 import { Header } from "@pThunder/shared";
 import { prefetchNotReadMessageList } from "@pThunder/features/home";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import SuspenseComponent from "@/shared/components/SuspenseComponent";
+import { NotificationList } from "@/features/notification";
 import { Metadata } from "next";
-import SuspenseComponent from "../../../shared/components/SuspenseComponent";
-import NotificationList from "@pThunder/features/notification/components/NotificationList";
 
 export const metadata: Metadata = {
   title: "풍물 머시기 | 알림",

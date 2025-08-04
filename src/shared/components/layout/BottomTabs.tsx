@@ -17,7 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Spinner } from "@pThunder/shared";
 import { Suspense } from "react";
 import { Header } from "@/shared/components/layout/Header";
-import NotificationList from "@pThunder/features/notification/components/NotificationList";
+import { NotificationList } from "@pThunder/features/notification";
 import ProfileCircle from "@pThunder/features/my-page/components/widget/ProfileCircle";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 

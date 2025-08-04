@@ -1,6 +1,6 @@
 import React from 'react'
 import { cookies } from 'next/headers'
-import { TokenProvider } from '../TokenProvider';
+import { TokenProvider } from '@/features/auth';
 
 export const dynamic = 'force-dynamic';
 

@@ -4,21 +4,19 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Client } from "@stomp/stompjs";
 import { Header } from "@/shared/components";
-import { useToken } from "../TokenProvider";
+import { useToken } from "@/features/auth";
+import { mySocketFactory } from "@pThunder/core";
 import {
   loadChatLogs,
   sendImageContent,
   sendTextConent,
   exitChat,
 } from "@/features/chat/api/apis";
-import { MessageList } from "@pThunder/features/chat/components/MessageList";
-import { ChatDrawer } from "@/features/chat/components";
+
 import { User } from "@/features/member/types";
 import { AnimatePresence } from "framer-motion";
-import { Message,ChatRoomDto } from "@/features/chat/types";
-import { ChatSendForm } from "@pThunder/features/chat/components/ChatSendForm";
-import { mySocketFactory } from "@pThunder/core";
-import { useGetMyPageInfo } from "@pThunder/features/my-page/api/api";
+import { Message,ChatRoomDto, ChatSendForm, ChatMessageList, ChatDrawer } from "@/features/chat";
+import { useGetMyPageInfo } from "@/features/my-page";
 
 export const dynamic = "force-dynamic";
 
@@ -252,7 +250,7 @@ export default function Page() {
               style={{ backgroundColor: "#FFF", padding: "24px 0" }}
               className="flex-grow"
             >
-              <MessageList
+              <ChatMessageList
                 messages={chatLog}
                 userList={userList}
                 currentUserId={myInfo?.username ?? ""}

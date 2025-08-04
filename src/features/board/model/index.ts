@@ -20,7 +20,7 @@ export interface PostListResponse {
   hasNextPage: boolean;
 }
 
-interface BoardInfo {
+export interface BoardInfo {
   rootCategoryName: string;
   childCategoryName: string | null;
 }

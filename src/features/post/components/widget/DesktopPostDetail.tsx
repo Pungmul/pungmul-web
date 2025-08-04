@@ -1,8 +1,8 @@
 "use client";
 
-import PostContentSkeleton from "./PostContentSkeleton";
-import PostContent from "./widget/PostContent";
-import PostMenu from "./PostMenu";
+import PostContentSkeleton from "../element/PostContentSkeleton";
+import PostContent from "../widget/PostContent";
+import PostMenu from "../element/PostMenu";
 import CommentList from "@pThunder/features/comment/components/widget/CommentsList";
 
 import { useLoadPostDetail } from "@/features/post/api";

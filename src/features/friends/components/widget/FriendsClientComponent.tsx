@@ -1,33 +1,14 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import FriendList from "@pThunder/component/friend/FriendList";
-import FriendRequest from "@pThunder/component/friend/FriendRequestButton";
-import FindFriends from "@pThunder/component/friend/FindFriendSection";
-import { acceptFriendRequest, rejectFriendRequest } from "@/app/(main)/friends/utils";
-
-interface Friend {
-  friendRequestId: number;
-  friendStatus: "ACCEPTED" | "PENDING";
-  simpleUserDTO: User;
-}
-
-interface User {
-  userId: number;
-  username: string;
-  name: string;
-  profileImage: ProfileImage;
-}
-
-interface ProfileImage {
-  id: number;
-  originalFilename: string;
-  convertedFileName: string;
-  fullFilePath: string;
-  fileType: string; // 예: "image/jpeg"
-  fileSize: number; // 바이트 단위 크기
-  createdAt: string; // ISO 형식의 날짜 및 시간
-}
+import { default as FriendList } from "./FriendList";
+import { default as FriendRequest } from "../element/FriendRequestButton";
+import { default as FindFriends } from "./FindFriendSection";
+import {
+  acceptFriendRequest,
+  rejectFriendRequest,
+} from "@pThunder/features/friends/api/utils";
+import { Friend } from "@pThunder/shared/types/friend/type";
 
 type FriendList = Friend[];
 
@@ -150,4 +131,4 @@ export default function FriendsClientComponent({
       {renderContent()}
     </div>
   );
-} 
+}

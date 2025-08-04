@@ -1,10 +1,13 @@
-import ChatList from "../ChatList";
-import { SelectFriendModalProvider } from "@/store/friend/useSelectFriendModalContext";
-import RoomPage from "./RoomPage";
-import Suspense from "@/shared/components/SuspenseComponent";
 import { Metadata } from "next";
-import { prefetchChatRooms } from "../utils";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+
+import { SelectFriendModalProvider } from "@/store/friend/useSelectFriendModalContext";
+import {
+  prefetchChatRooms,
+  RoomContainer,
+  ChatRoomList,
+} from "@/features/chat";
+import Suspense from "@/shared/components/SuspenseComponent";
 
 export const metadata: Metadata = {
   title: "풍물 머시기 | 채팅",
@@ -15,8 +18,8 @@ function ChatLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="block md:flex md:flex-row w-full flex-grow overflow-y-auto">
       <SelectFriendModalProvider>
-        <ChatList key="chat-list" />
-        <RoomPage>{children}</RoomPage>
+        <ChatRoomList key="chat-list" />
+        <RoomContainer>{children}</RoomContainer>
       </SelectFriendModalProvider>
     </div>
   );

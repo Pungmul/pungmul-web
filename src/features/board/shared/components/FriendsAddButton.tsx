@@ -1,6 +1,6 @@
 "use client";
 
-import { requestFriend } from "@/app/(main)/friends/utils";
+import { requestFriend } from "@pThunder/features/friends/api/utils";
 import { debounce } from "lodash";
 import React, { useMemo } from "react";
 

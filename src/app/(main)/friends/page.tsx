@@ -1,5 +1,5 @@
 import { fetchWithRefresh } from "@/core";
-import ClientComponent from "@pThunder/features/friends/components/FriendsClientComponent";
+import { FriendsClientComponent } from "@/features/friends";
 
 // 서버 사이드 렌더링 완전 비활성화
 export const dynamic = 'force-dynamic';
@@ -30,7 +30,7 @@ export default async function Page() {
   const { friendList, requestedFriendList } = await loadFriendList();
 
   return (
-    <ClientComponent
+    <FriendsClientComponent
       initFriendList={friendList}
       initRquestedFriendsList={requestedFriendList}
     />

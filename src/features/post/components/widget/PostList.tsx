@@ -4,8 +4,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { debounce } from "lodash";
 
 import { usePostListInfiniteQuery } from "@/features/board/api/boardInfo";
-import PostBox from "@/features/board/post/components/PostBox";
-import PostBoxSkelleton from "@/features/board/post/components/PostBoxSkelleton";
+import { PostBox, PostBoxSkelleton } from "@/features/post";
 import { BoardData } from "@/shared/types/board/type";
 import ObserveTrigger from "@/shared/components/ObserveTrigger";
 import { useFrequentBoard } from "@pThunder/store/board/frequantBoard";

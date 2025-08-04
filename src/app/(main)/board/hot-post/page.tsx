@@ -1,10 +1,9 @@
-import HotPostList from "@/features/board/board/components/HotPostList";
-import PostDetailOverlay from "@/features/board/post/components/PostDetailOverlay";
+import { HotPostList } from "@/features/board";
+import { PostDetailOverlay } from "@/features/post";
 
 export const dynamic = "force-dynamic";
 
 export default async function HotPostPage() {
-
   return (
     <>
       <div
@@ -13,10 +12,7 @@ export default async function HotPostPage() {
       >
         <HotPostList />
       </div>
-      <PostDetailOverlay
-        key="post-detail-overlay"
-        boardName={"핫 게시글"}
-      />
+      <PostDetailOverlay key="post-detail-overlay" boardName={"핫 게시글"} />
     </>
   );
 }

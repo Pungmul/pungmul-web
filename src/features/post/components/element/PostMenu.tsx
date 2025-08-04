@@ -6,7 +6,7 @@ import { ReportPostBody } from "@/shared/types/post/type";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { Toast } from "@/store/share/toastStore";
-import { useDeletePost } from "../../api/post";
+import { useDeletePost } from "@/features/board";
 import { alertStore } from "@pThunder/store/share/alertStore";
 function PostMenu({ isWriter }: { isWriter: boolean }) {
   const [isOpen, setOpen] = useState(false);
@@ -133,18 +133,20 @@ function PostMenu({ isWriter }: { isWriter: boolean }) {
             {isWriter && (
               <li
                 className="w-12 text-right text-red-400"
-                onClick={() => deletePost(Number(postId), {
-                  onSuccess: () => {
-                    router.back();
-                  },
-                  onError: (error) => {
-                    Alert.alert({
-                      title: "오류",
-                      message: "삭제에 실패했습니다.",
-                      subMessage: error.message,
-                    });
-                  },
-                })}
+                onClick={() =>
+                  deletePost(Number(postId), {
+                    onSuccess: () => {
+                      router.back();
+                    },
+                    onError: (error) => {
+                      Alert.alert({
+                        title: "오류",
+                        message: "삭제에 실패했습니다.",
+                        subMessage: error.message,
+                      });
+                    },
+                  })
+                }
               >
                 삭제
               </li>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { fetchBoardInformations, type BoardInfo } from "@/features/board";
-import BoardMainPageContent from "@/features/board/board/components/BoardMainPageContent";
+import { fetchBoardInformations, BoardMainPageContent, type BriefBoardInfo } from "@/features/board";
 
 export const metadata: Metadata = {
   title: "풍물 머시기 | 게시판",
@@ -13,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function BoardMainPage() {
   // 서버에서 게시판 정보 fetching
   // const queryClient = prefetchMyPageInfo();  
-  const boardList: BoardInfo[] = await fetchBoardInformations();
+  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
 
   return (
     <BoardMainPageContent boardList={boardList} />

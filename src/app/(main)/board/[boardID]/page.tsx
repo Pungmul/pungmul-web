@@ -2,16 +2,12 @@
 import { useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 
-import PostBoxSkelleton from "@/features/board/post/components/PostBoxSkelleton";
-
-import PostList from "@/features/board/post/components/PostList";
+import { PostBoxSkelleton} from "@/features/post";
+import PostList from "@pThunder/features/post/components/widget/PostList";
 import { useLoadBoardInfo } from "@/features/board/api";
 import { AnimatePresence } from "framer-motion";
 import { Responsive } from "@/shared/components/Responsive";
-import PostDetailOverlay from "@/features/board/post/components/PostDetailOverlay";
-import PostDetailModal from "@/features/board/post/components/PostDetailModal";
-import { PostingOverlay } from "@/features/board/post/components/PostingOverlay";
-import PostingModal from "@/features/board/post/components/PostingModal";
+import { PostDetailOverlay, PostDetailModal, PostingOverlay, PostingModal } from "@/features/post";
 
 export const dynamic = "force-dynamic";
 

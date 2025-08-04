@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 
 import { Header } from "@/shared/components/layout/Header";
 import { useRouter } from "next/navigation";
-import { Instrument, InstrumentStatus } from "@pThunder/features/instrument-status/model/index";
 import {
   instrumentNamesMap,
   instruments,
-} from "@pThunder/features/instrument-status/model/constant";
+  type Instrument,
+  InstrumentStatus,
+} from "@/features/instrument-status";
 
 import { InstrumentStatusBlock } from "@pThunder/features/lightning/components/deprecated/InstrumentStatus";
 import Image from "next/image";

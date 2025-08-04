@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import LocationIcon from "@public/icons/Location-icon.svg";
 import { useRouter } from "next/navigation";
-import { useLightningCreate } from "@pThunder/features/lightning/components/LightiningContext";
+import { useLightningCreate } from "@/features/lightning";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -19,7 +19,7 @@ type LocationType = {
 
 const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
-export default function LightningCreateCheckPage() {
+export default function LightningCreateCheckForm() {
   const router = useRouter();
   const {
     title,

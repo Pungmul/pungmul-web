@@ -1,29 +1,7 @@
 // src/app/(main)/friends/FriendRequest.tsx
 import React from "react";
 import Image from "next/image";
-
-interface Friend {
-  friendRequestId: number;
-  friendStatus: "ACCEPTED" | "PENDING";
-  simpleUserDTO: User;
-}
-
-interface User {
-  userId: number;
-  username: string;
-  name: string;
-  profileImage: ProfileImage;
-}
-
-interface ProfileImage {
-  id: number;
-  originalFilename: string;
-  convertedFileName: string;
-  fullFilePath: string;
-  fileType: string; // 예: "image/jpeg"
-  fileSize: number; // 바이트 단위 크기
-  createdAt: string; // ISO 형식의 날짜 및 시간
-}
+import { Friend } from "@pThunder/shared/types/friend/type";
 
 interface FriendRequestProps {
   requests: Friend[];

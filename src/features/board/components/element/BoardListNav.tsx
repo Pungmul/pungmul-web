@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { type BoardInfo } from "@/features/board";
+import { type BriefBoardInfo } from "@/features/board";
 
-export default function BoardListNav({ boardList, currentBoardID }: { boardList: BoardInfo[], currentBoardID: number | 'hot-post'}) {
+export default function BoardListNav({ boardList, currentBoardID }: { boardList: BriefBoardInfo[], currentBoardID: number | 'hot-post'}) {
 
   return (
     <nav className="hidden lg:flex flex-col gap-[24px] sticky top-[72px] self-start w-[120px] h-fit">

@@ -1,3 +1,4 @@
+"use client";
 import { useLoadPostDetail } from "@pThunder/features/post/api";
 import { postStore } from "@pThunder/store/post/postStore";
 import { useEffect, useMemo } from "react";
