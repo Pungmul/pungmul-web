@@ -39,7 +39,6 @@
 <img src="https://img.shields.io/badge/Zustand-764ABC?style=flat-square&logo=zustand&logoColor=white">
 <img src="https://img.shields.io/badge/React_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white">
 <img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white">
-<img src="https://img.shields.io/badge/Socket.io-010101?style=flat-square&logo=socket.io&logoColor=white">
 </div>
 </div>
 
