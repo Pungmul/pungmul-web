@@ -1,7 +1,7 @@
 "use client";
 
-import PostBox from "../../post/components/PostBox";
-import PostBoxSkelleton from "../../post/components/PostBoxSkelleton";
+import PostBox from "@pThunder/features/post/components/element/PostBox";
+import PostBoxSkelleton from "@pThunder/features/post/components/element/PostBoxSkelleton";
 import { useHotPostList } from "../../api/hotPost";
 import { Post } from "@pThunder/shared";
 

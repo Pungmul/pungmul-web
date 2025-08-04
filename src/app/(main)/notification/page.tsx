@@ -1,5 +1,5 @@
 import { Header } from "@pThunder/shared";
-import { prefetchNotReadMessageList } from "@pThunder/features/home/utils";
+import { prefetchNotReadMessageList } from "@pThunder/features/home";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Metadata } from "next";
 import SuspenseComponent from "../../../shared/components/SuspenseComponent";

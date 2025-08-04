@@ -10,7 +10,7 @@ import { SkeletonView } from "@pThunder/shared/components";
 import { useUserLocation } from "@pThunder/features/location";
 import { updateLocation } from "@pThunder/features/location/hooks/useLocation"; 
 import React, { use } from "react";
-import { useNearLightningQuery } from "@pThunder/features/home/utils";
+import { useNearLightningQuery } from "@pThunder/features/home";
 
 export default function NearLightningContent() {
   const { data: serverLocation } = useUserLocation();

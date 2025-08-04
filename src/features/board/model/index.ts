@@ -41,3 +41,9 @@ export interface BoardData {
   hotPost: Post;
   recentPostList: PostList;
 } 
+
+export type BriefBoardInfo = {
+  id: number;
+  parentId: number | null;
+  name: string;
+};

@@ -7,7 +7,7 @@ import { SwiperRef } from "swiper/react";
 
 import GpsMark from "@public/icons/Gps.svg";
 import { AnimatePresence } from "framer-motion";
-import { LightningOverlay } from "./CreateLightningOverlay";
+import { LightningOverlay } from "./widget/CreateLightningOverlay";
 import {
   LightningMeeting,
 } from "@/shared/types/lightning/type";
@@ -18,14 +18,14 @@ import {
 } from "@/features/lightning/api";
 
 import { Responsive } from "@/shared/components/Responsive";
-import { LightningModal } from "./CreateLightningModal";
+import { LightningModal } from "./widget/CreateLightningModal";
 import "@/app/globals.css";
 
 import "swiper/css";
 import "swiper/css/pagination";
-import { LightningInformation } from "./LightningInformation";
+import { LightningInformation } from "./widget/LightningInformation";
 import { useLightningSocket } from "../hooks/useLightning";
-import { LightningCardList } from "./LightningCardList";
+import { LightningCardList } from "./widget/LightningCardList";
 import { participatingLightningStore } from "../store/participatingLightning";
   
 type LocationType = {

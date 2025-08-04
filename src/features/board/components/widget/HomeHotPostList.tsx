@@ -2,7 +2,7 @@
 
 import { Post } from "@/shared/types/post/type";
 import { redirect } from "next/navigation";
-import PostBox from "../../post/components/PostBox";
+import PostBox from "@pThunder/features/post/components/element/PostBox";
 import Link from "next/link";
 
 export default function HomeHotPostList({ hotPosts , timeString}: { hotPosts: Post[] , timeString: string }) {

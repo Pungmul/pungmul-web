@@ -2,18 +2,18 @@
 export { default as LightningPage } from './page'
 // Lightning Core Components
 export { default as AddLightningCard } from './element/AddLightningCard'
-export { LightningModal as CreateLightningModal } from './CreateLightningModal'
-export { LightningOverlay as CreateLightningOverlay } from './CreateLightningOverlay'
+export { LightningModal as CreateLightningModal } from './widget/CreateLightningModal'
+export { LightningOverlay as CreateLightningOverlay } from './widget/CreateLightningOverlay'
 export { default as InstrumentAssignForm } from './deprecated/InstrumentAssignForm'
 export { InstrumentStatusBlock as InstrumentStatus } from './deprecated/InstrumentStatus'
 export { default as LightningAddressInput } from './widget/LightningAddressInput'
-export { default as LightningCard } from './LightningCard'
-export { default as LightningCreateForm } from './LightningCreateForm'
-export { LightningInformation } from './LightningInformation'
-export { default as LightningNameInput } from './LightningNameInput'
-export { default as NearLightning } from './NearLightning'
-export { TimeGapPannel } from './TimeGapPannel'
+export { default as LightningCard } from './element/LightningCard'
+export { default as LightningCreateForm } from './widget/LightningCreateForm'
+export { LightningInformation } from './widget/LightningInformation'
+export { default as LightningNameInput } from './element/LightningNameInput'
+export { default as NearLightning } from './widget/NearLightningContent'
+export { TimeGapPannel } from './element/TimeGapPannel'
 
 
 // Lightning Context
-export { LightningCreateContextProvider as LightiningContext, useLightningCreate } from './LightiningContext' 
+export { LightningCreateContextProvider as LightiningContext, useLightningCreate } from './widget/LightiningContext' 

@@ -1,1 +1,1 @@
-export { InstrumentStatusBlock } from './components/InstrumentStatus'; 
+export * from "./components";

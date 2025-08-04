@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { LightningCreateContextProvider } from "@pThunder/features/lightning/components/LightiningContext";
 
 export const metadata: Metadata = {
   title: "풍물 머시기 | 번개",
@@ -11,7 +10,5 @@ export default function LightningLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <LightningCreateContextProvider>{children}</LightningCreateContextProvider>
-  );
+  return children;
 }

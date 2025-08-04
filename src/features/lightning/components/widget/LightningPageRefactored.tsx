@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import { SwiperRef } from "swiper/react";
 import { AnimatePresence } from "framer-motion";
-import { LightningOverlay } from "../element/CreateLightningOverlay";
-import { LightningModal } from "../element/CreateLightningModal";
+import { LightningOverlay } from "./CreateLightningOverlay";
+import { LightningModal } from "./CreateLightningModal";
 import { LightningInformation } from "./LightningInformation";
 import { LightningMeeting } from "@/shared/types/lightning/type";
 import {

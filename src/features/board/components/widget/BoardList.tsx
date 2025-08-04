@@ -1,13 +1,13 @@
 "use client";
 
 import { WebViewLink } from "@/features/board/shared/components";
-import { BoardInfo } from "@pThunder/features/board/components/utils";
+import { BriefBoardInfo } from "../../model";
 import { StarIcon as StarIconOutline } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 
 interface BoardListProps {
-  boardList: BoardInfo[];
+  boardList: BriefBoardInfo[];
 }
 
 export default function BoardList({ boardList }: BoardListProps) {
