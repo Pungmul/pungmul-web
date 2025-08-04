@@ -1,5 +1,12 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  Suspense,
+} from "react";
 import { throttle } from "lodash";
 import Image from "next/image";
 
@@ -8,9 +15,7 @@ import { SwiperRef } from "swiper/react";
 import GpsMark from "@public/icons/Gps.svg";
 import { AnimatePresence } from "framer-motion";
 import { LightningOverlay } from "./widget/CreateLightningOverlay";
-import {
-  LightningMeeting,
-} from "@/shared/types/lightning/type";
+import { LightningMeeting } from "@/shared/types/lightning/type";
 import {
   useUserParticipationStatus,
   useUserLocation,
@@ -27,7 +32,8 @@ import { LightningInformation } from "./widget/LightningInformation";
 import { useLightningSocket } from "../hooks/useLightning";
 import { LightningCardList } from "./widget/LightningCardList";
 import { participatingLightningStore } from "../store/participatingLightning";
-  
+import { LightningCreateProvider } from "./widget/LightiningContext";
+
 type LocationType = {
   latitude: number;
   longitude: number;
@@ -40,10 +46,8 @@ export default function LightningPage() {
     useLightningSocket();
 
   // TanStack Query 훅들 사용
-  const {
-    data: userParticipationData,
-    isLoading: isParticipationLoading,
-  } = useUserParticipationStatus();
+  const { data: userParticipationData, isLoading: isParticipationLoading } =
+    useUserParticipationStatus();
   const { participatingLightning } = participatingLightningStore();
 
   const { data: serverUserLocation } = useUserLocation();
@@ -54,10 +58,10 @@ export default function LightningPage() {
 
   const [target, setTarget] = useState<"전체" | "우리학교">("전체");
 
-  const lightningList = useMemo(()=>{
-    if(target === "전체") return wholeLightningList;
+  const lightningList = useMemo(() => {
+    if (target === "전체") return wholeLightningList;
     return schoolLightningList;
-  },[target, wholeLightningList, schoolLightningList]);
+  }, [target, wholeLightningList, schoolLightningList]);
 
   const [userPartinLightning, setUserPartinLightning] = useState<
     | (LightningMeeting & {
@@ -183,8 +187,8 @@ export default function LightningPage() {
   }, [lightningList]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
+    if (typeof window === "undefined") return;
+
     const { geolocation } = navigator;
     if (!geolocation) {
       console.error("Geolocation is not supported by this browser.");
@@ -388,24 +392,26 @@ export default function LightningPage() {
           />
         </div>
       </section>
-      <Responsive
-        mobile={
-          userPartinLightning &&
-          !userPartinLightning.participationStatus && (
-            <Suspense fallback={<div>로딩중...</div>}>
-              <LightningOverlay />
-            </Suspense>
-          )
-        }
-        desktop={
-          userPartinLightning &&
-          !userPartinLightning.participationStatus && (
-            <Suspense fallback={<div>로딩중...</div>}>
-              <LightningModal />
-            </Suspense>
-          )
-        }
-      />
+      <LightningCreateProvider>
+        <Responsive
+          mobile={
+            userPartinLightning &&
+            !userPartinLightning.participationStatus && (
+              <Suspense fallback={<div>로딩중...</div>}>
+                <LightningOverlay />
+              </Suspense>
+            )
+          }
+          desktop={
+            userPartinLightning &&
+            !userPartinLightning.participationStatus && (
+              <Suspense fallback={<div>로딩중...</div>}>
+                <LightningModal />
+              </Suspense>
+            )
+          }
+        />
+      </LightningCreateProvider>
     </AnimatePresence>
   );
 }

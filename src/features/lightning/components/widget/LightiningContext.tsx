@@ -53,7 +53,7 @@ const LightningCreateContext = createContext<
   LightningCreateContextType | null
 >(null);
 
-export const LightningCreateContextProvider = ({
+export const LightningCreateProvider = ({
   children,
 }: {
   children: React.ReactNode;

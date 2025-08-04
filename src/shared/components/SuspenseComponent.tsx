@@ -9,7 +9,7 @@ export default function SuspenseComponent(props: {
 }) {
   const {
     fallback = (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-full w-full">
         <Spinner size={32} />
       </div>
     ),
