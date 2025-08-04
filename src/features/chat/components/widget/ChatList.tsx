@@ -1,5 +1,5 @@
 "use client";
-import { useChatRoomsQuery } from "@/app/(main)/chats/utils";
+import { useChatRoomsQuery } from "../../api";
 import { ChatRoomBox, ChatRoomBoxSkeleton } from "./ChatRoomBox";
 import { useSelectFriendModal } from "@/store/friend/useSelectFriendModalContext";
 import { useState } from "react";

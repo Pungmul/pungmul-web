@@ -1,9 +1,9 @@
 "use client";
-import DraftEditor from "@/features/board/post/components/Editor";
+import DraftEditor from "./Editor";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
-export const PostingOverlay: React.FC<{
+const PostingOverlay: React.FC<{
   boardId: number;
 }> = ({ boardId }) => {
   const searchParams = useSearchParams();
@@ -39,3 +39,5 @@ export const PostingOverlay: React.FC<{
     </AnimatePresence>
   );
 };
+
+export default PostingOverlay;

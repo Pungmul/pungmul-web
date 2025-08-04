@@ -2,10 +2,11 @@ import { getQueryClient } from "@pThunder/core";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { fetchBoardInfoAPI } from "@/features/board/api";
-import BoardListNav from "@/features/board/board/components/BoardListNav";
-import BoardHeader from "@/features/board/board/components/BoardHeader";
-import { BoardInfo, fetchBoardInformations } from "@pThunder/features";
-
+import { BoardListNav, BoardHeader } from "@/features/board";
+import {
+  BriefBoardInfo,
+  fetchBoardInformations,
+} from "@pThunder/features/board";
 
 export async function generateMetadata({
   params,
@@ -13,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ boardID: string }>;
 }) {
   const { boardID } = await params;
-  const boardList: BoardInfo[] = await fetchBoardInformations();
+  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
   const boardName =
     boardList.find((board) => board.id === Number(boardID))?.name ||
     "알 수 없는 게시판";
@@ -33,7 +34,7 @@ export default async function BoardPageLayout({
 }) {
   const { boardID } = await params;
   const queryClient = getQueryClient();
-  const boardList: BoardInfo[] = await fetchBoardInformations();
+  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
 
   queryClient.prefetchQuery({
     queryKey: ["board", boardID],
@@ -60,7 +61,6 @@ export default async function BoardPageLayout({
             <div className="w-full md:max-w-[768px] z-10">{children}</div>
           </div>
         </div>
-       
       </div>
     </HydrationBoundary>
   );

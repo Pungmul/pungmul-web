@@ -1,0 +1,1 @@
+export { useInitPost } from "./useInitPost";

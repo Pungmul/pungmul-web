@@ -183,6 +183,8 @@ export default function LightningPage() {
   }, [lightningList]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const { geolocation } = navigator;
     if (!geolocation) {
       console.error("Geolocation is not supported by this browser.");

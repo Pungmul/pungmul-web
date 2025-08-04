@@ -1,11 +1,11 @@
 "use client";
 import { createContext, useContext, useState } from "react";
 
-import SelectFriendsModal from "@/features/chat/components/SelectFriendsModal";
+import { SelectFriendsModal } from "@/features/chat";
 import {
   createPersonalChatRoom,
   createMultiChatRoom,
-} from "@/app/(main)/chats/utils";
+} from "@/features/chat";
 import { useRouter } from "next/navigation";
 
 interface SelectFriendModalContextType {

@@ -1,13 +1,19 @@
-import { getQueryClient } from "@pThunder/core";
+import { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import BoardListNav from "@/features/board/board/components/BoardListNav";
-import BoardHeader from "@/features/board/board/components/BoardHeader";
-import { fetchHotPostList } from "@/features/board/api/hotPost";
-import { BoardInfo, fetchBoardInformations } from "@pThunder/features/board";
-import Suspense from "@pThunder/shared/components/SuspenseComponent";
+import { getQueryClient } from "@/core";
+import Suspense from "@/shared/components/SuspenseComponent";
 
-export const metadata = {
+import {
+  fetchHotPostList,
+  BriefBoardInfo,
+  fetchBoardInformations,
+  BoardListNav,
+  BoardHeader,
+} from "@/features/board";
+
+
+export const metadata: Metadata = {
   title: "풍물 머시기 | 인기 게시글",
 };
 
@@ -18,7 +24,7 @@ export default async function BoardPageLayout({
 }) {
   const queryClient = getQueryClient();
 
-  const boardList: BoardInfo[] = await fetchBoardInformations();
+  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
 
   queryClient.prefetchQuery({
     queryKey: ["boardList"],

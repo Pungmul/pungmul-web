@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { Suspense } from "react";
-import AddChatRoomButton from "./AddChatRoomButton";
+import { AddChatRoomButton } from "@/features/chat";
 
 // 동적 렌더링 강제 - 프리렌더 에러 해결
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // useSearchParams를 사용하는 컴포넌트를 Suspense로 감싸기
 function InboxContent() {
@@ -28,13 +28,13 @@ function InboxContent() {
 
 export default async function InboxPage() {
   return (
-    <Suspense fallback={
-      <div className="flex flex-col flex-grow h-full w-full justify-center items-center">
-        <div className="text-[24px] font-semibold text-black">
-          로딩 중...
+    <Suspense
+      fallback={
+        <div className="flex flex-col flex-grow h-full w-full justify-center items-center">
+          <div className="text-[24px] font-semibold text-black">로딩 중...</div>
         </div>
-      </div>
-    }>
+      }
+    >
       <InboxContent />
     </Suspense>
   );

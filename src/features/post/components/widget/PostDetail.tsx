@@ -4,9 +4,9 @@ import { Header } from "@/shared/components";
 
 import { CommentList } from "@/features/comment/components/widget/CommentsList";
 
-import PostMenu from "./PostMenu";
-import PostContentSkeleton from "./element/PostContentSkeleton";
-import PostContent from "./widget/PostContent";
+import PostMenu from "../element/PostMenu";
+import PostContentSkeleton from "../element/PostContentSkeleton";
+import PostContent from "./PostContent";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useLoadPostDetail } from "@/features/post/api";

@@ -1,6 +1,6 @@
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { prefetchMyPageInfo } from "@pThunder/features/my-page/api/api";
-import MyPageClient from "./MyPageClient";
+import { prefetchMyPageInfo } from "@/features/my-page";
+import { MyPageClient } from "@/features/my-page";
 import Suspense from "@/shared/components/SuspenseComponent";
 
 // 서버 사이드 렌더링 완전 비활성화
