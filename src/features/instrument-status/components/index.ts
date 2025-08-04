@@ -1,4 +1,2 @@
-// InstrumentStatus Components Barrel Exports
-
-// Widget Components
-export { InstrumentStatusBlock } from './widget/InstrumentStatus' 
+// InstrumentStatus Widget Components
+export { InstrumentStatusBlock } from "./widget/InstrumentStatus";

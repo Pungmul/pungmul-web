@@ -1,6 +1,6 @@
 "use client";
 import { Header } from "@pThunder/shared";
-import PostingButton from "@pThunder/features/board/post/components/PostingButton";
+import PostingButton from "@pThunder/features/post/components/element/PostingButton";
 import { useRouter } from "next/navigation";
 import { Responsive } from "@pThunder/shared/components/Responsive";
 import { PencilIcon } from "@heroicons/react/24/outline";

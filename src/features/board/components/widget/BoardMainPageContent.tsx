@@ -3,13 +3,13 @@
 import Link from "next/link";
 import BoardList from "./BoardList";
 import LastUpdateTime from "../element/LastUpdateTime";
-import { BoardInfo } from "@pThunder/features/board/components/utils";
+import { BriefBoardInfo } from "../../model";
 
 import { HandThumbUpIcon, FireIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleBottomCenterTextIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 
 interface BoardMainPageContentProps {
-  boardList: BoardInfo[];
+  boardList: BriefBoardInfo[];
 }
 
 export default function BoardMainPageContent({

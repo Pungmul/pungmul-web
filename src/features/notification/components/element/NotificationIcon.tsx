@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useNotReadMessageCount } from "@pThunder/features/home/utils";
+import { useNotReadMessageCount } from "@pThunder/features/home";
 import NotificationBadge from "./NotificationBadge";
 import Image from "next/image";
 import React from "react";

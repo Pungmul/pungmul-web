@@ -14,7 +14,3 @@ export { default as BoardListNav } from './element/BoardListNav';
 export { default as FrequentBoards } from './element/FrequentBoards';
 export { default as HomeHeader } from './element/HomeHeader';
 export { default as LastUpdateTime } from './element/LastUpdateTime';
-
-// Board Utils
-export * from './HotPostUtils';
-export * from './utils'; 

@@ -1,6 +1,6 @@
 'use client';
 
-import { LightningMeeting } from "@/shared/types/lightning/type";
+import { LightningMeeting } from "../../model/index";
 import "@/app/globals.css";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -65,7 +65,7 @@ const LightningCard: React.FC<LightningCardProps> = ({
     }, 1000);
 
     return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 정리
-  }, [lightningMeeting, queryClient]);
+  }, [lightningMeeting.recruitmentEndTime]);
 
   return (
     <div

@@ -1,5 +1,5 @@
 "use client";
-import { useNotReadMessageList } from "@pThunder/features/home/utils";
+import { useNotReadMessageList } from "@pThunder/features/home";
 
 export default function NotificationList() {
   const { data: notReadMessage } = useNotReadMessageList();

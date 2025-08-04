@@ -1,2 +1,2 @@
-// Comment feature barrel exports
-export * from './components/element'; 
+export * from "./components";
+export * from "./model";

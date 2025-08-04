@@ -1,9 +1,6 @@
 "use client";
 import { useChatRoomsQuery } from "@/app/(main)/chats/utils";
-import {
-  ChatRoomBox,
-  ChatRoomBoxSkeleton,
-} from "@/features/chat/components/ChatRoomBox";
+import { ChatRoomBox, ChatRoomBoxSkeleton } from "./ChatRoomBox";
 import { useSelectFriendModal } from "@/store/friend/useSelectFriendModalContext";
 import { useState } from "react";
 import { getChoseong } from "es-hangul";

@@ -1,8 +1,8 @@
 "use client";
 
-import PostBox from "@/features/board/post/components/PostBox";
+import PostBox from "@pThunder/features/post/components/element/PostBox";
 import { useMyPostList } from "@/features/board/api/myPost";
-import PostBoxSkelleton from "@/features/board/post/components/PostBoxSkelleton";
+import PostBoxSkelleton from "@pThunder/features/post/components/element/PostBoxSkelleton";
 import DragScroll from "@/shared/components/DragScroll";
 import { Post } from "@pThunder/features/post/model/index";
 

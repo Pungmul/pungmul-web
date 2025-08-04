@@ -18,7 +18,7 @@ import { Spinner } from "@pThunder/shared";
 import { Suspense } from "react";
 import { Header } from "@/shared/components/layout/Header";
 import NotificationList from "@pThunder/features/notification/components/NotificationList";
-import ProfileCircle from "@pThunder/features/my-page/component/ProfileCircle";
+import ProfileCircle from "@pThunder/features/my-page/components/widget/ProfileCircle";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function BottomTabs() {
