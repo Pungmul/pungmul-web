@@ -147,7 +147,7 @@ export default function LightningCreateForm() {
                       }}
                       onClick={() => {
                         if (minPersonnel > 2) {
-                          setMinPersonnel((prev) => prev - 1);
+                          setMinPersonnel(minPersonnel - 1);
                         }
                       }}
                     >
@@ -203,7 +203,7 @@ export default function LightningCreateForm() {
                       }}
                       onClick={() => {
                         if (minPersonnel + 1 < maxPersonnel) {
-                          setMinPersonnel((prev) => prev + 1);
+                          setMinPersonnel(minPersonnel + 1);
                         }
                       }}
                     >
@@ -230,7 +230,7 @@ export default function LightningCreateForm() {
                       }}
                       onClick={() => {
                         if (maxPersonnel > minPersonnel + 1)
-                          setMaxPersonnel((prev) => prev - 1);
+                          setMaxPersonnel(maxPersonnel - 1);
                       }}
                     >
                       -
@@ -282,7 +282,7 @@ export default function LightningCreateForm() {
                       }}
                       onClick={() => {
                         if (maxPersonnel < 100)
-                          setMaxPersonnel((prev) => prev + 1);
+                          setMaxPersonnel(maxPersonnel + 1);
                       }}
                     >
                       +
@@ -356,7 +356,7 @@ export default function LightningCreateForm() {
                 }}
                 onClick={() => {
                   if (recruitmentPeriod > 5)
-                    setRecruitmentPeriod((prev) => prev - 5);
+                    setRecruitmentPeriod(recruitmentPeriod - 5);
                 }}
               >
                 -
@@ -371,7 +371,7 @@ export default function LightningCreateForm() {
                 }}
                 onClick={() => {
                   if (recruitmentPeriod < 60)
-                    setRecruitmentPeriod((prev) => prev + 5);
+                    setRecruitmentPeriod(recruitmentPeriod + 5);
                 }}
               >
                 +
