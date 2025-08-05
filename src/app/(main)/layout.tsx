@@ -8,7 +8,7 @@ import {
 import "@/app/globals.css";
 import { HeaderProgressBar, Toast } from "@/shared/components";
 import { Suspense } from "react";
-import { prefetchMyPageInfo } from "@/features/my-page/api/api";
+import { prefetchMyPageInfo } from "@pThunder/features/my-page";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import ReactQueryProviders from "@/shared/lib/useReactQuery";
 

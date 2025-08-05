@@ -1,5 +1,5 @@
 "use client";
-import { useGetMyPageInfo } from "@pThunder/features/my-page/api/api";
+import { useGetMyPageInfo } from "@pThunder/features/my-page";
 import { NotificationIcon } from "@pThunder/features/notification/components";
 import { useRouter } from "next/navigation";
 import React from "react";

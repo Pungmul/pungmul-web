@@ -17,7 +17,7 @@ import {
   useDeleteInstrumentSkill,
   useGetMyPageInfo,
   useUpdateInstrumentSkill,
-} from "@pThunder/features/my-page/api/api";
+} from "@pThunder/features/my-page";
 
 export default function MyPageClient() {
   const router = useRouter();

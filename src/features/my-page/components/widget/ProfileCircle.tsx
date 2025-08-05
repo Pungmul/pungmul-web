@@ -1,4 +1,4 @@
-import { useGetMyPageInfo } from "../../api/api";
+import { useGetMyPageInfo } from "../../api/myStatusApi";
 
 import Image from "next/image";
 

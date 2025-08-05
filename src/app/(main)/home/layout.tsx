@@ -8,13 +8,13 @@ export const metadata: Metadata = {
   description: "풍물 머시기의 메인화면 입니다.",
 };
 
-export default function HomeLayout({
+export default async function HomeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const queryClient = getQueryClient();
-  queryClient.prefetchQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["my-page-info"],
     queryFn: getMyPageInfo,
   });
