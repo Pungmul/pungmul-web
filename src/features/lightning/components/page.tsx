@@ -32,7 +32,6 @@ import { LightningInformation } from "./widget/LightningInformation";
 import { useLightningSocket } from "../hooks/useLightning";
 import { LightningCardList } from "./widget/LightningCardList";
 import { participatingLightningStore } from "../store/participatingLightning";
-import { LightningCreateProvider } from "./widget/LightiningContext";
 
 type LocationType = {
   latitude: number;
@@ -392,26 +391,24 @@ export default function LightningPage() {
           />
         </div>
       </section>
-      <LightningCreateProvider>
-        <Responsive
-          mobile={
-            userPartinLightning &&
-            !userPartinLightning.participationStatus && (
-              <Suspense fallback={<div>로딩중...</div>}>
-                <LightningOverlay />
-              </Suspense>
-            )
-          }
-          desktop={
-            userPartinLightning &&
-            !userPartinLightning.participationStatus && (
-              <Suspense fallback={<div>로딩중...</div>}>
-                <LightningModal />
-              </Suspense>
-            )
-          }
-        />
-      </LightningCreateProvider>
+      <Responsive
+        mobile={
+          userPartinLightning &&
+          !userPartinLightning.participationStatus && (
+            <Suspense fallback={<div>로딩중...</div>}>
+              <LightningOverlay />
+            </Suspense>
+          )
+        }
+        desktop={
+          userPartinLightning &&
+          !userPartinLightning.participationStatus && (
+            <Suspense fallback={<div>로딩중...</div>}>
+              <LightningModal />
+            </Suspense>
+          )
+        }
+      />
     </AnimatePresence>
   );
 }

@@ -16,5 +16,5 @@ export { TimeGapPannel } from './element/TimeGapPannel'
 
 
 // Lightning Context
-export { LightningCreateProvider, useLightningCreate } from './widget/LightiningContext' 
+export { useLightningCreate } from './widget/LightiningContext' 
 export { default as LightningCreateCheckForm } from './widget/LightningCreateCheckForm'
