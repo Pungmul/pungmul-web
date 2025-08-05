@@ -44,11 +44,11 @@ export async function POST(req: Request) {
 
     headers.append(
       "Set-Cookie",
-      `accessToken=${accessToken}; Path=/; SameSite=Strict; Max-Age=${expiresIn}`
+      `accessToken=${accessToken}; Path=/; SameSite=Strict; HttpOnly; Max-Age=${expiresIn}`
     );
     headers.append(
       "Set-Cookie",
-      `refreshToken=${refreshToken}; Path=/; SameSite=Strict; Max-Age=${refreshTokenExpiresIn}`
+      `refreshToken=${refreshToken}; Path=/; SameSite=Strict; HttpOnly; Max-Age=${refreshTokenExpiresIn}`
     );
     // 클라이언트에 프록시 응답 반환
     return Response.json(
