@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 
 import Image from "next/image";
-import { useGetMyPageInfo } from "@/features/my-page/api/api";
+import { useGetMyPageInfo } from "@pThunder/features/my-page";
 import { Header } from "@/shared/components";
 import { User } from "@/features/member/types";
 
