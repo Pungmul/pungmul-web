@@ -4,7 +4,7 @@ import {
 } from "@pThunder/shared";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
 import { useEffect, useState, useRef } from "react";
-import { useGetMyPageInfo } from "@pThunder/features/my-page/api/api";
+import { useGetMyPageInfo } from "@pThunder/features/my-page";
 import { useLoadLightningData } from "../api/api";
 import { useGetToken } from "@pThunder/features/auth/api";
 

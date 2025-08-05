@@ -2,20 +2,26 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Client } from "@stomp/stompjs";
-import { Header } from "@/shared/components";
-import { useToken } from "@/features/auth";
-import { mySocketFactory } from "@pThunder/core";
-import {
-  loadChatLogs,
-  sendImageContent,
-  sendTextConent,
-  exitChat,
-} from "@/features/chat/api/apis";
 
-import { User } from "@/features/member/types";
+import { Header } from "@/shared/components";
+import {
+  useChatRoomQuery,
+  useSendTextMessageMutation,
+  useSendImageMessageMutation,
+  useExitChatMutation,
+} from "@/features/chat/api/chatRoomHooks";
+import {
+  useRoomReadSocket,
+  useRoomMessageSocket,
+} from "@/features/chat/socket";
+
 import { AnimatePresence } from "framer-motion";
-import { Message,ChatRoomDto, ChatSendForm, ChatMessageList, ChatDrawer } from "@/features/chat";
+import {
+  ChatSendForm,
+  ChatMessageList,
+  ChatDrawer,
+  Message,
+} from "@/features/chat";
 import { useGetMyPageInfo } from "@/features/my-page";
 
 export const dynamic = "force-dynamic";
@@ -23,17 +29,66 @@ export const dynamic = "force-dynamic";
 export default function Page() {
   const { roomId } = useParams();
   const { data: myInfo } = useGetMyPageInfo();
-  const token = useToken();
   const router = useRouter();
-  
+
   const wholeRef = useRef<HTMLDivElement>(null);
-  const clientRef = useRef<Client | null>(null);
-  
+
   const [title, setTitle] = useState("");
-  const [userList, setUserList] = useState<User[]>([]);
-  const [chatLog, setChatLog] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  // React Query 훅 사용
+  const { data: chatRoomData, isLoading } = useChatRoomQuery(roomId as string);
+  const [chatLog, setChatLog] = useState<Message[]>(
+    chatRoomData?.messageList.list || []
+  );
+
+  const sendTextMessageMutation = useSendTextMessageMutation();
+  const sendImageMessageMutation = useSendImageMessageMutation();
+  const exitChatMutation = useExitChatMutation();
+
+  // 소켓 훅 사용
+  const { readSign } = useRoomReadSocket(roomId as string);
+  const { isConnected: messageConnected } = useRoomMessageSocket(
+    roomId as string,
+    {
+      onMessage: (message: Message) => {
+        
+        console.log(message, "chatMessage");
+        if (message.chatType === "TEXT") {
+          const chatMessage: Message = {
+            id: message.id,
+            senderUsername: message.senderUsername,
+            content: message.content,
+            chatType: message.chatType,
+            imageUrlList: message.imageUrlList,
+            chatRoomUUID: message.chatRoomUUID,
+            createdAt: message.createdAt || Date.now().toString(),
+          };
+          setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
+          readSign();
+        } else if (message.chatType === "IMAGE") {
+          const chatMessage: Message = {
+            id: message.id,
+            senderUsername: message.senderUsername,
+            content: message.content,
+            chatType: message.chatType,
+            imageUrlList: message.imageUrlList,
+            chatRoomUUID: message.chatRoomUUID,
+            createdAt: message.createdAt || Date.now().toString(),
+          };
+
+          setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
+          readSign();
+        }
+      },
+      onAlarm: (message) => {
+        console.log(message, "alarm message");
+      },
+    }
+  );
+
+  // 채팅방 데이터에서 필요한 정보 추출
+  const userList = chatRoomData?.userInfoList || [];
+  const loading = isLoading;
 
   const onSendMessage = useCallback(
     async (message: string) => {
@@ -41,14 +96,15 @@ export default function Page() {
         content: message,
       };
       try {
-        await sendTextConent(roomId as string, messagePayload);
+        await sendTextMessageMutation.mutateAsync({
+          roomId: roomId as string,
+          message: messagePayload,
+        });
       } catch {
         alert("채팅 전송에 실패했습니다.");
-      } finally {
-        setLoading(false);
       }
     },
-    [roomId]
+    [roomId, sendTextMessageMutation]
   );
 
   const onSendImage = useCallback(
@@ -59,149 +115,43 @@ export default function Page() {
         Array.from(files).forEach((file) => {
           formData.append("files", file);
         });
-        await sendImageContent(roomId as string, formData);
+        await sendImageMessageMutation.mutateAsync({
+          roomId: roomId as string,
+          formData,
+        });
       } catch (error) {
         if (error instanceof Error) {
           alert("채팅 전송에 실패했습니다.\n" + error.message);
         } else {
           alert("채팅 전송에 실패했습니다.");
         }
-      } finally {
       }
     },
-    [roomId]
+    [roomId, sendImageMessageMutation]
   );
-
-  // const onInviteUser = useCallback(async () => {
-  //   try {
-  //     await inviteUser(roomId as string, { newUsernameList: ["test"] });
-  //   } catch (error) {
-  //     console.error("초대 실패", error);
-  //   } finally {
-  //     setDrawerOpen(false);
-  //   }
-  // }, [roomId, setDrawerOpen]);
 
   const onExitChat = useCallback(async () => {
     if (!confirm("채팅방을 나가시겠습니까?")) return;
-    try {
-      await exitChat(roomId as string);
-      clientRef.current?.deactivate();
-      router.push("/chats/r/inbox");
-    } catch (error) {
-      console.error("채팅방 나가기 실패", error);
-    }
-  }, [roomId, router]);
-
-  useEffect(() => {
-    const initLoadChatLogs = async () => {
-      try {
-        setLoading(true);
-        const data = (await loadChatLogs(roomId as string)) as ChatRoomDto;
-
-        setUserList(data.userInfoList);
-        setChatLog(data.messageList.list);
-        setTitle(
-          data.chatRoomInfo.group
-            ? `${data.chatRoomInfo.roomName} (${data.userInfoList.length})`
-            : data.chatRoomInfo.roomName
-        );
-      } catch (error) {
-        console.error("채팅 로그 로드 실패", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initLoadChatLogs();
-  }, [roomId]);
-
-  useEffect(() => {
-    if (!token) {
-      console.error("Token is not found");
-      return;
-    }
-
-    const stompClient = new Client({
-      webSocketFactory: () => mySocketFactory(),
-      reconnectDelay: 5000,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
+    exitChatMutation.mutate(roomId as string, {
+      onSuccess: () => {
+        router.push("/chats/r/inbox");
       },
-      onConnect: () => {
-        console.log("✅ 연결 완료");
-        setLoading(false);
-        console.log(roomId, "roomId");
-
-        stompClient.subscribe(`/sub/chat/alarm/${roomId}`, (message) => {
-          // {
-          //   "messageLogId":189,
-          //   "domainType":"CHAT",
-          //   "businessIdentifier":"alarm",
-          //   "identifier":"3b928aa1-26f7-418f-ba4b-e7a9360453eb",
-          //   "stompDest":"/sub/chat/alarm/3b928aa1-26f7-418f-ba4b-e7a9360453eb",
-          //   "content":"{\"content\":\"김진현 님이 나갔습니다.\"}"
-          // }
-          const parsedMessage = JSON.parse(message.body);
-          console.log(parsedMessage, "message");
-        });
-
-        stompClient.subscribe(`/sub/chat/message/${roomId}`, (message) => {
-          const parsedMessage = JSON.parse(message.body);
-          console.log(parsedMessage, "message");
-          if (parsedMessage.chatType === "TEXT") {
-            const chatMessage: Message = {
-              id: parsedMessage.id,
-              senderUsername: parsedMessage.senderUsername,
-              content: parsedMessage.content,
-              chatType: parsedMessage.chatType,
-              imageUrlList: parsedMessage.imageUrlList,
-              chatRoomUUID: parsedMessage.chatRoomUUID,
-              createdAt: parsedMessage.createdAt || Date.now().toString(),
-            };
-            console.log(chatMessage, "chatMessage");
-            setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
-          } else if (parsedMessage.chatType === "IMAGE") {
-            const chatMessage: Message = {
-              id: parsedMessage.id,
-              senderUsername: parsedMessage.senderUsername,
-              content: parsedMessage.content,
-              chatType: parsedMessage.chatType,
-              imageUrlList: parsedMessage.imageUrlList,
-              chatRoomUUID: parsedMessage.chatRoomUUID,
-              createdAt: parsedMessage.createdAt || Date.now().toString(),
-            };
-
-            setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
-          }
-        });
-
-        stompClient.subscribe(`/sub/chat/read/${roomId}`, (message) => {
-          console.log(message, "read message");
-        });
-
-        stompClient.publish({
-          destination: `/pub/chat/read/${roomId}`,
-          body: JSON.stringify(roomId),
-        });
-
-
-        console.log("Sending message:", {
-          roomId: roomId,
-        });
-      },
-      onStompError: (frame) => {
-        console.error("❌ STOMP 에러 발생", frame);
+      onError: (error) => {
+        console.error("채팅방 나가기 실패", error);
       },
     });
+  }, [roomId, router, exitChatMutation]);
 
-    stompClient.activate();
-    clientRef.current = stompClient;
-
-    return () => {
-      clientRef.current?.deactivate();
-    };
-  }, [roomId, token]);
+  // 채팅방 데이터가 로드되면 title 설정
+  useEffect(() => {
+    if (chatRoomData) {
+      setTitle(
+        chatRoomData.chatRoomInfo.group
+          ? `${chatRoomData.chatRoomInfo.roomName} (${chatRoomData.userInfoList.length})`
+          : chatRoomData.chatRoomInfo.roomName
+      );
+    }
+  }, [chatRoomData]);
 
   useEffect(() => {
     if (title) {
@@ -239,7 +189,7 @@ export default function Page() {
             </div>
           }
         />
-        {loading ? (
+        {loading || !messageConnected ? (
           <div className="flex justify-center items-center h-full">
             {roomId}번 방 로딩중...
           </div>
@@ -258,10 +208,7 @@ export default function Page() {
             </div>
           </div>
         )}
-        <ChatSendForm
-          onSendMessage={onSendMessage}
-          onSendImage={onSendImage}
-        />
+        <ChatSendForm onSendMessage={onSendMessage} onSendImage={onSendImage} />
         <ChatDrawer
           drawerOpen={drawerOpen}
           onExitChat={onExitChat}

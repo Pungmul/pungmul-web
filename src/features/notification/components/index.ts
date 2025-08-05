@@ -11,4 +11,3 @@ export { default as NotificationToast } from './widget/NotificationToast'
 
 // Notification Module Components
 export { default as FCMClient } from './module/FCM'
-export { default as WebSocketWorker } from './module/WebSocketWorker'

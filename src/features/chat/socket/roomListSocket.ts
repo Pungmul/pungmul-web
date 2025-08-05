@@ -1,38 +1,78 @@
-import { useEffect, useRef } from "react";
-import { Client } from "@stomp/stompjs";
-
-import { mySocketFactory } from "@/core";
+import { useEffect, useState } from "react";
+import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
+import { useGetToken } from "@pThunder/features/auth/api";
 
 export function useRoomListSocket() {
-  const stompClientRef = useRef<Client | null>(null);
+  const { data: token } = useGetToken();
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
-    const socket = mySocketFactory();
+    if (!token) {
+      return;
+    }
 
-    const client = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      debug: (str) => {
-        console.log(str);
-      },
-      onConnect: () => {
-        console.log("Connected to WebSocket");
-        client.subscribe("/topic/greetings", (response) => {
-          console.log("Received message:", response.body);
+    // 이미 연결 중이거나 연결된 상태면 중복 연결 방지
+    if (isConnecting || isConnected) {
+      return;
+    }
+
+    const connectSharedSocket = async () => {
+      try {
+        setIsConnecting(true);
+
+        await sharedSocketManager.connect({
+          url:
+            process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8080/ws",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-      },
-      onStompError: (frame) => {
-        console.error("Broker reported error: " + frame.headers["message"]);
-        console.error("Additional details: " + frame.body);
-      },
-    });
 
-    client.activate();
-    stompClientRef.current = client;
+        setIsConnected(true);
+        setIsConnecting(false);
+
+        // 채팅 읽음 상태 구독
+        const readTopic = `/sub/user/chat/list`;
+        sharedSocketManager.subscribe(readTopic, (message) => {
+          console.log("Received read message:", message);
+        });
+
+        console.log("채팅 읽음 소켓 연결 성공");
+
+      } catch (error) {
+        console.error("채팅 읽음 소켓 연결 실패:", error);
+        setIsConnected(false);
+        setIsConnecting(false);
+
+        // 연결 실패 시 3초 후 재시도
+        setTimeout(() => {
+          if (!isConnected && !isConnecting) {
+            connectSharedSocket();
+          }
+        }, 3000);
+      }
+    };
+
+    connectSharedSocket();
 
     return () => {
-      client.deactivate();
+      // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
+      const readTopic = `/sub/user/chat/list`;
+      sharedSocketManager.unsubscribe(readTopic);
+
+      // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
+      if (
+        sharedSocketManager.getConnectionStatus() &&
+        sharedSocketManager.getSubscriptionCount() === 0
+      ) {
+        sharedSocketManager.disconnect();
+      }
+
+      setIsConnected(false);
+      setIsConnecting(false);
+      console.log("채팅 읽음 소켓 구독 해제 및 연결 해제");
     };
-  }, []);
-  
-}
+  }, [token]);
+
+} 

@@ -3,7 +3,7 @@ import {
   NotificationToast,
   NotificationContainer,
   FCMClient,
-  WebSocketWorker,
+
 } from "@/features/notification";
 import "@/app/globals.css";
 import { HeaderProgressBar, Toast } from "@/shared/components";
@@ -24,7 +24,6 @@ export default async function RootLayout({
     <ReactQueryProviders>
       <div id="main-contents" className="relative flex">
         <FCMClient />
-        <WebSocketWorker />
         <NotificationContainer />
         <NotificationToast />
         <Toast />
