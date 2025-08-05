@@ -47,7 +47,7 @@ export default function BoardMainPageContent({
                   className="w-full px-2 py-1 flex flex-row items-center gap-4 cursor-pointer"
                 >
                   <div className="w-6 h-6 flex items-center justify-center">
-                    <ChatBubbleBottomCenterTextIcon className="size-6" color="#83e4ff"/>
+                    <ChatBubbleBottomCenterTextIcon className="size-6" color="#bfdbfe"/>
                   </div>
                   <div className="text-[17px] text-gray-600 font-[200]">
                     내가 쓴 댓글
