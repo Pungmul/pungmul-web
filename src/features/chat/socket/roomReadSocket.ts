@@ -59,12 +59,20 @@ export function useRoomReadSocket(roomId: string) {
     connectSharedSocket();
 
     return () => {
-      // 컴포넌트 언마운트 시 구독 해제
+      // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
       const readTopic = `/sub/chat/read/${roomId}`;
       sharedSocketManager.unsubscribe(readTopic);
-      console.log("채팅 읽음 소켓 구독 해제 - roomId:", roomId);
+      
+      // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
+      if (sharedSocketManager.getConnectionStatus() && sharedSocketManager.getSubscriptionCount() === 0) {
+        sharedSocketManager.disconnect();
+      }
+      
+      setIsConnected(false);
+      setIsConnecting(false);
+      console.log("채팅 읽음 소켓 구독 해제 및 연결 해제 - roomId:", roomId);
     };
-  }, [roomId, token, isConnected, isConnecting]);
+  }, [roomId, token]);
 
   const readSign = useCallback(() => {
     if (!isConnected) {
