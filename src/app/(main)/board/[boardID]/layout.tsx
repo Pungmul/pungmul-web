@@ -7,6 +7,7 @@ import {
   BriefBoardInfo,
   fetchBoardInformations,
 } from "@pThunder/features/board";
+import Suspense from "@pThunder/shared/components/SuspenseComponent";
 
 export async function generateMetadata({
   params,
@@ -58,7 +59,9 @@ export default async function BoardPageLayout({
               boardList={boardList}
               currentBoardID={Number(boardID)}
             />
-            <div className="w-full md:max-w-[768px] z-10">{children}</div>
+            <div className="w-full md:max-w-[768px] z-10">
+              <Suspense>{children}</Suspense>
+            </div>
           </div>
         </div>
       </div>
