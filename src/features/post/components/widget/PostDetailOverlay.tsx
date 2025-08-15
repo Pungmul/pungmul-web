@@ -1,30 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { PanInfo, motion, AnimatePresence, useAnimate } from "framer-motion";
 import PostDetail from "./PostDetail";
 
-const PostDetailOverlay: React.FC<{ boardName?: string }> = ({ boardName }) => {
-  const searchParams = useSearchParams();
-  const postId = searchParams.get("postId")
-    ? parseInt(searchParams.get("postId")!)
-    : undefined;
+interface PostDetailOverlayProps {
+  boardName: string;
+  postId: number | undefined;
+  onClose: () => void;
+}
+
+const PostDetailOverlay: React.FC<PostDetailOverlayProps> = ({ boardName, postId, onClose }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [containerScope, animateContainer] = useAnimate<HTMLDivElement>();
   const [backdropScope, animateBackdrop] = useAnimate<HTMLDivElement>();
   const isFirstRender = useRef(true);
-  const router = useRouter();
-  const pathname = usePathname();
 
-  // useEffect(() => {
-  //   if (postId !== undefined) {
-  //     document.body.style.overflowY = "hidden";
-  //   } else {
-  //     document.body.style.overflowY = "auto";
-  //   }
-  // }, [postId]);
+  useEffect(() => {
+    if (postId !== undefined) {
+      document.body.style.overflowY = "hidden";
+    } else {
+      document.body.style.overflowY = "auto";
+    }
+  }, [postId]);
 
   useEffect(() => {
     if (
@@ -62,7 +61,7 @@ const PostDetailOverlay: React.FC<{ boardName?: string }> = ({ boardName }) => {
   ) => {
     if (info.offset.x > 60 || info.velocity.x > 200) {
       // 충분히 오른쪽으로 드래그되면 닫기
-      router.replace(pathname);
+      onClose();
     } else {
       setIsAnimating(true);
       animateContainer(

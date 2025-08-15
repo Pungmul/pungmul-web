@@ -62,6 +62,8 @@ export default async function BoardPageLayout({
           </div>
         </div>
       </div>
+      <div className="z-30" id="post-detail-section"/>
+      <div className="z-40" id="posting-section"/>
     </HydrationBoundary>
   );
 }
