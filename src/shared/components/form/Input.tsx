@@ -1,36 +1,34 @@
 "use client";
 
-import { HTMLInputTypeAttribute, useState } from "react";
+import { HTMLInputTypeAttribute, InputHTMLAttributes, useState } from "react";
 import { josa } from "es-hangul";
 import Image from "next/image";
 import WarningCircleIcon from "@public/icons/Warning-circle-icon.svg";
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import EyeIcon from "../ui/EyeIcon";
 import EyeSlashIcon from "../ui/EyeSlashIcon";
 import "@pThunder/app/globals.css";
 
-interface InputProps <T extends FieldValues>{
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
-  name: Path<T>;
   className?: string;
   label: string;
   errorMessage?: string;
   isEncrypted?: boolean;
-  register: UseFormRegister<T>;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-export function Input<T extends FieldValues>(props: InputProps<T>) {
+export function Input(props: InputProps) {
   const {
     type = "text",
-    name,
     className,
     label,
     errorMessage,
     isEncrypted = false,
-    register,
     placeholder = `${josa(label, "을/를")} 입력해주세요.`,
+    onChange,
+    ...rest
   } = props;
-  
+
   const [visible, setVisible] = useState(isEncrypted ? false : true);
 
   const toggleVisible = () => {
@@ -53,18 +51,24 @@ export function Input<T extends FieldValues>(props: InputProps<T>) {
           style={{ gap: 8, padding: "8px 8px", borderRadius: 5 }}
         >
           <input
-            type={isEncrypted ? (visible ? "text" : "password") : type}
             className={`flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF] ${className}`}
             placeholder={placeholder}
-            {...register(name)}
+            onChange={onChange}
+            {...rest}
+            type={isEncrypted ? (visible ? "text" : "password") : type}
           />
-          {isEncrypted && <span
-            className="w-[24px] h-[24px] cursor-pointer flex items-center justify-center"
-            onClick={toggleVisible}
-          >
-            {visible ? <EyeIcon color="#816DFF"/> : <EyeSlashIcon color="#816DFF"/>}
-          </span>
-        }
+          {isEncrypted && (
+            <span
+              className="w-[24px] h-[24px] cursor-pointer flex items-center justify-center"
+              onClick={toggleVisible}
+            >
+              {visible ? (
+                <EyeIcon color="#816DFF" />
+              ) : (
+                <EyeSlashIcon color="#816DFF" />
+              )}
+            </span>
+          )}
         </div>
         {errorMessage && (
           <div
