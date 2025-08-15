@@ -393,20 +393,14 @@ export default function LightningPage() {
       </section>
       <Responsive
         mobile={
-          userPartinLightning &&
-          !userPartinLightning.participationStatus && (
-            <Suspense fallback={<div>로딩중...</div>}>
-              <LightningOverlay />
-            </Suspense>
-          )
+          <Suspense fallback={<div>로딩중...</div>}>
+            <LightningOverlay />
+          </Suspense>
         }
         desktop={
-          userPartinLightning &&
-          !userPartinLightning.participationStatus && (
-            <Suspense fallback={<div>로딩중...</div>}>
-              <LightningModal />
-            </Suspense>
-          )
+          <Suspense fallback={<div>로딩중...</div>}>
+            <LightningModal />
+          </Suspense>
         }
       />
     </AnimatePresence>

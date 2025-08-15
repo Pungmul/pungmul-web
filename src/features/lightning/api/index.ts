@@ -127,7 +127,7 @@ export const useUserParticipationStatus = () => {
   return useQuery({
     queryKey: lightningQueryKeys.status(),
     queryFn: getUserParticipationStatusAPI,
-    staleTime: 1000 * 60 * 1, // 1분
+    staleTime: 0,
     retry: 2,
   });
 };

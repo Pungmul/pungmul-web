@@ -1,4 +1,5 @@
 import {
+  isLightningMeetingMessage,
   LightningMeeting,
   mapClubToSchoolName,
 } from "@pThunder/shared";
@@ -49,29 +50,28 @@ export const useLightningSocket = () => {
 
         setIsConnected(true);
         setIsConnecting(false);
-
-        // Worker 타입 로깅
-        const workerType = sharedSocketManager.getWorkerType();
-        console.log(`${workerType === 'shared' ? 'SharedWorker' : 'DedicatedWorker'} 모드로 동작 중`);
-
         // 전체 공개 채널 구독
         const wholeTopic = "/sub/lightning-meeting/search";
-        sharedSocketManager.subscribe(wholeTopic, (content: unknown) => {
-          console.log("wholeLightningList content", content);
-          setWholeLightningList([...content as LightningMeeting[]]);
+        sharedSocketManager.subscribe(wholeTopic, (content) => {
+          if (!isLightningMeetingMessage(content)) {
+            console.error("Invalid message content");
+            return;
+          }
+          const messageContent = content;
+          setWholeLightningList([...messageContent.content as LightningMeeting[]]);
         });
-        subscriptionsRef.current.add(wholeTopic);
-
-        console.log("✌🏻전체 공개 채널 연결 성공", myInfo?.groupName, mapClubToSchoolName(myInfo!.groupName!));
 
         // 학교별 채널 구독
         if (myInfo?.groupName) {
           const schoolTopic = `/sub/lightning-meeting/search/${mapClubToSchoolName(myInfo.groupName)}`;
-            sharedSocketManager.subscribe(schoolTopic, (content: unknown) => {
-            console.log("schoolLightningList content", content);
-            setSchoolLightningList([...content as LightningMeeting[]]);
+          sharedSocketManager.subscribe(schoolTopic, (content) => {
+            if (!isLightningMeetingMessage(content)) {
+              console.error("Invalid message content");
+              return;
+            }
+            const messageContent = content;
+            setSchoolLightningList([...messageContent.content as LightningMeeting[]]);
           });
-          subscriptionsRef.current.add(schoolTopic);
         }
       } catch (error) {
         console.error("Worker 연결 실패:", error);
@@ -95,7 +95,6 @@ export const useLightningSocket = () => {
         sharedSocketManager.unsubscribe(topic);
       });
       subscriptionsRef.current.clear();
-      console.log("Lightning 컴포넌트 언마운트 - 구독 해제 완료");
     };
   }, [myInfo, token, isConnected, isConnecting]);
 
@@ -113,6 +112,5 @@ export const useLightningSocket = () => {
     myInfo,
     isConnected: isConnected || sharedSocketManager.getConnectionStatus(),
     isConnecting,
-    workerType: sharedSocketManager.getWorkerType(),
   };
 };
