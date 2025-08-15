@@ -46,9 +46,9 @@ export default async function BoardPageLayout({
         <div className="flex flex-col w-full flex-grow relative">
           <div className="flex flex-row justify-center gap-[12px] w-full h-full">
             <BoardListNav boardList={boardList} currentBoardID={"hot-post"} />
-            <Suspense>
-              <div className="w-full max-w-[768px]">{children}</div>
-            </Suspense>
+            <div className="w-full max-w-[768px]">
+              <Suspense>{children}</Suspense>
+            </div>
           </div>
         </div>
         <div className="z-30" id="post-detail-section" />

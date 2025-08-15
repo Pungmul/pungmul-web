@@ -41,7 +41,7 @@ export default function BoardHeader({ boardName }: BoardHeaderProps) {
               대충 설명을 끄적끄적
             </div>
           </div>
-          {boardName !== "인기 게시글" && (
+          {boardName !== "인기 게시글" && boardName !== "내가 작성한 게시글" && (
             <div className="fixed bottom-[12px] flex justify-center w-full p-[8px] z-30">
               <button
                 className="px-[12px] py-[8px] bg-white rounded-full flex items-center justify-center gap-[8px] border-[1px] border-[#EEE]"
