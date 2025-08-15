@@ -2,12 +2,11 @@
 import { useEffect } from "react";
 import { notFound, useParams } from "next/navigation";
 
-import { PostBoxSkelleton} from "@/features/post";
+import { PostBoxSkelleton } from "@/features/post";
 import PostList from "@pThunder/features/post/components/widget/PostList";
 import { useLoadBoardInfo } from "@/features/board/api";
-import { AnimatePresence } from "framer-motion";
-import { Responsive } from "@/shared/components/Responsive";
-import { PostDetailOverlay, PostDetailModal, PostingOverlay, PostingModal } from "@/features/post";
+import { PostingPage } from "@pThunder/features/post/components/widget/PostingPage";
+import { PostDetailPage } from "@pThunder/features/post/components/widget/PostDetailPage";
 
 export const dynamic = "force-dynamic";
 
@@ -30,36 +29,21 @@ export default function BoardPage() {
   }
 
   return (
-    <> 
-    <section
-      key="board-post-list-section"
-      className={"relative flex flex-col w-full bg-white"}
-    >
-      {isLoading || !boardData ? (
-        <PostBoxSkelleton length={8} />
-      ) : (
-        <PostList boardData={boardData} boardId={boardID} />
-      )}
-    </section>
-     <AnimatePresence mode="sync">
-     <Responsive
-       key="post-detail-overlay-responsive"
-       mobile={
-         <PostDetailOverlay
-           boardName={
-             boardData?.boardInfo.rootCategoryName || "알 수 없는 게시판"
-           }
-         />
-       }
-       desktop={<PostDetailModal />}
-     />
-
-     <Responsive
-       key="posting-overlay-responsive"
-       mobile={<PostingOverlay boardId={Number(boardID)} />}
-       desktop={<PostingModal boardId={Number(boardID)} />}
-     />
-   </AnimatePresence>
-   </>
+    <>
+      <section
+        key="board-post-list-section"
+        className={"relative flex flex-col w-full bg-white"}
+      >
+        {isLoading || !boardData ? (
+          <PostBoxSkelleton length={8} />
+        ) : (
+          <PostList boardData={boardData} boardId={boardID} />
+        )}
+      </section>
+      <PostDetailPage
+        boardName={boardData?.boardInfo.rootCategoryName || "알 수 없는 게시판"}
+      />
+      <PostingPage />
+    </>
   );
 }

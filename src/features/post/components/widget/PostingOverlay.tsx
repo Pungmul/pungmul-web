@@ -1,17 +1,12 @@
 "use client";
 import DraftEditor from "./Editor";
-import { AnimatePresence, motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 
 const PostingOverlay: React.FC<{
   boardId: number;
 }> = ({ boardId }) => {
-  const searchParams = useSearchParams();
-  const isPosting = searchParams.get("isPosting") === "true";
-
   return (
-    <AnimatePresence>
-      {isPosting && (
+      <>
         <motion.div
           key={"post-backdrop"}
           initial={{ opacity: 0 }}
@@ -23,8 +18,6 @@ const PostingOverlay: React.FC<{
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         />
-      )}
-      {isPosting && (
         <motion.div
           key={"post" + boardId}
           initial={{ y: "100%" }}
@@ -35,8 +28,7 @@ const PostingOverlay: React.FC<{
         >
           <DraftEditor boardID={boardId} />
         </motion.div>
-      )}
-    </AnimatePresence>
+      </>
   );
 };
 

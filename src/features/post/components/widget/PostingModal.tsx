@@ -6,25 +6,23 @@ import { usePathname } from "next/navigation";
 import Suspense from "@/shared/components/SuspenseComponent"
 import { Modal } from "@/shared/components";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import DraftEditor from "./Editor";
 
 const PostingModal: React.FC<{
   boardId: number;
 }> = ({ boardId }) => {
-  const searchParams = useSearchParams();
-  const isPosting = searchParams.get("isPosting") === "true";
-
   const router = useRouter();
   const pathname = usePathname();
 
   const handleClose = useCallback(() => {
+    console.log(pathname);
     router.replace(pathname);
   }, [router, pathname]);
 
   return (
     <Modal
-      isOpen={!!isPosting}
+      isOpen={true}
       onClose={handleClose}
       hasHeader={false}
       style={{ padding: 0 }}

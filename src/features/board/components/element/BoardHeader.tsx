@@ -30,7 +30,7 @@ export default function BoardHeader({ boardName }: BoardHeaderProps) {
           onLeftClick={() => {
             router.replace("/board/main", { scroll: false });
           }}
-          className="z-30"
+          className="z-20"
         />
       }
       desktop={
