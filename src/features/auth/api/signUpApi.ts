@@ -25,13 +25,8 @@ export const signUpRequest = async (data: SignUpRequestForm): Promise<SignUpResp
 };
 
 // React Query Hook
-export const useSignUpRequest = (options?: {
-  onSuccess?: (data: SignUpResponse) => void;
-  onError?: (error: Error) => void;
-}) => {
+export const useSignUpRequest = () => {
   return useMutation({
-    mutationFn: signUpRequest,
-    onSuccess: options?.onSuccess || (() => {}),
-    onError: options?.onError || (() => {}),
+    mutationFn: signUpRequest
   });
 }; 

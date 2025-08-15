@@ -1,11 +1,11 @@
 import { CLUB_NAMES } from "../../club/model/constant";
 import { z } from "zod";
+import { checkEmailRegistered } from "../api/emailCheckApi";
 
 const baseAccountSchema = z.object({
   email: z
-    .string()
-    .min(1, "이메일을 입력해주세요")
-    .email({ message: "이메일 형식이 올바르지 않습니다" }),
+    .email({ message: "이메일 형식이 올바르지 않습니다" })
+    .min(1, "이메일을 입력해주세요"),
   password: z
     .string()
     .min(8, "비밀번호는 8~12자로 이루어져야합니다")
@@ -33,7 +33,7 @@ const basePersonalSchema = z.object({
 });
 
 // 통합 스키마 (먼저 merge 후 refine 적용)
-const baseFullSchema = baseAccountSchema.merge(basePersonalSchema);
+const baseFullSchema = baseAccountSchema.extend(basePersonalSchema.shape);
 
 // refine이 적용된 최종 스키마
 export const fullSignUpSchema = baseFullSchema
@@ -45,25 +45,33 @@ export const fullSignUpSchema = baseFullSchema
     message: "올바른 형식의 한글 패명을 입력하세요",
     path: ["nickname"],
   })
-  .refine((data) => data.club !== null, {
+  .refine((data) => data.club !== undefined, {
     message: "소속패를 선택해주세요",
     path: ["club"],
   });
 
-export const accountSchema = baseAccountSchema.refine(
-  (data) => data.password === data.confirmPassword,
-  {
+export const accountSchema = baseAccountSchema
+  .refine(
+    async (data) => {
+      const isRegistered = await checkEmailRegistered({ email: data.email });
+      return !isRegistered;
+    },
+    {
+      message: "이미 사용 중인 이메일입니다",
+      path: ["email"],
+    }
+  )
+  .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다",
     path: ["confirmPassword"],
-  }
-);
+  });
 
 export const personalSchema = basePersonalSchema
   .refine((data) => !data.nickname || /^[가-힣]+$/.test(data.nickname), {
     message: "올바른 형식의 한글 패명을 입력하세요",
     path: ["nickname"],
   })
-  .refine((data) => data.club !== null, {
+  .refine((data) => data.club !== undefined, {
     message: "소속패를 선택해주세요",
     path: ["club"],
   });

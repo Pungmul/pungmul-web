@@ -11,16 +11,14 @@ function LoginForm() {
     <form className="flex w-full flex-col gap-4" onSubmit={onSubmit}>
       <Input
         label="ID"
-        name="loginId"
-        register={register}
         errorMessage={inputErrors.loginId?.message || ""}
+        {...register("loginId")}
       />
       <Input
         label="비밀번호"
-        name="password"
-        register={register}
         errorMessage={inputErrors.password?.message || ""}
         isEncrypted={true}
+        {...register("password")}
       />
       <div className="fexl-col w-full" style={{ padding: "0 12px" }}>
         {requestError && (
