@@ -1,3 +1,4 @@
+import { UseFormReturn } from "react-hook-form";
 import { FullSignUpFormData } from "../types/sign-up.schemas";
 import { SignUpStep } from "../types/sign-up.types";
 
@@ -34,7 +35,7 @@ export const isStepValid = (
 
 export const validateStep = async (
   step: SignUpStep,
-  form: any,
+  form: UseFormReturn<FullSignUpFormData>,
   usingTermAgree?: boolean,
   personalInfoAgree?: boolean
 ): Promise<boolean> => {
