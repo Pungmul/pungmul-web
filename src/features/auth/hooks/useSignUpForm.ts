@@ -141,7 +141,7 @@ export const useSignUpForm = () => {
         password: form.getValues().password,
         name: form.getValues().name,
         clubName: form.getValues().nickname || "",
-        clubId: form.getValues().club ? mapClubToClubId(form.getValues().club as any) : null,
+        clubId: form.getValues().club ? mapClubToClubId(form.getValues().club as ClubName) : null,
         phoneNumber: form.getValues().tellNumber.replace(/-/g, ""),
         invitationCode: form.getValues().inviteCode,
       };

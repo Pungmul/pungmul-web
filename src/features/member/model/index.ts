@@ -1,4 +1,3 @@
-import { ClubName } from "../../club/model/constant";
 import { InstrumentStatus } from "../../instrument-status/model/index";
 
 export interface ProfileImage {
