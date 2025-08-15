@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { LoginResponse } from "../types/login-response";
-import { LoginMethod, LoginRequest } from "../types/login-request";
-import { useLoginStore } from "../stores/loginStore";
+import { LoginRequest } from "../types/login-request";
 
 async function loginApi(
   loginId: string,
@@ -19,26 +18,9 @@ async function loginApi(
   return response;
 }
 
-export const useLoginRequest = ({
-  onSuccess,
-  onError,
-  loginMethod = "email",
-}: {
-  onSuccess: (data: LoginResponse) => void;
-  onError: (error: Error) => void;
-  loginMethod?: LoginMethod;
-}) => {
+export const useLoginRequest = () => {
   return useMutation({
     mutationFn: ({ loginId, password }: LoginRequest) =>
       loginApi(loginId, password),
-    onSuccess: (data) => {
-      onSuccess(data);
-      useLoginStore.setState({
-        isLoggedIn: true,
-        lastLoginTime: new Date(),
-        loginMethod,
-      });
-    },
-    onError,
   });
 };

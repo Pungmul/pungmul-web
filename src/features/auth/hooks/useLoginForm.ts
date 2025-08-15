@@ -9,14 +9,7 @@ import { LoginFormType, loginSchema } from "../types/login.schema";
 export const useLoginForm = () => {
   const router = useRouter();
   
-  const { mutate: loginRequest, error: requestError, isPending } = useLoginRequest({
-    onSuccess: async () => {
-      router.replace("/home");
-    },
-    onError: async (error) => {
-      console.log(error);
-    }
-  });
+  const { mutate: loginRequest, error: requestError, isPending } = useLoginRequest();
 
   const {
     register,
@@ -33,7 +26,14 @@ export const useLoginForm = () => {
 
   const onSubmit = handleSubmit(async (data: LoginFormType) => {
     console.log(data);
-    loginRequest(data);
+    loginRequest(data, {
+      onSuccess: () => {
+        router.replace("/home");
+      },
+      onError: (error) => {
+        console.log(error);
+      }
+    });
   });
 
   return {

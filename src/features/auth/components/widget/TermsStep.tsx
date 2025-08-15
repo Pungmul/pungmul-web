@@ -1,47 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import checkMark from "@public/icons/checkMark.svg";
+import useTermStep from "../../hooks/useTermStep";
 
-interface TermsStepProps {
+interface TermsStepFormData {
   usingTermAgree: boolean;
-  setUsingTermAgree: (value: boolean) => void;
   personalInfoAgree: boolean;
-  setPersonalInfoAgree: (value: boolean) => void;
 }
 
-export const TermsStep: React.FC<TermsStepProps> = ({
-  usingTermAgree,
-  setUsingTermAgree,
-  personalInfoAgree,
-  setPersonalInfoAgree,
-}) => {
-  const [allAgree, setAllAgree] = useState(false);
+interface TermsStepProps {
+  onSubmit: (data: TermsStepFormData) => void;
+}
 
-  useEffect(() => {
-    if (usingTermAgree && personalInfoAgree) {
-      setAllAgree(true);
-    } else {
-      setAllAgree(false);
-    }
-  }, [usingTermAgree, personalInfoAgree]);
-
-  useEffect(() => {
-    if (allAgree) {
-      if (!usingTermAgree || !personalInfoAgree) {
-        setUsingTermAgree(true);
-        setPersonalInfoAgree(true);
-      }
-    } else if (usingTermAgree && personalInfoAgree) {
-      setUsingTermAgree(false);
-      setPersonalInfoAgree(false);
-    }
-  }, [allAgree, setUsingTermAgree, setPersonalInfoAgree, usingTermAgree, personalInfoAgree]);
+export const TermsStep: React.FC<TermsStepProps> = ({ onSubmit }) => {
+  const {
+    form,
+    handleTermAgree,
+    handlePersonalInfoAgree,
+    handleAllAgree,
+    allAgree,
+    usingTermAgree,
+    personalInfoAgree,
+    isProgressable,
+  } = useTermStep();
 
   return (
-    <div className="flex flex-col flex-grow">
+    <form
+      className="flex flex-col flex-grow"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(form.getValues());
+      }}
+    >
       <div style={{ padding: "0 24px", width: "100%" }}>
         <label
           htmlFor="all_check"
@@ -50,10 +42,7 @@ export const TermsStep: React.FC<TermsStepProps> = ({
           <input
             type="checkbox"
             checked={allAgree}
-            onChange={(e) => {
-              const checked = e.target.checked;
-              setAllAgree(checked);
-            }}
+            onChange={handleAllAgree}
             name="all_check"
             id="all_check"
             className="hidden peer"
@@ -89,10 +78,7 @@ export const TermsStep: React.FC<TermsStepProps> = ({
             <input
               type="checkbox"
               checked={usingTermAgree}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setUsingTermAgree(checked);
-              }}
+              onChange={handleTermAgree}
               name="약관"
               id="약관"
               className="hidden peer"
@@ -121,7 +107,6 @@ export const TermsStep: React.FC<TermsStepProps> = ({
           </label>
 
           <ChevronRightIcon className="w-[16px] h-[16px] cursor-pointer" />
-
         </div>
 
         <div
@@ -136,10 +121,7 @@ export const TermsStep: React.FC<TermsStepProps> = ({
             <input
               type="checkbox"
               checked={personalInfoAgree}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setPersonalInfoAgree(checked);
-              }}
+              onChange={handlePersonalInfoAgree}
               name="개인정보"
               id="개인정보"
               className="hidden peer"
@@ -172,6 +154,20 @@ export const TermsStep: React.FC<TermsStepProps> = ({
           <ChevronRightIcon className="w-[16px] h-[16px] cursor-pointer" />
         </div>
       </div>
-    </div>
+      <div className="w-full py-4" style={{ padding: "12px 36px" }}>
+        <button
+          type="submit"
+          disabled={!isProgressable}
+          className="w-full flex items-center justify-center text-white rounded"
+          style={{
+            height: 48,
+            backgroundColor: isProgressable ? "#816DFF" : "#e2deff",
+            cursor: isProgressable ? "pointer" : "not-allowed",
+          }}
+        >
+          {isProgressable ? "다음" : "약관에 동의해주세요"}
+        </button>
+      </div>
+    </form>
   );
 };

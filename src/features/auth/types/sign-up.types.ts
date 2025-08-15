@@ -1,7 +1,7 @@
 import { UseFormRegister, FieldErrors } from "react-hook-form";
 import { FullSignUpFormData } from "./sign-up.schemas";
 
-export type SignUpStep = "약관동의" | "계정정보입력" | "개인정보입력";
+export type SignUpStep = "약관동의" | "계정정보입력" | "개인정보입력" | "완료";
 
 export type SignUpStepList ={
   약관동의: TermsStepProps;

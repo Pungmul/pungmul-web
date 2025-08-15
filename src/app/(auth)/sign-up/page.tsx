@@ -1,5 +1,3 @@
-"use client";
-
 import { Header } from "@/shared/components";
 import { SignUpForm } from "@/features/auth/components/widget/SignUpForm";
 
