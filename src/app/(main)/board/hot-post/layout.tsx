@@ -12,7 +12,6 @@ import {
   BoardHeader,
 } from "@/features/board";
 
-
 export const metadata: Metadata = {
   title: "풍물 머시기 | 인기 게시글",
 };
@@ -52,6 +51,7 @@ export default async function BoardPageLayout({
             </Suspense>
           </div>
         </div>
+        <div className="z-30" id="post-detail-section" />
       </HydrationBoundary>
     </div>
   );

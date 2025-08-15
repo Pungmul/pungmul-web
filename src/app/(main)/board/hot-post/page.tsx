@@ -1,5 +1,5 @@
 import { HotPostList } from "@/features/board";
-import { PostDetailOverlay } from "@/features/post";
+import { PostDetailPage } from "@pThunder/features/post/components/widget/PostDetailPage";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,9 @@ export default async function HotPostPage() {
       >
         <HotPostList />
       </div>
-      <PostDetailOverlay key="post-detail-overlay" boardName={"핫 게시글"} />
+      <PostDetailPage
+        boardName={"핫 게시글"}
+      />
     </>
   );
 }
