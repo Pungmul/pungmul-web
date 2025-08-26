@@ -20,6 +20,7 @@ import { Header } from "@/shared/components/layout/Header";
 import { NotificationList } from "@pThunder/features/notification";
 import ProfileCircle from "@pThunder/features/my-page/components/widget/ProfileCircle";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useGetMyPageInfo } from "@pThunder/features/my-page";
 
 export default function BottomTabs() {
   const view = useView();
@@ -29,6 +30,9 @@ export default function BottomTabs() {
 
   const [tabsWidth, setTabsWidth] = useState(0);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  const { data: myPageInfo , isLoading} = useGetMyPageInfo();
+
   useEffect(() => {
     const element = tabsRef.current;
     if (!element) return;
@@ -183,7 +187,6 @@ export default function BottomTabs() {
         <Link
           href={"/board/main"}
           className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
-          prefetch
         >
           {pathname.startsWith("/board") ? (
             <Image src={BoardIconFilled} width={36} alt="" />
@@ -230,19 +233,17 @@ export default function BottomTabs() {
           className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
           prefetch
         >
-          <Suspense
-            fallback={
-              <Image
-                src={"/icons/MyPage-Icon.svg"}
-                width={36}
-                height={36}
-                alt=""
-                className="rounded-full object-cover object-center overflow-hidden"
-              />
-            }
-          >
-            <ProfileCircle />
-          </Suspense>
+          {isLoading || !myPageInfo ? (
+            <Image
+              src={"/icons/MyPage-Icon.svg"}
+              width={36}
+              height={36}
+              alt=""
+              className="rounded-full object-cover object-center overflow-hidden"
+            />
+          ) : (
+            <ProfileCircle myInfo={myPageInfo} />
+          )}
           <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
             프로필
           </div>

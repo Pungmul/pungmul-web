@@ -15,7 +15,7 @@ import Image from "next/image";
 import {
   useAddInstrumentSkill,
   useDeleteInstrumentSkill,
-  useGetMyPageInfo,
+  useSuspenseGetMyPageInfo,
   useUpdateInstrumentSkill,
 } from "@pThunder/features/my-page";
 
@@ -23,7 +23,7 @@ export default function MyPageClient() {
   const router = useRouter();
 
   const [selectVisible, setVisible] = useState(false);
-  const { data: userData } = useGetMyPageInfo();
+  const { data: userData } = useSuspenseGetMyPageInfo();
   const { mutate: addInstrumentSkill } = useAddInstrumentSkill();
   const { mutate: deleteInstrumentSkill } = useDeleteInstrumentSkill();
   const { mutate: updateInstrumentSkill } = useUpdateInstrumentSkill();

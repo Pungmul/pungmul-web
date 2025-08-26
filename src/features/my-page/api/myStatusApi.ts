@@ -4,7 +4,7 @@ import {
   InstrumentStatus,
   Member,
 } from "@pThunder/shared";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 const getMyPageInfo = async (): Promise<Member> => {
   const response = await fetch(
@@ -95,6 +95,13 @@ const prefetchMyPageInfo = () => {
 };
 
 const useGetMyPageInfo = () => {
+  return useQuery({
+    queryKey: ["my-page-info"],
+    queryFn: getMyPageInfo,
+  });
+};
+
+const useSuspenseGetMyPageInfo = () => {
   return useSuspenseQuery({
     queryKey: ["my-page-info"],
     queryFn: getMyPageInfo,
@@ -125,6 +132,7 @@ const useDeleteInstrumentSkill = () => {
 
 export {
   prefetchMyPageInfo as prefetchMyPageInfo,
+  useSuspenseGetMyPageInfo,
   useGetMyPageInfo,
   useUpdateInstrumentSkill,
   useAddInstrumentSkill,

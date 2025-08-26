@@ -1,12 +1,12 @@
 "use client";
-import { useGetMyPageInfo } from "@pThunder/features/my-page";
+import { useSuspenseGetMyPageInfo } from "@pThunder/features/my-page";
 import { NotificationIcon } from "@pThunder/features/notification/components";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function HomeHeader() {
   const router = useRouter();
-  const { data: myInfo } = useGetMyPageInfo();
+  const { data: myInfo } = useSuspenseGetMyPageInfo();
   return (
     <div className="flex flex-row justify-between items-end px-[24px]">
       <h1 className="text-[18px] font-normal">

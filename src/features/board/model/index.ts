@@ -46,4 +46,5 @@ export type BriefBoardInfo = {
   id: number;
   parentId: number | null;
   name: string;
+  description: string;
 };

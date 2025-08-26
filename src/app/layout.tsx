@@ -19,6 +19,8 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+export const dynamic = 'force-static'
+
 export default async function Layout({
   children,
 }: Readonly<{

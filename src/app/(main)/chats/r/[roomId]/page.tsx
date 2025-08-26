@@ -22,13 +22,13 @@ import {
   ChatDrawer,
   Message,
 } from "@/features/chat";
-import { useGetMyPageInfo } from "@/features/my-page";
+import { useSuspenseGetMyPageInfo } from "@/features/my-page";
 
-export const dynamic = "force-dynamic";
+// CSR로 완전 전환 - 서버 렌더링 비활성화
 
 export default function Page() {
   const { roomId } = useParams();
-  const { data: myInfo } = useGetMyPageInfo();
+  const { data: myInfo } = useSuspenseGetMyPageInfo();
   const router = useRouter();
 
   const wholeRef = useRef<HTMLDivElement>(null);

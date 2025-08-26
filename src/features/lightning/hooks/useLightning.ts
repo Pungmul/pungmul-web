@@ -5,12 +5,12 @@ import {
 } from "@pThunder/shared";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
 import { useEffect, useState, useRef } from "react";
-import { useGetMyPageInfo } from "@pThunder/features/my-page";
+import { useSuspenseGetMyPageInfo } from "@pThunder/features/my-page";
 import { useLoadLightningData } from "../api/api";
 import { useGetToken } from "@pThunder/features/auth/api";
 
 export const useLightningSocket = () => {
-  const { data: myInfo } = useGetMyPageInfo();
+  const { data: myInfo } = useSuspenseGetMyPageInfo();
   const { data: lightningData } = useLoadLightningData();
   const { data: token } = useGetToken();
 
