@@ -19,7 +19,7 @@ const PostDetailModal: React.FC<PostDetailModalProps> = ({ postId, onClose }) =>
       style={{ padding: 0 }}
       className="rounded-xl overflow-visible w-[80dvw] h-[80dvh]"
     >
-      <DesktopPostDetail postId={postId} />
+      <DesktopPostDetail key="desktop-post-detail" postId={postId} />
     </Modal>
   );
 };

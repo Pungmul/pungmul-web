@@ -128,7 +128,7 @@ const PostDetailOverlay: React.FC<PostDetailOverlayProps> = ({ boardName, postId
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="absolute top-0 left-0 w-dvw h-dvh bg-white z-20 overflow-y-auto"
           >
-            <PostDetail boardName={boardName || ""} postId={postId} />
+            <PostDetail boardName={boardName || ""} postId={postId} onClose={onClose} />
           </motion.div>
         )}
       </AnimatePresence>

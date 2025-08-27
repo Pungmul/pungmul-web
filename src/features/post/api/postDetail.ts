@@ -16,7 +16,7 @@ export const loadPostDetailAPI = async (postId: number): Promise<PostDetail> => 
 // React Query Hook
 export const useLoadPostDetail = (postId: number | null) => {
   return useSuspenseQuery({
-    queryKey: ["postDetail", postId],
+    queryKey: ["postDetail", `post-${postId}`],
     queryFn: () => {
       if (!postId) return null;
       return loadPostDetailAPI(postId);

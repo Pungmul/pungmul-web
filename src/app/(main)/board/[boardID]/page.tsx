@@ -37,13 +37,14 @@ export default function BoardPage() {
         {isLoading || !boardData ? (
           <PostBoxSkelleton length={8} />
         ) : (
-          <PostList boardData={boardData} boardId={boardID} />
+          <PostList key="board-post-list" boardData={boardData} boardId={boardID} />
         )}
       </section>
       <PostDetailPage
+        key="board-post-detail-page"
         boardName={boardData?.boardInfo.rootCategoryName || "알 수 없는 게시판"}
       />
-      <PostingPage />
+      <PostingPage key="board-posting-page" />
     </>
   );
 }

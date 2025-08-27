@@ -41,6 +41,8 @@ export const usePostListInfiniteQuery = (
       return lastPage.hasNextPage ? lastPage.pageNum + 1 : undefined;
     },
     initialPageParam: 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -50,6 +52,8 @@ export const useLoadBoardInfo = (boardId: number) => {
     queryFn: () => fetchBoardInfoAPI(boardId),
     staleTime: 1000 * 60 * 1, // 1분
     retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 // 하위 호환성을 위한 기존 함수들 (deprecated)

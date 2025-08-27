@@ -8,18 +8,17 @@ import PostMenu from "../element/PostMenu";
 import PostContentSkeleton from "../element/PostContentSkeleton";
 import PostContent from "./PostContent";
 
-import { usePathname, useRouter } from "next/navigation";
 import { useLoadPostDetail } from "@/features/post/api";
 
 export default function PostDetailView({
   boardName,
   postId,
+  onClose,
 }: {
   boardName?: string;
   postId: number;
+  onClose: () => void;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
   const { data: post, isLoading } = useLoadPostDetail(postId);
 
   return (
@@ -28,7 +27,7 @@ export default function PostDetailView({
         <Header
           title={boardName || ""}
           onLeftClick={() => {
-            router.replace(pathname);
+            onClose();
           }}
           rightBtn={<PostMenu isWriter={post?.isWriter ?? false} />}
         />

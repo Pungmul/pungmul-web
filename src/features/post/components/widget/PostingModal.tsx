@@ -16,8 +16,7 @@ const PostingModal: React.FC<{
   const pathname = usePathname();
 
   const handleClose = useCallback(() => {
-    console.log(pathname);
-    router.replace(pathname);
+    router.replace(pathname, {scroll: false});
   }, [router, pathname]);
 
   return (

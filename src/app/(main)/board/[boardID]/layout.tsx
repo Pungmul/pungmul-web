@@ -7,7 +7,6 @@ import {
   BriefBoardInfo,
   fetchBoardInformations,
 } from "@pThunder/features/board";
-import Suspense from "@pThunder/shared/components/SuspenseComponent";
 
 export async function generateMetadata({
   params,
@@ -23,6 +22,9 @@ export async function generateMetadata({
     title: `풍물 머시기 | ${boardName}`,
   };
 }
+
+
+export const dynamic = "force-static";
 
 export default async function BoardPageLayout({
   children,
@@ -56,11 +58,12 @@ export default async function BoardPageLayout({
         <div className="flex flex-col w-full flex-grow relative">
           <div className="flex flex-row justify-center gap-[12px] w-full h-full">
             <BoardListNav
+
               boardList={boardList}
               currentBoardID={Number(boardID)}
             />
             <div className="w-full md:max-w-[768px] z-10">
-              <Suspense>{children}</Suspense>
+              {children}
             </div>
           </div>
         </div>

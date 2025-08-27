@@ -165,9 +165,9 @@ const DraftEditor: React.FC<{ boardID: number }> = ({ boardID }) => {
         title={"글쓰기"}
         onLeftClick={() => {
           if (isEdit) {
-            router.replace(`/board/${boardID}?postId=${postId}`);
+            router.replace(`/board/${boardID}?postId=${postId}`, {scroll: false});
           } else {
-            router.replace(`/board/${boardID}`);
+            router.replace(`/board/${boardID}`, {scroll: false});
           }
         }}
         rightBtn={
