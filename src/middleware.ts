@@ -10,6 +10,17 @@ export async function middleware(req: NextRequest) {
   const refreshToken = cookieStore.get("refreshToken")?.value;
   // 로그인 상태에서 로그인/회원가입 페이지 접근 시 홈으로 리다이렉트
 
+  if (req.nextUrl.pathname === "/") {  
+    if (refreshToken) {
+      // 로그인 되어있으면 /home
+      return NextResponse.redirect(new URL("/home", req.url));
+    } else {
+      // 로그인 안되어있으면 /login
+      cookieStore.delete("accessToken");
+      cookieStore.delete("refreshToken");
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
 
   if (!refreshToken && !accessToken) {
     if (
