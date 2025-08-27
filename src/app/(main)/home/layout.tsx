@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { getMyPageInfo } from "@pThunder/features/my-page";
-import { getQueryClient } from "@pThunder/core";
 
 export const metadata: Metadata = {
   title: "풍물 머시기 | 홈",
@@ -13,15 +10,5 @@ export default async function HomeLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const queryClient = getQueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: ["my-page-info"],
-    queryFn: getMyPageInfo,
-  });
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      {children}
-    </HydrationBoundary>
-  );
+  return <>{children}</>;
 }

@@ -1,11 +1,18 @@
 "use client";
 
-import { Post } from "@/shared/types/post/type";
 import { redirect } from "next/navigation";
 import PostBox from "@pThunder/features/post/components/element/PostBox";
 import Link from "next/link";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { fetchHotPostList } from "@/features/board";
+import { Post } from "@/shared/types/post/type";
 
-export default function HomeHotPostList({ hotPosts , timeString}: { hotPosts: Post[] , timeString: string }) {
+export default function HomeHotPostList({timeString}: { timeString: string }) {
+
+  const {data: hotPosts} = useSuspenseQuery<{list: Post[]}>({
+    queryKey: ["hotPosts"],
+    queryFn: () => fetchHotPostList(),
+  });
 
   return (
     <section  className="flex flex-col" style={{ gap: 20, paddingBottom: 32 }}>
@@ -22,8 +29,8 @@ export default function HomeHotPostList({ hotPosts , timeString}: { hotPosts: Po
             borderRadius: 5,
           }}
         >
-          {hotPosts.length > 0 ? (
-            hotPosts.map((post) => (
+          {hotPosts && hotPosts.list.length > 0 ? (
+            hotPosts.list.map((post) => (
               <PostBox
                 key={'main-hot-post-'+post.postId}
                 post={post}

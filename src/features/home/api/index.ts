@@ -1,4 +1,3 @@
-export { fetchHotPostList } from './fetchHotPostList';
 export { loadHotPostList } from './hotPost';
 export { loadNearLightning } from './lightning';
 export { updateUserLocation } from './location';
