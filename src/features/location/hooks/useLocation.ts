@@ -15,7 +15,7 @@ export const useUserLocation = () => {
     queryKey: locationKeys.user(),
     queryFn: getUserLocation,
     staleTime: 1000 * 30,
-    gcTime: 1000 * 60,
+    gcTime: 1000 * 30,
   });
 };
 
