@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
 import { useGetToken } from "@pThunder/features/auth/api";
+import { useGetMyPageInfo } from "@pThunder/features/my-page";
+import { useChatRoomStore } from "@/store/chat/chatRoomStore";
+import { ChatRoomUpdateMessage } from "../types";
+
+
 
 export function useRoomListSocket() {
   const { data: token } = useGetToken();
+  const { data: userData } = useGetMyPageInfo();
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  
+  // Zustand 스토어에서 메시지 핸들러 가져오기
+  const { handleSocketMessage } = useChatRoomStore();
 
   useEffect(() => {
-    if (!token) {
+    if (!token || !userData?.name) {
       return;
     }
 
@@ -32,16 +41,29 @@ export function useRoomListSocket() {
         setIsConnected(true);
         setIsConnecting(false);
 
-        // 채팅 읽음 상태 구독
-        const readTopic = `/sub/user/chat/list`;
-        sharedSocketManager.subscribe(readTopic, (message) => {
-          console.log("Received read message:", message);
+        // 채팅 알림 구독
+        const notificationTopic = `/sub/chat/notification/${userData.username}`;
+        sharedSocketManager.subscribe(notificationTopic, (data: unknown) => {
+          
+          const message = data as ChatRoomUpdateMessage;          
+          try {
+            
+            // 채팅 메시지인 경우 스토어 업데이트
+            if (message) {
+             
+              
+              // 소켓 메시지 핸들러로도 전달 (추가 처리 필요시)
+              handleSocketMessage(message);
+            }
+          } catch (error) {
+            console.error('Socket message parsing error:', error, message);
+          }
         });
 
-        console.log("채팅 읽음 소켓 연결 성공");
+        console.log("채팅 알림 소켓 연결 성공 - username:", userData.name);
 
       } catch (error) {
-        console.error("채팅 읽음 소켓 연결 실패:", error);
+        console.error("채팅 알림 소켓 연결 실패:", error);
         setIsConnected(false);
         setIsConnecting(false);
 
@@ -58,8 +80,10 @@ export function useRoomListSocket() {
 
     return () => {
       // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
-      const readTopic = `/sub/user/chat/list`;
-      sharedSocketManager.unsubscribe(readTopic);
+      if (userData?.name) {
+        const notificationTopic = `/sub/chat/notification/${userData.name}`;
+        sharedSocketManager.unsubscribe(notificationTopic);
+      }
 
       // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
       if (
@@ -71,8 +95,9 @@ export function useRoomListSocket() {
 
       setIsConnected(false);
       setIsConnecting(false);
-      console.log("채팅 읽음 소켓 구독 해제 및 연결 해제");
+      console.log("채팅 알림 소켓 구독 해제 및 연결 해제");
     };
-  }, [token]);
+  }, [token, userData, handleSocketMessage]);
 
+  return { isConnected };
 } 

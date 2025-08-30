@@ -38,7 +38,7 @@ const MessageListComponent: React.FC<MessageListProps> = ({
       )?.name;
       const timeStamp = TimeFormat(new Date(message.createdAt));
       const isSameTime =
-        nextMessage &&
+        nextMessage && message.senderUsername === nextMessage.senderUsername &&
         TimeFormat(new Date(message.createdAt)) ===
           TimeFormat(new Date(nextMessage?.createdAt));
 

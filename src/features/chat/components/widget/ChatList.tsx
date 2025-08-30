@@ -1,16 +1,25 @@
 "use client";
-import { useChatRoomsQuery } from "../../api";
 import { ChatRoomBox, ChatRoomBoxSkeleton } from "./ChatRoomBox";
 import { useSelectFriendModal } from "@/store/friend/useSelectFriendModalContext";
 import { useState } from "react";
 import { getChoseong } from "es-hangul";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useRoomList } from "../../model";
 
 export default function ChatList() {
+
   const { openModalToSelectFriend } = useSelectFriendModal();
   const [isSearching, setIsSearching] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const { data: chatRooms } = useChatRoomsQuery();
+  
+  // 새로운 통합 훅 사용
+  const { 
+    chatRooms, 
+    isLoading, 
+    // isSocketConnected, 
+    // isRealtime,
+    // totalUnreadCount 
+  } = useRoomList();
   const clickAddChatButton = () => {
     openModalToSelectFriend();
   }; 
@@ -97,21 +106,31 @@ export default function ChatList() {
         className="relative w-full h-full flex-grow flex flex-col overflow-y-auto"
         style={{ scrollbarWidth: "thin" }}
       >
-        {chatRooms
+        {!isLoading && chatRooms
           ? isSearching
             ? chatRooms
                 .filter((room) =>
                   getChoseong(room.roomName).includes(getChoseong(searchKeyword))
                 )
                 .map((room, index) => (
-                  <ChatRoomBox key={"room-" + index} room={room} />
+                  <ChatRoomBox key={room.chatRoomUUID || "room-" + index} room={room} />
                 ))
             : chatRooms.map((room, index) => (
-              <ChatRoomBox key={"room-" + index} room={room} />
+              <ChatRoomBox key={room.chatRoomUUID || "room-" + index} room={room} />
             ))
           : Array.from({ length: 10 }).map((_, index) => (
-              <ChatRoomBoxSkeleton key={"room-" + index} />
+              <ChatRoomBoxSkeleton key={"room-skeleton-" + index} />
             ))}
+        
+        {/* 개발 중 디버그 정보 표시 */}
+        {/* {process.env.NODE_ENV === 'development' && (
+          <div className="p-4 text-xs text-gray-500 border-t">
+            <div>총 읽지 않은 메시지: {totalUnreadCount}</div>
+            <div>소켓 연결: {isSocketConnected ? '✅' : '❌'}</div>
+            <div>실시간 모드: {isRealtime ? '✅' : '❌'}</div>
+            <div>채팅방 수: {chatRooms?.length || 0}</div>
+          </div>
+        )} */}
       </div>
     </div>
   );

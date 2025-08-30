@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
 import { useGetToken } from "@pThunder/features/auth/api";
+import { useChatRoomStore } from "@/store/chat/chatRoomStore";
 
 export function useRoomReadSocket(roomId: string) {
   const { data: token } = useGetToken();
+  const { userCheckIn, userCheckOut } = useChatRoomStore();
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -22,7 +24,8 @@ export function useRoomReadSocket(roomId: string) {
         setIsConnecting(true);
 
         await sharedSocketManager.connect({
-          url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:8080/ws',
+          url:
+            process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8080/ws",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -30,7 +33,7 @@ export function useRoomReadSocket(roomId: string) {
 
         setIsConnected(true);
         setIsConnecting(false);
-
+        userCheckIn(roomId);
         // 채팅 읽음 상태 구독
         const readTopic = `/sub/chat/read/${roomId}`;
         sharedSocketManager.subscribe(readTopic, (message) => {
@@ -41,12 +44,11 @@ export function useRoomReadSocket(roomId: string) {
 
         // 초기 읽음 상태 전송
         readSign();
-
       } catch (error) {
         console.error("채팅 읽음 소켓 연결 실패:", error);
         setIsConnected(false);
         setIsConnecting(false);
-        
+
         // 연결 실패 시 3초 후 재시도
         setTimeout(() => {
           if (!isConnected && !isConnecting) {
@@ -62,14 +64,18 @@ export function useRoomReadSocket(roomId: string) {
       // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
       const readTopic = `/sub/chat/read/${roomId}`;
       sharedSocketManager.unsubscribe(readTopic);
-      
+
       // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
-      if (sharedSocketManager.getConnectionStatus() && sharedSocketManager.getSubscriptionCount() === 0) {
+      if (
+        sharedSocketManager.getConnectionStatus() &&
+        sharedSocketManager.getSubscriptionCount() === 0
+      ) {
         sharedSocketManager.disconnect();
       }
-      
+
       setIsConnected(false);
       setIsConnecting(false);
+      userCheckOut();
       console.log("채팅 읽음 소켓 구독 해제 및 연결 해제 - roomId:", roomId);
     };
   }, [roomId, token]);
@@ -81,11 +87,11 @@ export function useRoomReadSocket(roomId: string) {
     }
 
     const message = {
-      roomId: roomId,
+      chatRoomUUID: roomId,
     };
 
     console.log("Sending read sign:", message);
-    
+
     sharedSocketManager.sendMessage(`/pub/chat/read/${roomId}`, message);
   }, [roomId, isConnected]);
 

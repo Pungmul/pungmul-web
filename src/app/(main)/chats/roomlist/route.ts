@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     const data = await proxyResponse.json();
-    console.log(data);
+    console.log(data.response.list);
     const { response } = await data;
 
     return Response.json(response, { status: 200 });
