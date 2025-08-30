@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 
 import Image from "next/image";
-import { useGetMyPageInfo } from "@pThunder/features/my-page";
+import { useSuspenseGetMyPageInfo } from "@pThunder/features/my-page";
 import { Header } from "@/shared/components";
 import { User } from "@/features/member/types";
 
@@ -26,7 +26,7 @@ export const ChatDrawer = ({
   onExitChat,
   userList,
 }: ChatDrawerProps) => {
-  const { data: myInfo } = useGetMyPageInfo();
+  const { data: myInfo } = useSuspenseGetMyPageInfo();
   
   // useAnimate 훅으로 애니메이션 제어
   const [containerScope, animateContainer] = useAnimate<HTMLDivElement>();

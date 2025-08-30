@@ -4,6 +4,7 @@
 export { default as AddChatRoomButton } from "./element/AddChatRoomButton";
 export { ChatMessage as ChatMessageComponent } from "./element/ChatMessage";
 export { ImageMessage as ImageMessageComponent } from "./element/ImageMessage";
+export { ChatTabBadge, default as ChatTabBadgeDefault } from "./element/ChatTabBadge";
 
 //widget
 export { default as ChatDrawer } from "./widget/ChatDrawer";

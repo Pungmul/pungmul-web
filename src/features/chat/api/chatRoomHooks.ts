@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { 
   loadChatLogs, 
   sendTextContent, 
@@ -9,7 +9,7 @@ import {
 
 // 채팅 로그 조회 훅
 export const useChatRoomQuery = (roomId: string) => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ["chatRoom", roomId],
     queryFn: () => loadChatLogs(roomId),
     staleTime: 1000 * 60 * 5, // 5분
