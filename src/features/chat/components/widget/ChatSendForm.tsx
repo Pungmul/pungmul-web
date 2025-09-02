@@ -13,11 +13,12 @@ export const ChatSendForm: React.FC<ChatSendFormProps> = ({
 }) => {
   const messageRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState("");
-
+  
+  
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setInputValue("");
     onSendMessage(inputValue).then(() => {
-      setInputValue("");
     });
   };
 

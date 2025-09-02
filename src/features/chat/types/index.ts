@@ -9,7 +9,7 @@ export interface ChatRoomInfo {
 
 export type Message =
   | {
-      id: number;
+      id: number | string;
       senderUsername: string;
       content: string;
       chatType: "TEXT";
@@ -18,7 +18,7 @@ export type Message =
       createdAt: string;
     }
   | {
-      id: number;
+      id: number | string;
       senderUsername: string;
       content: null;
       chatType: "IMAGE";
@@ -65,6 +65,25 @@ export interface MessageList {
   navigateLastPage: number;
 }
 
+
+export interface ChatRoomListItemDto {
+  chatRoomUUID: string;
+  lastMessageTime: string | null;
+  lastMessageContent: string | null;
+  unreadCount: number | null;
+  senderId: number | null;
+  senderName: string | null;
+  receiverId: number | null;
+  receiverName: string | null;
+  chatRoomMemberIds: number[];
+  chatRoomMemberNames: string[];
+  roomName: string;
+  profileImageUrl: string | null;
+  group: boolean;
+}
+
+
+
 export interface ChatRoomDto {
   chatRoomInfo: ChatRoomInfo;
   userInfoList: User[];
@@ -87,4 +106,11 @@ export interface AlarmMessage {
   identifier: string;
   stompDest: string;
   content: string;
+}
+
+
+export interface ChatRoomUpdateMessage {
+  chatRoomUUID: string;
+  content: string;
+  timestamp: string;
 }

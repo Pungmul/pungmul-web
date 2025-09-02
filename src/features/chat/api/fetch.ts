@@ -1,5 +1,7 @@
 import { getQueryClient } from "@pThunder/core";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { ChatRoomListItemDto } from "../types";
+import { loadChatLogs } from "./chatRoomApis";
 
 export async function createPersonalChatRoom(body: { receiverName: string }) {
   try {
@@ -44,24 +46,7 @@ export async function createMultiChatRoom(body: { receiverName: string[] }) {
     alert("비정상 동작");
   }
 }
-
-interface ChatRoomDto {
-  chatRoomUUID: string;
-  lastMessageTime: string | null;
-  lastMessageContent: string | null;
-  unreadCount: number | null;
-  senderId: number | null;
-  senderName: string | null;
-  receiverId: number | null;
-  receiverName: string | null;
-  chatRoomMemberIds: number[];
-  chatRoomMemberNames: string[];
-  roomName: string;
-  profileImageUrl: string | null;
-  group: boolean;
-}
-
-const loadChatRooms = async (): Promise<ChatRoomDto[]> => {
+const loadChatRooms = async (): Promise<ChatRoomListItemDto[]> => {
   try {
     // 서버/클라이언트 환경에 따라 URL 분기
     const proxyUrl = `/chats/roomlist`;
@@ -88,14 +73,24 @@ export const useChatRoomsQuery = () => {
     retry: 2,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
+    
   });
 };
 
-export const prefetchChatRooms = () => {
+export const prefetchChatRooms = async () => {
   const queryClient = getQueryClient();
-  queryClient.prefetchQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["chatRooms"],
     queryFn: loadChatRooms,
+  });
+  return queryClient;
+};
+
+export const prefetchChatRoomLog = async (roomId: string) => {
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["chatRoom", roomId],
+    queryFn: () => loadChatLogs(roomId),
   });
   return queryClient;
 };

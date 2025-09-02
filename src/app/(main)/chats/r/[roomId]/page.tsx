@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-
+import { v4 as uuidv4 } from "uuid";
 import { Header } from "@/shared/components";
 import {
   useChatRoomQuery,
@@ -23,6 +23,8 @@ import {
   Message,
 } from "@/features/chat";
 import { useSuspenseGetMyPageInfo } from "@/features/my-page";
+import dayjs from "dayjs";
+import { PendingMessageList } from "@pThunder/features/chat/components/widget/PendingMessageList";
 
 // CSR로 완전 전환 - 서버 렌더링 비활성화
 
@@ -40,6 +42,7 @@ export default function Page() {
   const [chatLog, setChatLog] = useState<Message[]>(
     chatRoomData?.messageList.list || []
   );
+  const [pendingMessages, setPendingMessages] = useState<Message[]>([]);
 
   const sendTextMessageMutation = useSendTextMessageMutation();
   const sendImageMessageMutation = useSendImageMessageMutation();
@@ -51,7 +54,6 @@ export default function Page() {
     roomId as string,
     {
       onMessage: (message: Message) => {
-        
         console.log(message, "chatMessage");
         if (message.chatType === "TEXT") {
           const chatMessage: Message = {
@@ -61,7 +63,7 @@ export default function Page() {
             chatType: message.chatType,
             imageUrlList: message.imageUrlList,
             chatRoomUUID: message.chatRoomUUID,
-            createdAt: message.createdAt || Date.now().toString(),
+            createdAt: message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
           };
           setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
           readSign();
@@ -73,7 +75,7 @@ export default function Page() {
             chatType: message.chatType,
             imageUrlList: message.imageUrlList,
             chatRoomUUID: message.chatRoomUUID,
-            createdAt: message.createdAt || Date.now().toString(),
+            createdAt: message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
           };
 
           setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
@@ -92,6 +94,19 @@ export default function Page() {
 
   const onSendMessage = useCallback(
     async (message: string) => {
+      setPendingMessages((prevPendingMessages) => [
+        ...prevPendingMessages,
+        {
+          id: uuidv4(),
+          senderUsername: myInfo?.username ?? "",
+          content: message,
+          chatType: "TEXT",
+          imageUrlList: null,
+          chatRoomUUID: roomId as string,
+          createdAt:dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        },
+      ]);
+
       const messagePayload = {
         content: message,
       };
@@ -102,6 +117,8 @@ export default function Page() {
         });
       } catch {
         alert("채팅 전송에 실패했습니다.");
+      } finally {
+        setPendingMessages([]);
       }
     },
     [roomId, sendTextMessageMutation]
@@ -109,6 +126,18 @@ export default function Page() {
 
   const onSendImage = useCallback(
     async (files: FileList) => {
+      setPendingMessages((prevPendingMessages) => [
+        ...prevPendingMessages,
+        {
+          id: uuidv4(),
+          senderUsername: myInfo?.username ?? "",
+          content: null,
+          chatType: "IMAGE",
+          imageUrlList: Array.from(files).map((file) => file.name),
+          chatRoomUUID: roomId as string,
+          createdAt:dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        },
+      ]);
       try {
         const formData = new FormData();
         if (!files) throw new Error("파일이 없습니다.");
@@ -145,6 +174,7 @@ export default function Page() {
   // 채팅방 데이터가 로드되면 title 설정
   useEffect(() => {
     if (chatRoomData) {
+      setChatLog(chatRoomData.messageList.list);
       setTitle(
         chatRoomData.chatRoomInfo.group
           ? `${chatRoomData.chatRoomInfo.roomName} (${chatRoomData.userInfoList.length})`
@@ -204,6 +234,9 @@ export default function Page() {
                 messages={chatLog}
                 userList={userList}
                 currentUserId={myInfo?.username ?? ""}
+              />
+              <PendingMessageList
+                messages={pendingMessages}
               />
             </div>
           </div>
