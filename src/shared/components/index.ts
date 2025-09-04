@@ -2,6 +2,7 @@
 
 // Layout Components
 export { Header } from './layout/Header'
+export { Space } from './layout/Space'
 export { default as HeaderProgressBar } from './layout/HeaderProgressBar'
 
 // UI Components
