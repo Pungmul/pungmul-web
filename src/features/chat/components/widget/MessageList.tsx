@@ -38,16 +38,13 @@ const MessageListComponent: React.FC<MessageListProps> = ({
       )?.name;
       const timeStamp = TimeFormat(new Date(message.createdAt));
       const isSameTime =
-        nextMessage && message.senderUsername === nextMessage.senderUsername &&
+        nextMessage &&
+        message.senderUsername === nextMessage.senderUsername &&
         TimeFormat(new Date(message.createdAt)) ===
           TimeFormat(new Date(nextMessage?.createdAt));
 
       if (message.chatType === "TEXT") {
-        if (
-          !prevMessage ||
-          prevMessage.senderUsername !== message.senderUsername ||
-          TimeFormat(new Date(prevMessage.createdAt)) !== timeStamp
-        ) {
+        if (isSameTime) {
           return (
             <li className="flex flex-col gap-2" key={message.id}>
               {!isUser && (
@@ -62,9 +59,21 @@ const MessageListComponent: React.FC<MessageListProps> = ({
               <ChatMessage
                 key={message.id}
                 message={message.content}
-                timestamp={isSameTime ? "" : timeStamp}
+                sideContent={
+                  message.createdAt && (
+                    <div>
+                      <div
+                        className={
+                          "text-[#DDD] text-[10px] lg:text-[11px]" +
+                          (isUser ? " self-start" : " self-end")
+                        }
+                      >
+                        읽음
+                      </div>
+                    </div>
+                  )
+                }
                 isUser={isUser}
-                isRead={true}
               />
             </li>
           );
@@ -75,9 +84,29 @@ const MessageListComponent: React.FC<MessageListProps> = ({
             <ChatMessage
               key={message.id}
               message={message.content}
-              timestamp={timeStamp}
+              sideContent={
+                message.createdAt && (
+                  <div className="flex flex-col gap-[2px]">
+                    <div
+                      className={
+                        "text-[#DDD] text-[10px] lg:text-[11px]" +
+                        (isUser ? " self-start" : " self-end")
+                      }
+                    >
+                      읽음
+                    </div>
+                    <div
+                      className={
+                        "text-[#DDD] text-[10px] lg:text-[11px]" +
+                        (isUser ? " self-start" : " self-end")
+                      }
+                    >
+                      {timeStamp}
+                    </div>
+                  </div>
+                )
+              }
               isUser={isUser}
-              isRead={true}
             />
           </li>
         );
@@ -86,14 +115,24 @@ const MessageListComponent: React.FC<MessageListProps> = ({
           <li key={message.id}>
             <ImageMessage
               imageList={message.imageUrlList || []}
-              timestamp={timeStamp}
+              sideContent={
+                message.createdAt && (
+                  <div
+                    className={
+                      "text-[#DDD] text-[10px] lg:text-[11px]" +
+                      (isUser ? " self-start" : " self-end")
+                    }
+                  >
+                    읽음
+                  </div>
+                )
+              }
               isUser={isUser}
-              isRead={true}
             />
           </li>
         );
       }
-      
+
       return null;
     },
     [userList, currentUserId]

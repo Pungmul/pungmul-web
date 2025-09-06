@@ -17,14 +17,22 @@ export const loadChatLogs = async (roomId: string): Promise<ChatRoomDto> => {
 
 // 텍스트 메시지 전송
 export const sendTextContent = async (roomId: string, message: { content: string }): Promise<void> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 5000);
+  const signal = controller.signal;
   const response = await fetch(`/chats/r/${roomId}/message`, {
     credentials: "include",
     method: "POST",
+    signal,
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(message),
   });
+
+  clearTimeout(timeout);
 
   if (!response.ok) {
     throw new Error("메시지 전송에 실패했습니다.");
@@ -33,11 +41,20 @@ export const sendTextContent = async (roomId: string, message: { content: string
 
 // 이미지 메시지 전송
 export const sendImageContent = async (roomId: string, formData: FormData): Promise<void> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 5000);
+
+  const signal = controller.signal;
   const response = await fetch(`/chats/r/${roomId}/image`, {
     credentials: "include",
     method: "POST",
+    signal,
     body: formData,
   });
+
+  clearTimeout(timeout);
 
   if (!response.ok) {
     throw new Error("이미지 전송에 실패했습니다.");

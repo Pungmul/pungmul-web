@@ -2,16 +2,14 @@ import React from "react";
 
 interface ChatMessageProps {
   message: string;
-  timestamp?: string;
+  sideContent?: React.ReactNode;
   isUser: boolean;
-  isRead: boolean;
 }
 
 const ChatMessageComponent: React.FC<ChatMessageProps> = ({
   message,
-  timestamp,
+  sideContent,
   isUser,
-  isRead,
 }) => {
   return (
     <div className="px-[24px]">
@@ -30,28 +28,7 @@ const ChatMessageComponent: React.FC<ChatMessageProps> = ({
         >
           {message}
         </div>
-        <div className="flex flex-col justify-end min-w-[56px] lg:min-w-[72px] gap-[4px]">
-          {isRead && timestamp && (
-            <div
-              className={
-                "text-[#DDD] text-[11px] lg:text-[12px]" +
-                (isUser ? " self-start" : " self-end")
-              }
-            >
-              읽음
-            </div>
-          )}
-          {timestamp && (
-            <div
-              className={
-                "text-[#DDD] text-[11px] lg:text-[13px]" +
-                (isUser ? " self-start" : " self-end")
-              }
-            >
-              {timestamp}
-            </div>
-          )}
-        </div>
+        {sideContent && <>{sideContent}</>}
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ export const ChatSendForm: React.FC<ChatSendFormProps> = ({
   
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!inputValue.trim()) return;
     setInputValue("");
     onSendMessage(inputValue).then(() => {
     });

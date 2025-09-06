@@ -25,6 +25,7 @@ import {
 import { useSuspenseGetMyPageInfo } from "@/features/my-page";
 import dayjs from "dayjs";
 import { PendingMessageList } from "@pThunder/features/chat/components/widget/PendingMessageList";
+import { Space } from "@pThunder/shared/components";
 
 // CSR로 완전 전환 - 서버 렌더링 비활성화
 
@@ -42,7 +43,9 @@ export default function Page() {
   const [chatLog, setChatLog] = useState<Message[]>(
     chatRoomData?.messageList.list || []
   );
-  const [pendingMessages, setPendingMessages] = useState<Message[]>([]);
+  const [pendingMessages, setPendingMessages] = useState<
+    (Message & { state: "pending" | "failed" })[]
+  >([]);
 
   const sendTextMessageMutation = useSendTextMessageMutation();
   const sendImageMessageMutation = useSendImageMessageMutation();
@@ -54,7 +57,18 @@ export default function Page() {
     roomId as string,
     {
       onMessage: (message: Message) => {
-        console.log(message, "chatMessage");
+        // 내가 보낸 메시지인 경우 pendingMessages에서 같은 시간의 메시지 제거
+        if (message.senderUsername === myInfo?.username) {
+          setPendingMessages((prev) => {
+            const idx = prev.findIndex(
+              (msg) => msg.content === message.content
+            );
+            if (idx === -1) return prev;
+
+            return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+          });
+        }
+
         if (message.chatType === "TEXT") {
           const chatMessage: Message = {
             id: message.id,
@@ -63,7 +77,8 @@ export default function Page() {
             chatType: message.chatType,
             imageUrlList: message.imageUrlList,
             chatRoomUUID: message.chatRoomUUID,
-            createdAt: message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+            createdAt:
+              message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
           };
           setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
           readSign();
@@ -75,7 +90,8 @@ export default function Page() {
             chatType: message.chatType,
             imageUrlList: message.imageUrlList,
             chatRoomUUID: message.chatRoomUUID,
-            createdAt: message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
+            createdAt:
+              message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
           };
 
           setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
@@ -94,16 +110,19 @@ export default function Page() {
 
   const onSendMessage = useCallback(
     async (message: string) => {
+      const pendingUniqueId = uuidv4();
+      const createdAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
       setPendingMessages((prevPendingMessages) => [
         ...prevPendingMessages,
         {
-          id: uuidv4(),
+          id: pendingUniqueId,
           senderUsername: myInfo?.username ?? "",
           content: message,
           chatType: "TEXT",
           imageUrlList: null,
           chatRoomUUID: roomId as string,
-          createdAt:dayjs().format("YYYY-MM-DD HH:mm:ss"),
+          createdAt: createdAt,
+          state: "pending",
         },
       ]);
 
@@ -111,31 +130,53 @@ export default function Page() {
         content: message,
       };
       try {
-        await sendTextMessageMutation.mutateAsync({
-          roomId: roomId as string,
-          message: messagePayload,
-        });
+        sendTextMessageMutation.mutate(
+          {
+            roomId: roomId as string,
+            message: messagePayload,
+          },
+          {
+            onSuccess: () => {},
+            onError: (error) => {
+              setPendingMessages((prevPendingMessages) =>
+                prevPendingMessages.map((pendingMsg) =>
+                  pendingMsg.id === pendingUniqueId
+                    ? { ...pendingMsg, state: "failed" }
+                    : pendingMsg
+                )
+              );
+            },
+          }
+        );
       } catch {
         alert("채팅 전송에 실패했습니다.");
-      } finally {
-        setPendingMessages([]);
+        setPendingMessages((prevPendingMessages) =>
+          prevPendingMessages.map((pendingMsg) =>
+            pendingMsg.id === pendingUniqueId
+              ? { ...pendingMsg, state: "failed" }
+              : pendingMsg
+          )
+        );
       }
     },
-    [roomId, sendTextMessageMutation]
+    [roomId, sendTextMessageMutation, myInfo?.username]
   );
 
   const onSendImage = useCallback(
     async (files: FileList) => {
+      const pendingUniqueId = uuidv4();
+      const createdAt = dayjs().format("YYYY-MM-DD HH:mm:ss");
       setPendingMessages((prevPendingMessages) => [
         ...prevPendingMessages,
         {
-          id: uuidv4(),
+          id: pendingUniqueId,
           senderUsername: myInfo?.username ?? "",
           content: null,
           chatType: "IMAGE",
           imageUrlList: Array.from(files).map((file) => file.name),
           chatRoomUUID: roomId as string,
-          createdAt:dayjs().format("YYYY-MM-DD HH:mm:ss"),
+          createdAt: createdAt,
+          state: "pending",
         },
       ]);
       try {
@@ -144,16 +185,38 @@ export default function Page() {
         Array.from(files).forEach((file) => {
           formData.append("files", file);
         });
-        await sendImageMessageMutation.mutateAsync({
-          roomId: roomId as string,
-          formData,
-        });
+        sendImageMessageMutation.mutate(
+          {
+            roomId: roomId as string,
+            formData,
+          },
+          {
+            onSuccess: () => {},
+            onError: (error) => {
+              setPendingMessages((prevPendingMessages) =>
+                prevPendingMessages.map((pendingMsg) =>
+                  pendingMsg.id === pendingUniqueId
+                    ? { ...pendingMsg, state: "failed" }
+                    : pendingMsg
+                )
+              );
+            },
+          }
+        );
       } catch (error) {
         if (error instanceof Error) {
           alert("채팅 전송에 실패했습니다.\n" + error.message);
         } else {
           alert("채팅 전송에 실패했습니다.");
         }
+
+        setPendingMessages((prevPendingMessages) =>
+          prevPendingMessages.map((pendingMsg) =>
+            pendingMsg.id === pendingUniqueId
+              ? { ...pendingMsg, state: "failed" }
+              : pendingMsg
+          )
+        );
       }
     },
     [roomId, sendImageMessageMutation]
@@ -170,6 +233,15 @@ export default function Page() {
       },
     });
   }, [roomId, router, exitChatMutation]);
+
+  const onDeleteMessage = useCallback(
+    (message: Message & { state: "pending" | "failed" }) => {
+      setPendingMessages((prevPendingMessages) =>
+        prevPendingMessages.filter((pendingMsg) => pendingMsg.id !== message.id)
+      );
+    },
+    []
+  );
 
   // 채팅방 데이터가 로드되면 title 설정
   useEffect(() => {
@@ -235,8 +307,12 @@ export default function Page() {
                 userList={userList}
                 currentUserId={myInfo?.username ?? ""}
               />
+              <Space h={12} />
               <PendingMessageList
                 messages={pendingMessages}
+                onResendText={onSendMessage}
+                onResendImage={onSendImage}
+                onDeleteMessage={onDeleteMessage}
               />
             </div>
           </div>
