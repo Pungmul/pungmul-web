@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import checkMark from "@public/icons/checkMark.svg";
 import useTermStep from "../../hooks/useTermStep";
+import Link from "next/link";
 
 interface TermsStepFormData {
   usingTermAgree: boolean;
@@ -105,8 +106,9 @@ export const TermsStep: React.FC<TermsStepProps> = ({ onSubmit }) => {
               </div>
             </div>
           </label>
-
-          <ChevronRightIcon className="w-[16px] h-[16px] cursor-pointer" />
+          <Link href="/terms" target="_blank">
+            <ChevronRightIcon className="w-[16px] h-[16px] cursor-pointer" />
+          </Link>
         </div>
 
         <div
@@ -151,7 +153,9 @@ export const TermsStep: React.FC<TermsStepProps> = ({ onSubmit }) => {
               </div>
             </div>
           </label>
-          <ChevronRightIcon className="w-[16px] h-[16px] cursor-pointer" />
+          <Link href="/privacy" target="_blank">
+            <ChevronRightIcon className="w-[16px] h-[16px] cursor-pointer" />
+          </Link>
         </div>
       </div>
       <div className="w-full py-4" style={{ padding: "12px 36px" }}>

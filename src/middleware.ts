@@ -4,13 +4,31 @@ import { reissueToken } from "@/features/auth/api/serverApi";
 import { cookies } from "next/headers";
 
 export async function middleware(req: NextRequest) {
+  if (
+    req.nextUrl.pathname.startsWith("/icons") ||
+    req.nextUrl.pathname.startsWith("/logos") ||
+    req.nextUrl.pathname.startsWith("/fonts") ||
+    req.nextUrl.pathname.startsWith("/terms")
+  ) {
+    return NextResponse.next();
+  }
+
   const cookieStore = await cookies();
 
   const accessToken = cookieStore.get("accessToken")?.value;
   const refreshToken = cookieStore.get("refreshToken")?.value;
+  const kakaoAccessToken = cookieStore.get("kakaoAccessToken")?.value;
   // 로그인 상태에서 로그인/회원가입 페이지 접근 시 홈으로 리다이렉트
 
-  if (req.nextUrl.pathname === "/") {  
+  if(req.nextUrl.pathname.startsWith("/kakao/sign-up")) {
+    if(kakaoAccessToken) {
+      return NextResponse.redirect(new URL("/home", req.url));
+    } else {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
+
+  if (req.nextUrl.pathname === "/") {
     if (refreshToken) {
       // 로그인 되어있으면 /home
       return NextResponse.redirect(new URL("/home", req.url));
@@ -26,18 +44,19 @@ export async function middleware(req: NextRequest) {
     if (
       !req.nextUrl.pathname.startsWith("/login") &&
       !req.nextUrl.pathname.startsWith("/sign-up") &&
-      !req.nextUrl.pathname.startsWith("/cookie")
+      !req.nextUrl.pathname.startsWith("/cookie") &&
+      !req.nextUrl.pathname.startsWith("/kakao/login")
     ) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
 
       return NextResponse.redirect(new URL("/login", req.url));
-    }else{
+    } else {
       return NextResponse.next();
     }
   }
 
-  if(refreshToken && !accessToken) {
+  if (refreshToken && !accessToken) {
     await reissueToken()
       .then((data) => {
         cookieStore.set("accessToken", data.accessToken, {
@@ -60,17 +79,15 @@ export async function middleware(req: NextRequest) {
       });
   }
 
-  
   if (
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/sign-up") ||
     req.nextUrl.pathname.startsWith("/cookie")
   ) {
-
     if (accessToken) {
       return NextResponse.redirect(new URL("/home", req.url));
     }
-    
+
     if (refreshToken) {
       await reissueToken()
         .then((data) => {

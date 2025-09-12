@@ -37,24 +37,23 @@ export function Input(props: InputProps) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col" style={{ gap: 4, padding: "0 12px" }}>
+      <div className="flex flex-col gap-[4px]">
         <div
-          className="text-[#816DFF]"
-          style={{ fontSize: 14, marginLeft: 4, lineHeight: "15px" }}
+          className="text-grey-500 pl-[4px] text-[14px]"
         >
           {label}
         </div>
         <div
-          className={`flex flex-row items-center border ${
-            errorMessage ? "border-red-400" : "border-[#CDC5FF]"
-          }`}
+          className={`flex flex-row items-center border box-border ${
+            errorMessage ? "border-2 border-red-400" : "border-grey-500"
+          } ${rest.disabled ? "bg-grey-100 text-grey-400 cursor-not-allowed" : ""}`}
           style={{ gap: 8, padding: "8px 8px", borderRadius: 5 }}
         >
           <input
-            className={`flex-grow outline-none placeholder-[#CDC5FF] text-[#816DFF] ${className}`}
             placeholder={placeholder}
             onChange={onChange}
             {...rest}
+            className={`flex-grow outline-none placeholder-grey-300 text-grey-500 ${rest.disabled ? "placeholder:bg-grey-100 placeholder-grey-500" : ""} ${className} `}
             type={isEncrypted ? (visible ? "text" : "password") : type}
           />
           {isEncrypted && (
@@ -63,9 +62,9 @@ export function Input(props: InputProps) {
               onClick={toggleVisible}
             >
               {visible ? (
-                <EyeIcon color="#816DFF" />
+                <EyeIcon className="text-grey-300" />
               ) : (
-                <EyeSlashIcon color="#816DFF" />
+                <EyeSlashIcon className="text-grey-300" />
               )}
             </span>
           )}
@@ -73,7 +72,7 @@ export function Input(props: InputProps) {
         {errorMessage && (
           <div
             className="flex flex-row items-center"
-            style={{ gap: 4, marginTop: 4 }}
+            style={{ gap: 4}}
           >
             <Image src={WarningCircleIcon} width={12} alt="" />
             <div
