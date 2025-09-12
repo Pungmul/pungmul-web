@@ -10,6 +10,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const redirectURL = searchParams.get("redirectURL");
 
+
   return (
     <div className="w-full h-full flex flex-col justify-center items-center relative">
       <div
@@ -26,13 +27,13 @@ export default function LoginPage() {
         </div>
         <LoginForm />
         <div className="w-full px-[12px]">
-          <Link
+          <a
             className="flex w-full bg-[#FEE500] py-2 rounded-md mt-2 cursor-pointer flex-row items-center justify-center gap-[16px] px-[24px]"
             href={`/kakao/login?redirectURL=${redirectURL}`}
           >
             <KakaoLogo style={{ width: 20, height: 20 }} />
             <div className="text-[16px] font-semibold">카카오로 시작하기</div>
-          </Link>
+          </a>
           <Link
             className="block w-full border border-grey-500 text-grey-500 text-center bg-white py-2 rounded-md mt-2 cursor-pointer"
             href="/sign-up"
