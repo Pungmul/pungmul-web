@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface KakaoLogoProps extends Omit<React.SVGProps<SVGSVGElement>, "color"> {}
+type KakaoLogoProps = Omit<React.SVGProps<SVGSVGElement>, "color">;
 
 function KakaoLogo(
   { ...props }: KakaoLogoProps,

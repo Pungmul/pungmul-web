@@ -137,7 +137,7 @@ export default function Page() {
           },
           {
             onSuccess: () => {},
-            onError: (error) => {
+            onError: () => {
               setPendingMessages((prevPendingMessages) =>
                 prevPendingMessages.map((pendingMsg) =>
                   pendingMsg.id === pendingUniqueId
@@ -192,7 +192,7 @@ export default function Page() {
           },
           {
             onSuccess: () => {},
-            onError: (error) => {
+            onError: () => {
               setPendingMessages((prevPendingMessages) =>
                 prevPendingMessages.map((pendingMsg) =>
                   pendingMsg.id === pendingUniqueId

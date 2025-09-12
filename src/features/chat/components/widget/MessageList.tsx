@@ -31,22 +31,22 @@ const MessageListComponent: React.FC<MessageListProps> = ({
   currentUserId,
 }) => {
   const renderMessage = useCallback(
-    (message: Message, prevMessage?: Message, nextMessage?: Message) => {
-      const isUser = message.senderUsername === currentUserId;
+    (_message: Message, _prevMessage?: Message, _nextMessage?: Message) => {
+      const isUser = _message.senderUsername === currentUserId;
       const userName = userList.find(
-        (user) => user.username === message.senderUsername
+        (user) => user.username === _message.senderUsername
       )?.name;
-      const timeStamp = TimeFormat(new Date(message.createdAt));
+      const timeStamp = TimeFormat(new Date(_message.createdAt));
       const isSameTime =
-        nextMessage &&
-        message.senderUsername === nextMessage.senderUsername &&
-        TimeFormat(new Date(message.createdAt)) ===
-          TimeFormat(new Date(nextMessage?.createdAt));
+        _nextMessage &&
+        _message.senderUsername === _nextMessage.senderUsername &&
+        TimeFormat(new Date(_message.createdAt)) ===
+          TimeFormat(new Date(_nextMessage?.createdAt));
 
-      if (message.chatType === "TEXT") {
+      if (_message.chatType === "TEXT") {
         if (isSameTime) {
           return (
-            <li className="flex flex-col gap-2" key={message.id}>
+            <li className="flex flex-col gap-2" key={_message.id}>
               {!isUser && (
                 <div
                   className={`${
@@ -57,10 +57,10 @@ const MessageListComponent: React.FC<MessageListProps> = ({
                 </div>
               )}
               <ChatMessage
-                key={message.id}
-                message={message.content}
+                key={_message.id}
+                message={_message.content}
                 sideContent={
-                  message.createdAt && (
+                  _message.createdAt && (
                     <div>
                       <div
                         className={
@@ -80,12 +80,12 @@ const MessageListComponent: React.FC<MessageListProps> = ({
         }
 
         return (
-          <li key={message.id}>
+          <li key={_message.id}>
             <ChatMessage
-              key={message.id}
-              message={message.content}
+              key={_message.id}
+              message={_message.content}
               sideContent={
-                message.createdAt && (
+                _message.createdAt && (
                   <div className="flex flex-col gap-[2px]">
                     <div
                       className={
@@ -110,13 +110,13 @@ const MessageListComponent: React.FC<MessageListProps> = ({
             />
           </li>
         );
-      } else if (message.chatType === "IMAGE") {
+      } else if (_message.chatType === "IMAGE") {
         return (
-          <li key={message.id}>
+          <li key={_message.id}>
             <ImageMessage
-              imageList={message.imageUrlList || []}
+              imageList={_message.imageUrlList || []}
               sideContent={
-                message.createdAt && (
+                _message.createdAt && (
                   <div
                     className={
                       "text-[#DDD] text-[10px] lg:text-[11px]" +
