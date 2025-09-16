@@ -1,17 +1,21 @@
 // SharedWorker 환경을 위한 필수 설정
 self.exports = {};
 
-importScripts('https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js');
-importScripts('https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.0/bundles/stomp.umd.min.js');
+importScripts(
+  "https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"
+);
+importScripts(
+  "https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.0/bundles/stomp.umd.min.js"
+);
 
 console.log("🔍 SharedWorker: SockJS 로드됨:", typeof SockJS);
 console.log("🔍 SharedWorker: self.StompJS 로드됨:", typeof self.StompJs);
 console.log("🔍 SharedWorker: self.StompJS 로드됨:", self.StompJs);
 
 let stompClient = null;
-let connections = new Map();
-let subscriptions = new Map();
-let pendingSubscriptions = new Map(); // 대기 중인 구독들을 저장
+const connections = new Map();
+const subscriptions = new Map();
+const pendingSubscriptions = new Map(); // 대기 중인 구독들을 저장
 
 // SharedWorker 모드
 self.addEventListener("connect", (event) => {
@@ -142,32 +146,40 @@ function subscribeToTopic(data, clientId) {
 
     console.log("🔍 SharedWorker: 새로운 토픽 구독:", topic);
 
-    stompClient.subscribe(topic, (message) => {
-      console.log("🔍 SharedWorker: 메시지 수신 - topic:", topic);
-      const messageData = JSON.parse(message.body);
+    try {
+      stompClient.subscribe(topic, (message) => {
+        console.log("🔍 SharedWorker: 메시지 수신 - topic:", topic);
+        const messageData = JSON.parse(message.body);
 
-      // 해당 토픽을 구독하는 모든 클라이언트에게 메시지 전달
-      const topicSubscribers = subscriptions.get(topic);
-      if (topicSubscribers) {
-        topicSubscribers.forEach((subscriberId) => {
-          sendToClient(subscriberId, {
-            type: "MESSAGE",
-            data: {
-              topic: topic,
-              message: messageData,
-            },
+        // 해당 토픽을 구독하는 모든 클라이언트에게 메시지 전달
+        const topicSubscribers = subscriptions.get(topic);
+        if (topicSubscribers) {
+          topicSubscribers.forEach((subscriberId) => {
+            sendToClient(subscriberId, {
+              type: "MESSAGE",
+              data: {
+                topic: topic,
+                message: messageData,
+              },
+            });
           });
-        });
-      }
-    });
+        }
+      });
 
-    // 구독 완료 알림
-    sendToClient(clientId, {
-      type: "SUBSCRIBED",
-      data: {
-        topic: topic,
-      },
-    });
+      // 구독 완료 알림
+      sendToClient(clientId, {
+        type: "SUBSCRIBED",
+        data: {
+          topic: topic,
+        },
+      });
+    } catch (error) {
+      console.error("🔍 SharedWorker: 구독 실패:", error);
+      sendToClient(clientId, {
+        type: "ERROR",
+        error: error,
+      });
+    }
   }
 }
 
@@ -194,7 +206,7 @@ function sendMessage(data, clientId) {
   }
 
   const { topic, message } = data;
-  stompClient.send(topic, {}, JSON.stringify(message));
+  stompClient.publish({destination: topic, body: JSON.stringify(message)});
   console.log("🔍 SharedWorker: 메시지 전송 - topic:", topic);
 }
 
@@ -218,6 +230,11 @@ function disconnectClient(clientId) {
   }
 }
 
+/**
+ *
+ * @param {string} clientId
+ * @param {{type: "MESSAGE"|"IMAGE", data: {topic: string, message: object}}} message
+ */
 function sendToClient(clientId, message) {
   const port = connections.get(clientId);
   if (port) {
@@ -228,14 +245,14 @@ function sendToClient(clientId, message) {
 function retryPendingSubscriptions() {
   console.log("🔍 SharedWorker: 대기 중인 구독들 재시도");
   console.log("🔍 DedicatedWorker: 대기 중인 구독들:", pendingSubscriptions);
-  
+
   pendingSubscriptions.forEach((subscriptions, clientId) => {
     subscriptions.forEach((data) => {
       console.log("🔍 SharedWorker: 대기 중인 구독 재시도:", data.topic);
       subscribeToTopic(data, clientId);
     });
   });
-  
+
   // 재시도 후 대기 목록 클리어
   pendingSubscriptions.clear();
 }

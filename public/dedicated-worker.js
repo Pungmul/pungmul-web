@@ -4,8 +4,8 @@ importScripts('https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js')
 importScripts('https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.0/bundles/stomp.umd.min.js');
 
 let stompClient = null;
-let subscriptions = new Map();
-let pendingSubscriptions = []; // 대기 중인 구독들을 저장
+const subscriptions = new Map();
+const pendingSubscriptions = []; // 대기 중인 구독들을 저장
 
 // DedicatedWorker 모드
 self.addEventListener("message", (event) => {
@@ -146,7 +146,7 @@ function sendMessage(data) {
   }
 
   const { topic, message } = data;
-  stompClient.send(topic, {}, JSON.stringify(message));
+  stompClient.publish({destination: topic, body: JSON.stringify(message)});
   console.log("🔍 DedicatedWorker: 메시지 전송 - topic:", topic);
 }
 
