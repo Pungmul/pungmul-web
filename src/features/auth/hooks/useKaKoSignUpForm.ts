@@ -11,12 +11,15 @@ import { useKakaoSignUpRequest } from "../api/kakaoSignUpApi";
 import { SignUpStep } from "../types/kakao-sign-up.types";
 import { formatPhoneNumber } from "../lib";
 import { kakaoValidateStep } from "../model/kakaoSignUpValidation";
+import { useRouter } from "next/navigation";
 
 export const useSignUpForm = () => {
+  const router = useRouter();
+  
   const [currentStep, setCurrentStep] = useState<SignUpStep>("약관동의");
-
   const [usingTermAgree, setUsingTermAgree] = useState(false);
   const [personalInfoAgree, setPersonalInfoAgree] = useState(false);
+
 
 
   // React Hook Form 설정
@@ -132,7 +135,7 @@ export const useSignUpForm = () => {
       submitSignUp(finalData, {
         onSuccess: () => {
           // 성공 시 CompleteStep에서 처리
-          console.log("회원가입 성공");
+          router.push("/home");
         },
         onError: (error) => {
           console.error("회원가입 실패:", error);

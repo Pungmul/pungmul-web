@@ -10,27 +10,42 @@ export async function GET(req: Request) {
     const searchParams = reqUrl.searchParams;
 
     const accessToken = searchParams.get("token");
+    const refreshToken = searchParams.get("refresh_token");
     const needRegister = searchParams.get("need_register");
     const signUpToken = searchParams.get("sign_up_token");
     const redirectURL = searchParams.get("redirectURL");
 
     const cookieStore = await cookies();
 
-    if (accessToken && accessToken !== "null") {
+    if (
+      accessToken &&
+      accessToken !== "null" &&
+      refreshToken &&
+      refreshToken !== "null"
+    ) {
       cookieStore.set("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 3600,
       });
 
-      return Response.redirect(new URL(redirectURL ?? "/home", reqUrl).href, 302);
+      cookieStore.set("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 604800,
+      });
+
+      return Response.redirect(
+        new URL(redirectURL ?? "/home", reqUrl).href,
+        302
+      );
     }
 
     if (needRegister === "true" && signUpToken) {
       cookieStore.set("signUpToken", signUpToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 300
       });
 
       return Response.redirect(new URL("/kakao/sign-up", reqUrl).href, 302);
