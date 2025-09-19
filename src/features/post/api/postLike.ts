@@ -42,11 +42,10 @@ export const useLikePost = () => {
       );
       
       // 게시글 목록에서도 해당 게시글의 좋아요 수 업데이트
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: ["postList"],
       });
       
-      console.log("좋아요 업데이트 성공:", data);
     },
     onError: (error) => {
       console.error("좋아요 업데이트 중 에러:", error);

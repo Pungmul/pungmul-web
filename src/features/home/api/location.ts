@@ -3,7 +3,7 @@ export const updateUserLocation = async (
   longitude: number
 ): Promise<void> => {
   try {
-    const proxyUrl = `/location/api`;
+    const proxyUrl = `/api/location`;
 
     const response = await fetch(proxyUrl, {
       method: "POST",

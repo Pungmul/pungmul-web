@@ -1,8 +1,8 @@
 import { getQueryClient } from "@pThunder/core";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 const getToken = async (): Promise<string> => {
-  const token = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/token`, {
+  const token = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/auth/token`, {
     credentials: "include",
   });
 
@@ -12,7 +12,7 @@ const getToken = async (): Promise<string> => {
 };
 
 const useGetToken = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: ["token"],
     queryFn: getToken,
   });

@@ -4,7 +4,7 @@ import { SignUpRequestForm, SignUpResponse } from "../types/kakao-sign-up.types"
 // 회원가입 API 함수 - FormData 지원
 export const kakaoSignUpRequest = async (data: SignUpRequestForm): Promise<SignUpResponse> => {
   try {
-    const response = await fetch('/kakao/sign-up/api', {
+    const response = await fetch('/api/auth/kakao/sign-up', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

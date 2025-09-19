@@ -16,7 +16,7 @@ export const reportComment = async ({
     reportReason: selectedOption,
   };
 
-  const response = await fetch(`/board/comment/${commentId}/report`, {
+  const response = await fetch(`/api/comments/${commentId}/report`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const useReportComment = () => {
     mutationFn: reportComment,
     mutationKey: ["reportComment"],
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["postDetail"] });
+      return queryClient.invalidateQueries({ queryKey: ["postDetail"] });
     },
   });
 };

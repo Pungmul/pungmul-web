@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
-// POST 요청으로 카카오 로그인 콜백 처리
+// POST 요청으로 카카오 로그인 콜백 처리(수정 불가)
 export async function GET(req: Request) {
   try {
     // 카카오에서 받은 인증 코드 또는 토큰 처리

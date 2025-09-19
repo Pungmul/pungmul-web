@@ -2,7 +2,7 @@ import { Post } from "@pThunder/features/post/model/index";
 
 export async function loadHotPostList(): Promise<Post[]> {
   try {
-    const proxyUrl = `/board/hot-post/api`;
+    const proxyUrl = `/api/boards/hot-post`;
 
     const proxyResponse = await fetch(proxyUrl, {
       credentials: "include",

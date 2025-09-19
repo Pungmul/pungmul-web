@@ -17,7 +17,7 @@ export function useLogout() {
       sessionStorage.clear();
       
       // 3. 쿠키 삭제
-      await fetch('/logout/api', {
+      await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include'
       });

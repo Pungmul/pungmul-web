@@ -10,7 +10,7 @@ interface HotPostListResponse {
 
 export const fetchHotPostList = async (): Promise<HotPostListResponse> => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_LOCAL_URL}/board/hot-post/api`,
+    `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/boards/hot-post`,
     {
       credentials: "include",
     }

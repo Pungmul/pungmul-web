@@ -41,7 +41,7 @@ export const updateLocation = new Promise(async (resolve, reject) => {
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_LOCAL_URL}/location/api`,
+      `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/location`,
       {
         method: "POST",
         credentials: "include",

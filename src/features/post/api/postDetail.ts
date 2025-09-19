@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 
 export const loadPostDetailAPI = async (postId: number): Promise<PostDetail> => {
-  const response = await fetch(`/board/post?postId=${postId}`, {
+  const response = await fetch(`/api/posts/${postId}`, {
     credentials: "include",
   });
 

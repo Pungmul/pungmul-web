@@ -4,7 +4,7 @@ import { SignUpRequestForm, SignUpResponse } from "../types/sign-up.types";
 // 회원가입 API 함수 - FormData 지원
 export const signUpRequest = async (data: SignUpRequestForm): Promise<SignUpResponse> => {
   try {
-    const response = await fetch('/sign-up/api', {
+    const response = await fetch('/api/auth/sign-up', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

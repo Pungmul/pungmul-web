@@ -1,9 +1,22 @@
-import { ChatRoomDto } from "@/features/chat";
+import { ChatMessageDto, ChatRoomDto } from "@/features/chat";
 import { getQueryClient } from "@pThunder/core";
 
-// 채팅 로그 로드
-export const loadChatLogs = async (roomId: string): Promise<ChatRoomDto> => {
-  const response = await fetch(`/chats/chatlog/${roomId}`, {
+export const loadChatRoomInfo = async (
+  roomId: string
+): Promise<ChatRoomDto> => {
+  const response = await fetch(`/api/chats/${roomId}/info`, {
+    credentials: "include",
+    method: "GET",
+  });
+  return response.json();
+};
+
+// 채팅 로그 로드 (페이지네이션 지원)
+export const loadChatLogs = async (
+  roomId: string,
+  page: number = 2
+): Promise<ChatMessageDto> => {
+  const response = await fetch(`/api/chats/${roomId}/message?page=${page}`, {
     credentials: "include",
     method: "GET",
   });
@@ -12,17 +25,21 @@ export const loadChatLogs = async (roomId: string): Promise<ChatRoomDto> => {
     throw new Error("채팅 로그를 불러오는데 실패했습니다.");
   }
 
-  return response.json();
+  const data: ChatMessageDto = await response.json();
+  return { ...data, pageNum: page };
 };
 
 // 텍스트 메시지 전송
-export const sendTextContent = async (roomId: string, message: { content: string }): Promise<void> => {
+export const sendTextContent = async (
+  roomId: string,
+  message: { content: string }
+): Promise<void> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
   }, 5000);
   const signal = controller.signal;
-  const response = await fetch(`/chats/r/${roomId}/message`, {
+  const response = await fetch(`/api/chats/${roomId}/text`, {
     credentials: "include",
     method: "POST",
     signal,
@@ -40,14 +57,17 @@ export const sendTextContent = async (roomId: string, message: { content: string
 };
 
 // 이미지 메시지 전송
-export const sendImageContent = async (roomId: string, formData: FormData): Promise<void> => {
+export const sendImageContent = async (
+  roomId: string,
+  formData: FormData
+): Promise<void> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
   }, 5000);
 
   const signal = controller.signal;
-  const response = await fetch(`/chats/r/${roomId}/image`, {
+  const response = await fetch(`/api/chats/${roomId}/images`, {
     credentials: "include",
     method: "POST",
     signal,
@@ -63,7 +83,7 @@ export const sendImageContent = async (roomId: string, formData: FormData): Prom
 
 // 채팅방 나가기
 export const exitChat = async (roomId: string): Promise<void> => {
-  const response = await fetch(`/chats/r/${roomId}/exit`, {
+  const response = await fetch(`/api/chats/${roomId}/exit`, {
     credentials: "include",
     method: "POST",
   });
@@ -74,8 +94,11 @@ export const exitChat = async (roomId: string): Promise<void> => {
 };
 
 // 사용자 초대 (주석 처리된 부분)
-export const inviteUser = async (roomId: string, data: { newUsernameList: string[] }): Promise<void> => {
-  const response = await fetch(`/chats/r/${roomId}/invite`, {
+export const inviteUser = async (
+  roomId: string,
+  data: { newUsernameList: string[] }
+): Promise<void> => {
+  const response = await fetch(`/api/chats/${roomId}/invites`, {
     credentials: "include",
     method: "POST",
     headers: {
@@ -87,7 +110,7 @@ export const inviteUser = async (roomId: string, data: { newUsernameList: string
   if (!response.ok) {
     throw new Error("사용자 초대에 실패했습니다.");
   }
-}; 
+};
 
 export const prefetchChatRoomData = async (roomId: string) => {
   const queryClient = getQueryClient();

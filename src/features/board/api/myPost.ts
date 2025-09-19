@@ -1,8 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { MyPostResponse } from "../../post/model/index";
+import { MyPostResponse } from "@/shared/types/post/type";
 
 const fetchMyPostList = async (): Promise<MyPostResponse> => {
-  const response = await fetch(`/board/my-post/api`, {
+  const response = await fetch(`/api/posts/me`, {
     credentials: "include",
   });
   const data = await response.json();

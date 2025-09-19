@@ -1,15 +1,13 @@
-import { getQueryClient } from "@pThunder/core";
 import { useMutation } from "@tanstack/react-query";
 
 const loadPostDetail = async (postId: number) => {
-  const response = await fetch(`/api/post/${postId}`);
+  const response = await fetch(`/api/posts/${postId}`);
   return response.json();
 };
 
-
 const handleDeleteClick = async (postId: number) => {
   try {
-    const response = await fetch(`/board/post/${postId}/delete`, {
+    const response = await fetch(`/api/posts/${postId}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -25,15 +23,10 @@ const handleDeleteClick = async (postId: number) => {
 };
 
 const useDeletePost = () => {
-  const queryClient = getQueryClient();
   return useMutation({
     mutationFn: handleDeleteClick,
-    onSuccess: (_, postId) => {
-      queryClient.invalidateQueries({ queryKey: ["postDetail", postId] , refetchType: "all"});
-      queryClient.invalidateQueries({ queryKey: ["postList"] , refetchType: "all"});
-    }
+    mutationKey: [],
   });
 };
-
 
 export { loadPostDetail, useDeletePost };

@@ -9,7 +9,7 @@ interface EmailCheckResponse {
 // 이메일 중복 체크 API 함수
 export const checkEmailRegistered = async (data: EmailCheckRequest): Promise<EmailCheckResponse> => {
   try {
-    const response = await fetch('/sign-up/email-check', {
+    const response = await fetch('/api/auth/sign-up/check-email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

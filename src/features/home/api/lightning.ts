@@ -2,7 +2,7 @@ import { NearLightning } from "@pThunder/features/lightning/model/index";
 
 export async function loadNearLightning(): Promise<NearLightning[]> {
   try {
-    const proxyUrl = `${process.env.NEXT_PUBLIC_LOCAL_URL}/lightning/search/nearby`;
+    const proxyUrl = `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/lightning/nearby`;
 
     const proxyResponse = await fetch(proxyUrl, {
       credentials: "include",

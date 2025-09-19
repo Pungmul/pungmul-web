@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Comment as CommentType } from "../model/index";
 
 const postCommentAPI = async (id: number, comment: string, anonymity: boolean) => {
-  const response = await fetch(`/board/post/${id}/comment`, {
+  const response = await fetch(`/api/posts/${id}/comment`, {
     method: "POST",
     body: JSON.stringify({ content: comment, anonymity }),
     credentials: "include",

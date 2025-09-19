@@ -1,11 +1,11 @@
 import { getQueryClient } from "@pThunder/core";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { ChatRoomListItemDto } from "../types";
 import { loadChatLogs } from "./chatRoomApis";
 
 export async function createPersonalChatRoom(body: { receiverName: string }) {
   try {
-    const response = await fetch("/chats/create/personal", {
+    const response = await fetch("/api/chats/create/personal", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export async function createMultiChatRoom(body: { receiverName: string[] }) {
   try {
     if (body.receiverName.length === 0) throw Error("친구를 선택해주세요");
 
-    const response = await fetch("/chats/create/multi", {
+    const response = await fetch("/api/chats/create/multi", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export async function createMultiChatRoom(body: { receiverName: string[] }) {
 const loadChatRooms = async (): Promise<ChatRoomListItemDto[]> => {
   try {
     // 서버/클라이언트 환경에 따라 URL 분기
-    const proxyUrl = `/chats/roomlist`;
+    const proxyUrl = `/api/chats/roomlist`;
 
     const response = await fetch(proxyUrl, {
       credentials: "include",
@@ -67,12 +67,12 @@ const loadChatRooms = async (): Promise<ChatRoomListItemDto[]> => {
 }
 
 export const useChatRoomsQuery = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["chatRooms"],
     queryFn: loadChatRooms,
     retry: 2,
     refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData,
     
   });
 };

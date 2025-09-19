@@ -3,7 +3,7 @@ import { Toast } from "@pThunder/store/share/toastStore";
 
 const handleDeleteClick = async (commentId: number) => {
   try {
-    const response = await fetch(`/board/comment/${commentId}/delete`, {
+    const response = await fetch(`/api/comments/${commentId}`, {
       method: "DELETE",
       credentials: "include",
     });

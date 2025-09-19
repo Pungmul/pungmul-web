@@ -3,8 +3,9 @@ import { LightningMeeting } from "@pThunder/shared";
 import { getQueryClient } from "@pThunder/core";
 
 const loadLightningData = async (): Promise<{ normalLightningMeetings: LightningMeeting[], schoolLightningMeetings: LightningMeeting[] }>  => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/lightning/search`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/lightning/search`, {
     credentials: "include",
+    cache: "no-store",
   });
 
   if (!response.ok) {

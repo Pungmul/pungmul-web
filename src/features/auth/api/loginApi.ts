@@ -6,7 +6,7 @@ async function loginApi(
   loginId: string,
   password: string
 ): Promise<LoginResponse> {
-  const response = await fetch("/login/api", {
+  const response = await fetch("/api/auth/login", {
     method: "POST",
     body: JSON.stringify({ loginId, password }),
   })

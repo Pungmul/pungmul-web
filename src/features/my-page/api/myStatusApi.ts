@@ -8,7 +8,7 @@ import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
 const getMyPageInfo = async (): Promise<Member> => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_LOCAL_URL}/my-page/api`,
+    `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/users/me`,
     {
       credentials: "include",
     }

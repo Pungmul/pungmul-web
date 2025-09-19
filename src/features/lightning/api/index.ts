@@ -8,7 +8,7 @@ const getUserParticipationStatusAPI = async (): Promise<{
   lightningMeeting: LightningMeeting;
   chatRoomUUID: string | null;
 }> => {
-  const response = await fetch(`/lightning/status`, {
+  const response = await fetch(`/api/lightning/status`, {
     method: "GET",
     credentials: "include",
     cache: "no-store",
@@ -20,7 +20,7 @@ const getUserParticipationStatusAPI = async (): Promise<{
 };
 
 const joinLightningMeetingAPI = async (meetingId: number): Promise<void> => {
-  const response = await fetch(`/lightning/join`, {
+  const response = await fetch(`/api/lightning/join`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -34,8 +34,12 @@ const joinLightningMeetingAPI = async (meetingId: number): Promise<void> => {
   return response.json();
 };
 
-const exitLightningMeetingAPI = async ({lightningMeetingId}:{lightningMeetingId: number}) => {
-  const response = await fetch(`/lightning/exit`, {
+const exitLightningMeetingAPI = async ({
+  lightningMeetingId,
+}: {
+  lightningMeetingId: number;
+}) => {
+  const response = await fetch(`/api/lightning/exit`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -54,7 +58,7 @@ const deleteLightningMeetingAPI = async ({
 }: {
   lightningMeetingId: number;
 }) => {
-  const response = await fetch(`/lightning/delete`, {
+  const response = await fetch(`/api/lightning/cancel`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -72,7 +76,7 @@ const getUserLocationAPI = async (): Promise<{
   latitude: number;
   longitude: number;
 }> => {
-  const response = await fetch(`/location/api`, {
+  const response = await fetch(`/api/location`, {
     method: "GET",
     credentials: "include",
   });
@@ -89,7 +93,7 @@ const updateUserLocationAPI = async ({
   latitude: number;
   longitude: number;
 }): Promise<void> => {
-  const response = await fetch(`/location/api`, {
+  const response = await fetch(`/api/location`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -154,10 +158,13 @@ export const useJoinLightningMeeting = () => {
     mutationFn: joinLightningMeetingAPI,
     onSuccess: () => {
       // 참여 상태 쿼리 무효화하여 최신 상태로 업데이트
-      queryClient.invalidateQueries({
-        queryKey: lightningQueryKeys.status(),
-      });
-      console.log("번개 참여 성공");
+      return queryClient
+        .invalidateQueries({
+          queryKey: lightningQueryKeys.status(),
+        })
+        .then(() => {
+          console.log("번개 참여 성공");
+        });
     },
     onError: (error) => {
       console.error("번개 참여 중 에러:", error);
@@ -175,10 +182,13 @@ export const useExitLightningMeeting = () => {
     mutationFn: exitLightningMeetingAPI,
     onSuccess: (data) => {
       // 참여 상태 쿼리 무효화하여 최신 상태로 업데이트
-      queryClient.invalidateQueries({
-        queryKey: lightningQueryKeys.status(),
-      });
-      console.log("번개 탈퇴 성공:", data);
+      return queryClient
+        .invalidateQueries({
+          queryKey: lightningQueryKeys.status(),
+        })
+        .then(() => {
+          console.log("번개 탈퇴 성공:", data);
+        });
     },
     onError: (error) => {
       console.error("번개 탈퇴 중 에러:", error);
@@ -196,7 +206,7 @@ export const useDeleteLightningMeeting = () => {
     mutationFn: deleteLightningMeetingAPI,
     onSuccess: (data) => {
       // 참여 상태 쿼리 무효화하여 최신 상태로 업데이트
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: lightningQueryKeys.status(),
       });
       console.log("번개 삭제 성공:", data);
@@ -217,10 +227,11 @@ export const useUpdateUserLocation = () => {
     mutationFn: updateUserLocationAPI,
     onSuccess: () => {
       // 사용자 위치 쿼리 무효화하여 최신 위치로 업데이트
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: lightningQueryKeys.userLocation(),
+      }).then(()=>{
+        console.log("사용자 위치 업데이트 성공");
       });
-      console.log("사용자 위치 업데이트 성공");
     },
     onError: (error) => {
       console.error("사용자 위치 업데이트 중 에러:", error);
