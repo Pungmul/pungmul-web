@@ -5,8 +5,184 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-nanum-neo: 'NanumSquareNeo';
-  --swiper-theme-color: #816DFF !important;
+  /* 폰트는 layout.tsx에서 localFont로 로드됨 */
+  --swiper-theme-color: #FF5E3E !important;
+
+  --color-primary: #FF5E3E;
+  --color-primary-light: #FF8B8B;
+  --color-primary-dark: #FF4C4C;
+
+  --color-secondary: #FED421;
+
+  --color-correct: #2172FE;
+  --color-warning: #E14141;
+  --color-green: #31DD65;
+
+  --color-kakao: #FEE500;
+  /* 라이트 모드 색상을 기본 변수로 설정 */
+  --color-grey-100: #F7F7F8;
+  --color-grey-200: #EDEEF0;
+  --color-grey-300: #DFE1E4;
+  --color-grey-400: #C6C8CC;
+  --color-grey-500: #A4A6AA;
+  --color-grey-600: #73757A;
+  --color-grey-700: #43454A;
+  --color-grey-800: #232424;
+
+  --color-purple-100: #F2EEFF;
+  --color-purple-200: #CDC5FF;
+  --color-purple-300: #A79DFF;
+  --color-purple-400: #877FFF;
+  --color-purple-500: #6652E0;
+  --color-purple-600: #4A38B3;
+  --color-purple-700: #232424;
+
+  --color-red-100: #FFECEC;
+  --color-red-200: #FFCECE;
+  --color-red-300: #FF8B8B;
+  --color-red-400: #FF6B6B;
+  --color-red-500: #FF4C4C;
+  --color-red-600: #DF4444;
+  --color-red-700: #D13F3F;
+  --color-red-800: #B12F2F;
+
+  --color-lime-100: #EFFFC3;
+  --color-lime-200: #E2FE98;
+  --color-lime-300: #D5FD6A;
+  --color-lime-400: #CAFA40;
+  --color-lime-500: #C8FF00;
+  --color-lime-600: #BDEB00;
+  --color-lime-700: #AED400;
+  --color-lime-800: #A0BC00;
+
+  /* 원본 라이트 모드 색상들 유지 */
+  --color-grey-100-light: #F7F7F8;
+  --color-grey-200-light: #EDEEF0;
+  --color-grey-300-light: #DFE1E4;
+  --color-grey-400-light: #C6C8CC;
+  --color-grey-500-light: #A4A6AA;
+  --color-grey-600-light: #73757A;
+  --color-grey-700-light: #43454A;
+  --color-grey-800-light: #232424;
+
+  --color-purple-100-light: #F2EEFF;
+  --color-purple-200-light: #CDC5FF;
+  --color-purple-300-light: #A79DFF;
+  --color-purple-400-light: #877FFF;
+  --color-purple-500-light: #6652E0;
+  --color-purple-600-light: #4A38B3;
+  --color-purple-700-light: #232424;
+
+  --color-red-100-light: #FFECEC;
+  --color-red-200-light: #FFCECE;
+  --color-red-300-light: #FF8B8B;
+  --color-red-400-light: #FF6B6B;
+  --color-red-500-light: #FF4C4C;
+  --color-red-600-light: #DF4444;
+  --color-red-700-light: #D13F3F;
+  --color-red-800-light: #B12F2F;
+
+  --color-lime-100-light: #EFFFC3;
+  --color-lime-200-light: #E2FE98;
+  --color-lime-300-light: #D5FD6A;
+  --color-lime-400-light: #CAFA40;
+  --color-lime-500-light: #C8FF00;
+  --color-lime-600-light: #BDEB00;
+  --color-lime-700-light: #AED400;
+  --color-lime-800-light: #A0BC00;
+
+  --color-purple-100-dark: #2C2B3A;
+  --color-purple-200-dark: #3B365B;
+  --color-purple-300-dark: #5C50A7;
+  --color-purple-400-dark: #6E5ED3;
+  --color-purple-500-dark: #7866E9;
+  --color-purple-600-dark: #9382EE;
+  --color-purple-700-dark: #B3A7F2;
+  --color-purple-800-dark: #D2CAF6;
+
+  --color-red-100-dark: #622E2E;
+  --color-red-200-dark: #843636;
+  --color-red-300-dark: #A04949;
+  --color-red-400-dark: #B75C5C;
+  --color-red-500-dark: #D34444;
+  --color-red-600-dark: #D58585;
+  --color-red-700-dark: #E89A9A;
+  --color-red-800-dark: #F0BABA;
+
+  --color-grey-100-dark: #343536;
+  --color-grey-200-dark: #404142;
+  --color-grey-300-dark: #515253;
+  --color-grey-400-dark: #6A6B6D;
+  --color-grey-500-dark: #8A8B8D;
+  --color-grey-600-dark: #B0B2B3;
+  --color-grey-700-dark: #D2D3D4;
+  --color-grey-800-dark: #F7F7F8;
+
+  --color-lime-100-dark: #56622E;
+  --color-lime-200-dark: #78833C;
+  --color-lime-300-dark: #8D9644;
+  --color-lime-400-dark: #A2AA4E;
+  --color-lime-500-dark: #D0EA66;
+  --color-lime-600-dark: #D6EE7A;
+  --color-lime-700-dark: #DDF291;
+  --color-lime-800-dark: #E6F6AF;
+
+  --text-h1: 24px;
+  --text-h2: 20px;
+  --text-h3: 18px;
+  --text-h4: 16px;
+
+  --text-m1: 14px;
+  --text-m2: 12px;
+  --text-m3: 10px;
+  --text-m4: 8px;
+}
+
+/* 다크모드 자동 감지 및 색상 전환 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #232424;
+    --foreground: #F7F7F8;
+
+    /* 다크모드에서 색상 변수들을 다크 색상으로 전환 */
+    --color-primary-light: var(--color-primary-dark);
+    
+    --color-grey-100: var(--color-grey-100-dark);
+    --color-grey-200: var(--color-grey-200-dark);
+    --color-grey-300: var(--color-grey-300-dark);
+    --color-grey-400: var(--color-grey-400-dark);
+    --color-grey-500: var(--color-grey-500-dark);
+    --color-grey-600: var(--color-grey-600-dark);
+    --color-grey-700: var(--color-grey-700-dark);
+    --color-grey-800: var(--color-grey-800-dark);
+
+    --color-purple-100: var(--color-purple-100-dark);
+    --color-purple-200: var(--color-purple-200-dark);
+    --color-purple-300: var(--color-purple-300-dark);
+    --color-purple-400: var(--color-purple-400-dark);
+    --color-purple-500: var(--color-purple-500-dark);
+    --color-purple-600: var(--color-purple-600-dark);
+    --color-purple-700: var(--color-purple-700-dark);
+    --color-purple-800: var(--color-purple-800-dark);
+
+    --color-red-100: var(--color-red-100-dark);
+    --color-red-200: var(--color-red-200-dark);
+    --color-red-300: var(--color-red-300-dark);
+    --color-red-400: var(--color-red-400-dark);
+    --color-red-500: var(--color-red-500-dark);
+    --color-red-600: var(--color-red-600-dark);
+    --color-red-700: var(--color-red-700-dark);
+    --color-red-800: var(--color-red-800-dark);
+
+    --color-lime-100: var(--color-lime-100-dark);
+    --color-lime-200: var(--color-lime-200-dark);
+    --color-lime-300: var(--color-lime-300-dark);
+    --color-lime-400: var(--color-lime-400-dark);
+    --color-lime-500: var(--color-lime-500-dark);
+    --color-lime-600: var(--color-lime-600-dark);
+    --color-lime-700: var(--color-lime-700-dark);
+    --color-lime-800: var(--color-lime-800-dark);
+  }
 }
 
 html {
@@ -16,17 +192,10 @@ html {
   /* 상하 스크롤은 가능, 줌 방지 */
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
-
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-nanum-neo);
+  font-family: var(--font-nanum);
   /* font-family: Arial, Helvetica, sans-serif; */
   /* max-width: 420px; */
   touch-action: none;
@@ -40,17 +209,23 @@ body {
 }
 
 #nprogress .bar {
-	@apply bg-[#816DFF] h-[2px] !important;
+  @apply bg-primary h-[2px] !important;
 }
 
 .swiper-pagination-bullet-active {
-  background-color: #816DFF;
+  background-color: var(--color-primary);
 }
 
+input {
+  color: var(--foreground);
+  background-color: var(--background);
+  border: 1px solid var(--color-grey-200);
+}
 
 .border-0\.5 {
   border-width: 0.5px;
 }
+
 /* styles.css */
 .shadow-up-sm {
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
@@ -111,6 +286,7 @@ body {
   50% {
     transform: translateX(100%);
   }
+
   100% {
     transform: translateX(-100%);
   }
@@ -128,12 +304,10 @@ body {
 
 .ligtning-card-sign {
   overflow: hidden;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(154, 255, 65, 0.8) 0%,
-    rgba(26, 255, 68, 0.2) 50%,
-    rgba(179, 255, 28, 0.629) 60%
-  );
+  background: radial-gradient(ellipse at center,
+      rgba(154, 255, 65, 0.8) 0%,
+      rgba(26, 255, 68, 0.2) 50%,
+      rgba(179, 255, 28, 0.629) 60%);
   background-size: 100% 100%;
   width: calc(100% + 128px);
   height: calc(100% + 128px);
@@ -155,8 +329,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  --bg-default: #E3E3E3;
-  --highlight: #f0f0f0;
+  --bg-default: var(--color-grey-300);
+  --highlight: var(--color-grey-100);
   will-change: transform;
   background: linear-gradient(to right, var(--bg-default), var(--highlight), var(--bg-default));
   animation: loading 3s infinite linear;
@@ -164,7 +338,377 @@ body {
 
 .skeleton-container {
   overflow: hidden;
-  --bg-default: #E3E3E3;
+  --bg-default: var(--color-grey-300);
   background-color: var(--bg-default);
   position: relative;
+}
+
+/* =================================
+   디자인 시스템 유틸리티 클래스들
+   ================================= */
+
+/* 타이포그래피 클래스 */
+.text-h1 {
+  font-size: var(--text-h1);
+  font-family: var(--font-nanum-neo);
+  font-weight: 800;
+  /* extra-bold */
+}
+
+.text-h2 {
+  font-size: var(--text-h2);
+  font-family: var(--font-nanum-neo);
+  font-weight: 700;
+  /* bold */
+}
+
+.text-h3 {
+  font-size: var(--text-h3);
+  font-family: var(--font-nanum-neo);
+  font-weight: 700;
+  /* bold */
+}
+
+.text-h4 {
+  font-size: var(--text-h4);
+  font-family: var(--font-nanum-neo);
+  font-weight: 600;
+  /* semi-bold */
+}
+
+/* 미디어 텍스트 클래스 (본문용) */
+.text-m1 {
+  font-size: var(--text-m1);
+  font-family: var(--font-nanum-neo);
+  font-weight: 400;
+  /* regular */
+}
+
+.text-m2 {
+  font-size: var(--text-m2);
+  font-family: var(--font-nanum-neo);
+  font-weight: 400;
+  /* regular */
+}
+
+.text-m3 {
+  font-size: var(--text-m3);
+  font-family: var(--font-nanum-neo);
+  font-weight: 400;
+  /* regular */
+}
+
+.text-m4 {
+  font-size: var(--text-m4);
+  font-family: var(--font-nanum-neo);
+  font-weight: 300;
+  /* light */
+}
+
+/* 색상 조합 클래스 */
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.text-muted {
+  color: var(--color-grey-400);
+}
+
+.text-danger {
+  color: var(--color-warning);
+}
+
+.text-success {
+  color: var(--color-correct);
+}
+
+/* 그레이 색상 세부 클래스 */
+.text-grey-100 {
+  color: var(--color-grey-100);
+}
+
+.text-grey-200 {
+  color: var(--color-grey-200);
+}
+
+.text-grey-300 {
+  color: var(--color-grey-300);
+}
+
+.text-grey-400 {
+  color: var(--color-grey-400);
+}
+
+.text-grey-500 {
+  color: var(--color-grey-500);
+}
+
+.text-grey-600 {
+  color: var(--color-grey-600);
+}
+
+.text-grey-700 {
+  color: var(--color-grey-700);
+}
+
+.text-grey-800 {
+  color: var(--color-grey-800);
+}
+
+.text-grey-900 {
+  color: var(--color-grey-900);
+}
+
+/* 보라색 세부 클래스 */
+.text-purple-100 {
+  color: var(--color-purple-100);
+}
+
+.text-purple-200 {
+  color: var(--color-purple-200);
+}
+
+.text-purple-300 {
+  color: var(--color-purple-300);
+}
+
+.text-purple-400 {
+  color: var(--color-purple-400);
+}
+
+.text-purple-500 {
+  color: var(--color-purple-500);
+}
+
+.text-purple-600 {
+  color: var(--color-purple-600);
+}
+
+.text-purple-700 {
+  color: var(--color-purple-700);
+}
+
+.text-purple-800 {
+  color: var(--color-purple-800);
+}
+
+.text-purple-900 {
+  color: var(--color-purple-900);
+}
+
+/* 기본 색상 */
+.text-white {
+  color: white;
+}
+
+.text-black {
+  color: black;
+}
+
+/* 배경색 조합 */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+
+.bg-danger {
+  background-color: var(--color-warning);
+}
+
+.bg-success {
+  background-color: var(--color-correct);
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: var(--text-m2);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(129, 109, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+  box-shadow: 0 4px 16px rgba(129, 109, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(129, 109, 255, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--background);
+  color: var(--color-primary);
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: var(--text-m2);
+  font-weight: 600;
+  border: 2px solid var(--color-primary-light);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(129, 109, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 카드 스타일 */
+.card {
+  background-color: var(--background);
+  border: 1px solid var(--color-grey-200);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--color-grey-200);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+/* 간격 유틸리티 */
+.space-xs {
+  gap: 4px;
+}
+
+.space-sm {
+  gap: 8px;
+}
+
+.space-md {
+  gap: 16px;
+}
+
+.space-lg {
+  gap: 24px;
+}
+
+.space-xl {
+  gap: 32px;
+}
+
+.p-xs {
+  padding: 4px;
+}
+
+.p-sm {
+  padding: 8px;
+}
+
+.p-md {
+  padding: 16px;
+}
+
+.p-lg {
+  padding: 24px;
+}
+
+.p-xl {
+  padding: 32px;
+}
+
+.m-xs {
+  margin: 4px;
+}
+
+.m-sm {
+  margin: 8px;
+}
+
+.m-md {
+  margin: 16px;
+}
+
+.m-lg {
+  margin: 24px;
+}
+
+.m-xl {
+  margin: 32px;
+}
+
+/* 컴포넌트별 스타일 */
+.input-field {
+  padding: 12px 16px;
+  border: 2px solid var(--color-grey-200);
+  border-radius: 12px;
+  font-size: var(--text-m2);
+  font-weight: 500;
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-field:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 2px 6px rgba(129, 109, 255, 0.1);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(129, 109, 255, 0.1), 0 4px 12px rgba(129, 109, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.input-field::placeholder {
+  color: var(--color-grey-400);
+  font-weight: 400;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: var(--text-h6);
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: var(--color-purple-100);
+  color: var(--color-purple-700);
+}
+
+.badge-secondary {
+  background-color: var(--color-grey-100);
+  color: var(--color-grey-700);
+}
+
+.badge-danger {
+  background-color: var(--color-red-100);
+  color: var(--color-red-700);
+}
+
+.badge-success {
+  background-color: var(--color-lime-100);
+  color: var(--color-lime-700);
 }

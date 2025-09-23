@@ -9,6 +9,9 @@ const nextConfig = {
     ],
     minimumCacheTTL: 60 * 60 * 1000,
   },
+  experimental:{
+    scrollRestoration: true,
+  },
   allowedDevOrigins: ["http://localhost:3000", "http://192.168.0.10:3000"],
 };
 

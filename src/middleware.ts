@@ -12,7 +12,6 @@ export async function middleware(req: NextRequest) {
   ) {
     return NextResponse.next();
   }
-
   const cookieStore = await cookies();
 
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -20,7 +19,7 @@ export async function middleware(req: NextRequest) {
   const kakaoSignUpToken = cookieStore.get("signUpToken")?.value;
   // 로그인 상태에서 로그인/회원가입 페이지 접근 시 홈으로 리다이렉트
 
-  if (req.nextUrl.pathname.startsWith("/kakao/callback")) {
+  if (req.nextUrl.pathname.startsWith("/api/auth/kakao/callback")) {
     return NextResponse.next();
   }
 
@@ -49,7 +48,8 @@ export async function middleware(req: NextRequest) {
       !req.nextUrl.pathname.startsWith("/login") &&
       !req.nextUrl.pathname.startsWith("/sign-up") &&
       !req.nextUrl.pathname.startsWith("/cookie") &&
-      !req.nextUrl.pathname.startsWith("/kakao/login")
+      !req.nextUrl.pathname.startsWith("/kakao/login") &&
+      !req.nextUrl.pathname.startsWith("/reset-password")
     ) {
       cookieStore.delete("accessToken");
       cookieStore.delete("refreshToken");
@@ -86,8 +86,8 @@ export async function middleware(req: NextRequest) {
   if (
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/sign-up") ||
-    req.nextUrl.pathname.startsWith("/cookie") ||
-    req.nextUrl.pathname.startsWith("/kakao/login")
+    req.nextUrl.pathname.startsWith("/api/auth/cookie") ||
+    req.nextUrl.pathname.startsWith("/api/auth/kakao/login")
   ) {
     if (accessToken) {
       return NextResponse.redirect(new URL("/home", req.url));

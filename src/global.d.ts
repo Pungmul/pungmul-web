@@ -1,7 +1,7 @@
 export declare global {
   interface Window {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    kakao: any;
+    // kakao: any;
     ReactNativeWebView?: {
       postMessage: (message: string) => void;
       // 필요한 다른 메서드들 추가 가능
@@ -13,7 +13,20 @@ export declare global {
     };
   }
 
-  type ClubName = "어흥" | "떼" | "하날다래" | "악반" | "푸른소래" | "산틀";  
+  interface AlarmMessage {
+    messageLogId: number;
+    domainType: "CHAT";
+    businessIdentifier: string;
+    identifier: string;
+    stompDest: string;
+    content: string;
+  }
+
+  interface WindowEventMap {
+    chatRoomUpdate: CustomEvent<AlarmMessage>;
+  }
+
+  type ClubName = "어흥" | "떼" | "하날다래" | "악반" | "푸른소래" | "산틀" | "없음";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type KakaoMap = any;
 
@@ -24,7 +37,7 @@ export declare global {
     | "DEFAMATION"
     | "OFF_TOPIC"
     | "OTHER";
-    
+
   type CommentReportType =
     | "INCITING_TROUBLE"
     | "PORNOGRAPHY"
@@ -39,6 +52,11 @@ export declare global {
   // DEFAMATION: 특정인 비방
   // OFF_TOPIC: 주제에 맞지 않는 게시물
   // OTHER: 기타x
+
+  interface TabItem {
+    label: string;
+    value: string;
+  }
 }
 
 declare module "nprogress" {
