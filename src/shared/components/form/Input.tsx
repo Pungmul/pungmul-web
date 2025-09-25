@@ -2,30 +2,29 @@
 
 import { HTMLInputTypeAttribute, InputHTMLAttributes, useState } from "react";
 import { josa } from "es-hangul";
-import Image from "next/image";
-import WarningCircleIcon from "@public/icons/Warning-circle-icon.svg";
-import EyeIcon from "../ui/EyeIcon";
-import EyeSlashIcon from "../ui/EyeSlashIcon";
+import { WarningCircleIcon } from "@/shared/components/Icons";
+import { EyeIcon, EyeSlashIcon } from "../Icons";
 import "@pThunder/app/globals.css";
+import React from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   type?: HTMLInputTypeAttribute;
   placeholder?: string;
-  className?: string;
-  label: string;
-  errorMessage?: string;
+  label?: string;
+  errorMessage?: string | undefined;
   isEncrypted?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  ref?: React.RefCallback<HTMLInputElement | null>;
 }
-export function Input(props: InputProps) {
+function Input(props: InputProps) {
   const {
     type = "text",
-    className,
-    label,
+    label = "",
     errorMessage,
     isEncrypted = false,
     placeholder = `${josa(label, "을/를")} 입력해주세요.`,
     onChange,
+    ref,
     ...rest
   } = props;
 
@@ -36,54 +35,53 @@ export function Input(props: InputProps) {
   };
 
   return (
-    <div className="w-full">
+    <label className="w-full" htmlFor={label}>
       <div className="flex flex-col gap-[4px]">
+        {label.trim().length > 0 && (
+          <span className="text-grey-500 px-[4px] text-[14px]">{label}{rest.required && <span className="text-red-500 ml-[4px]">*</span>}</span>
+        )}
         <div
-          className="text-grey-500 pl-[4px] text-[14px]"
-        >
-          {label}
-        </div>
-        <div
-          className={`flex flex-row items-center border box-border ${
-            errorMessage ? "border-2 border-red-400" : "border-grey-500"
-          } ${rest.disabled ? "bg-grey-100 text-grey-400 cursor-not-allowed" : ""}`}
-          style={{ gap: 8, padding: "8px 8px", borderRadius: 5 }}
+          className={`relative flex flex-row items-center border-[2px] box-border gap-[8px] px-[8px] h-[48px] rounded-[5px] ${
+            !!errorMessage
+              ? "border-red-400"
+              : "border-grey-300 focus-within:border-grey-500"
+          } ${
+            rest.disabled ? "bg-grey-100 text-grey-600 cursor-not-allowed border-grey-300" : ""
+          }`}
         >
           <input
+            ref={ref}
             placeholder={placeholder}
             onChange={onChange}
-            {...rest}
-            className={`flex-grow outline-none placeholder-grey-300 text-grey-500 ${rest.disabled ? "placeholder:bg-grey-100 placeholder-grey-500" : ""} ${className} `}
             type={isEncrypted ? (visible ? "text" : "password") : type}
+            id={label.trim().length > 0 ? label : undefined}
+            {...rest}
+            className={`flex-grow w-full outline-none placeholder-grey-300 text-grey-500 bg-transparent border-none h-full ${
+              rest.disabled
+                ? "placeholder:bg-grey-100 placeholder-grey-500"
+                : ""
+            } ${rest.className} `}
           />
           {isEncrypted && (
             <span
-              className="w-[24px] h-[24px] cursor-pointer flex items-center justify-center"
+              className="size-[32px] p-[4px] cursor-pointer flex items-center justify-center text-grey-300 hover:text-grey-500"
               onClick={toggleVisible}
             >
-              {visible ? (
-                <EyeIcon className="text-grey-300" />
-              ) : (
-                <EyeSlashIcon className="text-grey-300" />
-              )}
+              {visible ? <EyeIcon /> : <EyeSlashIcon />}
             </span>
           )}
         </div>
-        {errorMessage && (
-          <div
-            className="flex flex-row items-center"
-            style={{ gap: 4}}
-          >
-            <Image src={WarningCircleIcon} width={12} alt="" />
-            <div
-              className="text-red-500 max-w-full"
-              style={{ fontSize: 12, lineHeight: "15px" }}
-            >
+        {!!errorMessage && (
+          <div className="flex flex-row items-center gap-[4px]">
+            <WarningCircleIcon className="text-red-400" />
+            <div className="text-red-500 max-w-full text-[12px]">
               {errorMessage}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </label>
   );
 }
+
+export default React.memo(Input);

@@ -1,9 +1,8 @@
 import * as React from "react";
-
-type KakaoLogoProps = Omit<React.SVGProps<SVGSVGElement>, "color">;
+import { IconProps } from "../../types/type";
 
 function KakaoLogo(
-  { ...props }: KakaoLogoProps,
+  { ...props }: IconProps,
   svgRef: React.Ref<SVGSVGElement>
 ) {
   return /*#__PURE__*/ React.createElement(
@@ -57,9 +56,6 @@ function KakaoLogo(
   );
 }
 
-const ForwardRef = /*#__PURE__*/ React.forwardRef<
-  SVGSVGElement,
-  KakaoLogoProps
->(KakaoLogo);
-export default ForwardRef;
+const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, IconProps>(KakaoLogo);
+export default React.memo(ForwardRef);
 

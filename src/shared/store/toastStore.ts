@@ -1,8 +1,10 @@
 import { create } from "zustand";
 
+type ToastType = "success" | "error" | "warning" | "info";
+
 interface ToastProps {
   message: string;
-  type: "success" | "error" | "warning" | "info";
+  type: ToastType;
   duration: number;
 }
 
@@ -31,7 +33,7 @@ export const Toast = {
     duration = 5000,
   }: {
     message: string;
-    type?: "success" | "error" | "warning" | "info";
+    type?: ToastType;
     duration?: number;
   }) => {
     toastStore.setState({
@@ -47,3 +49,4 @@ export const Toast = {
     toastStore.setState({ visible: false });
   },
 };
+

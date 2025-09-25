@@ -3,35 +3,44 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useView } from "@/shared/lib/useView";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 
-import HomeIconOutline from "@public/icons/Home-icon-outline.svg";
-import HomeIconFilled from "@public/icons/Home-icon-filled.svg";
-import ThunderIconOutline from "@public/icons/Thunder-Icon-outline.svg";
-import ThunderIconFilled from "@public/icons/Thunder-Icon-filled.svg";
-import BoardIconOutline from "@public/icons/Board-icon-outline.svg";
-import BoardIconFilled from "@public/icons/Board-icon-filled.svg";
-import ChatIconOutline from "@public/icons/Chat-icon-outline.svg";
-import ChatIconFilled from "@public/icons/Chat-icon-filled.svg";
+import {
+  HomeIconOutline,
+  HomeIconFilled,
+  ThunderIconOutline,
+  ThunderIconFilled,
+  BoardIconOutline,
+  BoardIconFilled,
+  NotificationIcon,
+} from "@/shared/components/Icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { Spinner } from "@pThunder/shared";
-import { Suspense } from "react";
 import { Header } from "@/shared/components/layout/Header";
 import { NotificationList } from "@pThunder/features/notification";
 import ProfileCircle from "@pThunder/features/my-page/components/widget/ProfileCircle";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useGetMyPageInfo } from "@pThunder/features/my-page";
+import ChatMenuButton from "./ChatMenuButton/ChatMenuButton";
 
 export default function BottomTabs() {
   const view = useView();
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const notificationOverlayRef = useRef<HTMLDivElement>(null);
+  const notificationListRef = useRef<{ refetch: () => void } | null>(null);
 
   const [tabsWidth, setTabsWidth] = useState(0);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
-  const { data: myPageInfo , isLoading} = useGetMyPageInfo();
+  const { data: myPageInfo, isLoading } = useGetMyPageInfo();
+
+  useEffect(() => {
+    if (notificationListRef.current && isNotificationOpen) {
+      notificationListRef.current.refetch();
+    }
+  }, [isNotificationOpen]);
 
   useEffect(() => {
     const element = tabsRef.current;
@@ -69,7 +78,7 @@ export default function BottomTabs() {
       refreshToken: string;
     }) => {
       try {
-        const res = await fetch("/cookie", {
+        const res = await fetch("/api/auth/cookie", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(tokens),
@@ -125,7 +134,6 @@ export default function BottomTabs() {
   const pathname = usePathname(); // 현재 경로 가져오기
 
   if (view === "webview") {
-    // webview에서의 동작
     return null;
   }
 
@@ -134,120 +142,127 @@ export default function BottomTabs() {
     pathname !== "/home" &&
     pathname !== "/board/main" &&
     pathname !== "/chats/r/inbox" &&
-    pathname != "/lightning" &&
-    pathname != "/my-page"
+    pathname !== "/lightning" &&
+    pathname !== "/my-page"
   )
     return null;
 
-  // const webviewAction = ()=>{
-  //     window.ReactNativeWebView
-  // }
   return (
     <>
       <nav
-        className="w-full h-[84px] justify-between bg-white flex-shrink-0 flex flex-row bottom-0 border-t items-center sticky z-30 
-        md:border-r md:border-t-0 md:flex-col md:w-auto md:h-dvh md:justify-start md:gap-[24px] md:top-0"
-        style={{ padding: "12px 32px 24px 32px" }}
+        className={`w-full py-[8px] bg-background flex-shrink-0 border-t sticky z-30 md:border-r md:border-t-0 md:w-auto md:h-dvh px-[32px] ${
+          view === "desktop" ? " top-0" : " bottom-0"
+        }`}
         ref={tabsRef}
       >
-        {/* home page button */}
-        <Link
-          href={"/home"}
-          className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
-          prefetch
-        >
-          {pathname.startsWith("/home") ? (
-            <Image src={HomeIconFilled} width={36} alt="" />
-          ) : (
-            <Image src={HomeIconOutline} width={36} alt="" />
-          )}
-          <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
-            홈
-          </div>
-        </Link>
-        {/* newsfeed page button  */}
-        {/* <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/newsfeed')}>
+        <div>
+          <ul className="list-none w-full flex flex-row md:flex-col md:gap-[24px] items-center justify-between md:justify-start">
+            <li className="hidden md:block">
+              <Link
+                href={"/home"}
+                className="relative h-12 w-full cursor-pointer hidden md:block"
+              >
+                <Image
+                  src={"/logos/pungdeong_logo.png"}
+                  alt="logo"
+                  className="object-contain w-full h-full"
+                  fill
+                />
+              </Link>
+            </li>
+            <li>
+              {/* home page button */}
+              <Link
+                href={"/home"}
+                className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
+                prefetch
+              >
+                {pathname.startsWith("/home") ? (
+                  <HomeIconFilled className="w-[36px] h-[36px] text-grey-800" />
+                ) : (
+                  <HomeIconOutline className="w-[36px] h-[36px] text-grey-800" />
+                )}
+                <span className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-grey-800">
+                  홈
+                </span>
+              </Link>
+            </li>
+
+            {/* newsfeed page button  */}
+            {/* <div className="w-12 h-12 justify-center items-center cursor-pointer flex" onClick={() => router.push('/newsfeed')}>
                 {pathname == '/newsfeed' ? <Image src={NewsFeedIconFilled} width={36} alt="" /> : <Image src={NewsFeedIconOutline} width={36} alt="" />}
             </div> */}
-        {/* lightning page button */}
-        <Link
-          href={"/lightning"}
-          className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
-        >
-          {pathname.startsWith("/lightning") ? (
-            <Image src={ThunderIconFilled} width={36} alt="" />
-          ) : (
-            <Image src={ThunderIconOutline} width={36} alt="" />
-          )}
-          <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
-            번개
-          </div>
-        </Link>
-        {/* board page button */}
-        <Link
-          href={"/board/main"}
-          className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
-        >
-          {pathname.startsWith("/board") ? (
-            <Image src={BoardIconFilled} width={36} alt="" />
-          ) : (
-            <Image src={BoardIconOutline} width={36} alt="" />
-          )}
-          <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
-            게시판
-          </div>
-        </Link>
-        {/* chat page button */}
-        <Link
-          href={"/chats"}
-          className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
-          prefetch
-        >
-          {pathname.startsWith("/chats") ? (
-            <Image src={ChatIconFilled} width={36} alt="" />
-          ) : (
-            <Image src={ChatIconOutline} width={36} alt="" />
-          )}
-          <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
-            채팅
-          </div>
-        </Link>
-        <div
-          className="hidden md:flex h-12 justify-center items-center cursor-pointer gap-[24px] flex-row"
-          onClick={() => setIsNotificationOpen(true)}
-        >
-          {/* notification button */}
-          <Image
-            src={"/icons/Notification-Icon.svg"}
-            width={36}
-            height={36}
-            alt=""
-            className="cursor-pointer"
-          />
-          <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
-            알림
-          </div>
+
+            <li>
+              {" "}
+              {/* lightning page button */}
+              <Link
+                href={"/lightning"}
+                className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
+              >
+                {pathname.startsWith("/lightning") ? (
+                  <ThunderIconFilled className="w-[36px] h-[36px] text-grey-800" />
+                ) : (
+                  <ThunderIconOutline className="w-[36px] h-[36px] text-grey-800" />
+                )}
+                <span className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-grey-800">
+                  번개
+                </span>
+              </Link>
+            </li>
+
+            {/* board page button */}
+            <li>
+              <Link
+                href={"/board/main"}
+                className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
+              >
+                {pathname.startsWith("/board") ? (
+                  <BoardIconFilled className="w-[36px] h-[36px] text-grey-800" />
+                ) : (
+                  <BoardIconOutline className="w-[36px] h-[36px] text-grey-800" />
+                )}
+                <span className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-grey-800">
+                  게시판
+                </span>
+              </Link>
+            </li>
+
+            {/* chat page button */}
+            <li>
+              <ChatMenuButton />
+            </li>
+            <li className="hidden md:block">
+              <button
+                type="button"
+                className="hidden md:flex h-12 justify-center items-center cursor-pointer gap-[24px] flex-row"
+                onClick={() => setIsNotificationOpen(true)}
+              >
+                {/* notification button */}
+                <NotificationIcon className="w-[36px] h-[36px] text-grey-800 cursor-pointer" />
+                <span className="hidden 2xl:block text-left w-[100px] text-[16px] self-end pb-[8px] font-semibold text-grey-800">
+                  알림
+                </span>
+              </button>
+            </li>
+            <li>
+              <Link
+                href={"/my-page"}
+                className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
+                prefetch
+              >
+                {isLoading || !myPageInfo ? (
+                  <UserCircleIcon className="w-[36px] h-[36px] text-grey-800" />
+                ) : (
+                  <ProfileCircle myInfo={myPageInfo} />
+                )}
+                <span className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-grey-800">
+                  프로필
+                </span>
+              </Link>
+            </li>
+          </ul>
         </div>
-        <Link
-          href={"/my-page"}
-          className="h-12 justify-center items-center cursor-pointer flex gap-[24px] flex-row"
-          prefetch
-        >
-          {isLoading || !myPageInfo ? (
-            <Image
-              src={"/icons/MyPage-Icon.svg"}
-              width={36}
-              height={36}
-              alt=""
-              className="rounded-full object-cover object-center overflow-hidden"
-            />
-          ) : (
-            <ProfileCircle myInfo={myPageInfo} />
-          )}
-          <div className="hidden 2xl:block w-[100px] text-[16px] self-end pb-[8px] font-semibold text-black">
-            프로필
-          </div>
-        </Link>
       </nav>
       <AnimatePresence mode="wait">
         {isNotificationOpen && (
@@ -258,7 +273,7 @@ export default function BottomTabs() {
             animate={{ x: tabsWidth }}
             exit={{ x: -360 + tabsWidth }}
             transition={{ duration: 0.5 }}
-            className="md:flex hidden absolute bottom-0 left-0 w-[360px] h-full flex-shrink-0  flex-col items-center justify-between bg-white border backdrop-blur-sm z-20"
+            className="md:flex hidden fixed left-0 top-0 bottom-0 w-[360px] h-dvh flex-shrink-0  flex-col items-center justify-between bg-background border backdrop-blur-sm z-20"
           >
             <Header
               title="알림"
@@ -279,7 +294,7 @@ export default function BottomTabs() {
                 </div>
               }
             >
-              <NotificationList />
+              <NotificationList ref={notificationListRef} />
             </Suspense>
           </motion.div>
         )}

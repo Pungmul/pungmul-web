@@ -1,8 +1,7 @@
-import { SVGProps } from "react";
+import { IconProps } from "../../types/type";
+import { memo } from "react";
 
-type EyeIconProps = SVGProps<SVGSVGElement>;
-
-export default function EyeIcon(props: EyeIconProps) {
+const EyeIcon = memo(function EyeIcon(props: IconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,4 +24,6 @@ export default function EyeIcon(props: EyeIconProps) {
       />
     </svg>
   );
-}
+});
+
+export default EyeIcon;

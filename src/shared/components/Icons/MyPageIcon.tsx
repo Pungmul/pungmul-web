@@ -1,0 +1,28 @@
+import * as React from "react";
+import { IconProps } from "../../types/type";
+
+function MyPageIcon({
+  title,
+  titleId,
+  ...props
+}: IconProps, svgRef: React.Ref<SVGSVGElement>) {
+  return /*#__PURE__*/React.createElement("svg", Object.assign({
+    width: "32",
+    height: "32",
+    viewBox: "0 0 32 32",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    ref: svgRef,
+    "aria-labelledby": titleId
+  }, props), title ? /*#__PURE__*/React.createElement("title", {
+    id: titleId
+  }, title) : null, /*#__PURE__*/React.createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M8.19227 22.2487C8.99086 18.6728 12.1833 16 16 16C19.8167 16 23.0091 18.6728 23.8077 22.2487C25.1795 20.5369 26 18.3643 26 16C26 10.4772 21.5228 6 16 6C10.4772 6 6 10.4772 6 16C6 18.3643 6.82049 20.5369 8.19227 22.2487ZM23.9382 24.9994C26.429 22.8006 28 19.5837 28 16C28 9.37258 22.6274 4 16 4C9.37258 4 4 9.37258 4 16C4 19.5837 5.57097 22.8006 8.06182 24.9994C10.1773 26.8668 12.9563 28 16 28C18.8995 28 21.5588 26.9717 23.6331 25.2598C23.7363 25.1747 23.838 25.0878 23.9382 24.9994ZM16 15C18.2091 15 20 13.2091 20 11C20 8.79086 18.2091 7 16 7C13.7909 7 12 8.79086 12 11C12 13.2091 13.7909 15 16 15Z",
+    fill: "currentColor"
+  }));
+}
+
+const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, IconProps>(MyPageIcon);
+export default React.memo(ForwardRef);

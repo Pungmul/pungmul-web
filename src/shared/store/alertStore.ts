@@ -72,7 +72,7 @@ export const alertStore = create<AlertStore>((set) => ({
     onCancel,
     confirmText = "확인",
     cancelText = "취소",
-    confirmColor = "#000000",
+    confirmColor = "var(--color-grey-800)",
   }) => {
     const handleConfirm = () => {
       onConfirm?.();
@@ -103,3 +103,28 @@ export const alertStore = create<AlertStore>((set) => ({
     set({ isOpen: false });
   },
 }));
+
+
+export const Alert = {
+  alert: (data: {
+    title: string;
+    message: string;
+    subMessage?: string;
+    onConfirm?: () => void;
+    confirmText?: string;
+  }) => {
+    alertStore.getState().alert(data);
+  },
+  confirm: (data: {
+    title: string;
+    message: string;
+    subMessage?: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    confirmText?: string;
+    cancelText?: string;
+    confirmColor?: CSSProperties["color"];
+  }) => {
+    alertStore.getState().confirm(data);
+  },
+};

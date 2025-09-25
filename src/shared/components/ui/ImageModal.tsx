@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import ReactDOM from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion, PanInfo, useAnimate } from "framer-motion";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
 }) => {
   const [isClient, setIsClient] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [isIndicatorVisible, setIsIndicatorVisible] = useState(false);
+  const [isIndicatorVisible, setIsIndicatorVisible] = useState(true);
   const [imageContainerRef, animateImageContainer] =
     useAnimate<HTMLDivElement>();
   const controlsRef = useRef<HTMLElement[]>([]);
@@ -36,15 +37,16 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
     return () => {
       document.body.style.overflow = "";
+      setIsIndicatorVisible(true);
     };
   }, [isOpen, initialIndex]);
 
   const goToPrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : 0));
   }, [images.length]);
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : images.length - 1));
   }, [images.length]);
 
   const handleKeyDown = useCallback(
@@ -156,7 +158,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
         />
 
         {/* Previous button */}
-        {images.length > 1 && (
+        {images.length > 1 && currentIndex > 0 && (
           <section
             ref={(el) => {
               if (el) controlsRef.current[0] = el;
@@ -170,12 +172,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 goToPrevious();
               }}
               className={
-                "z-10 w-8 h-8 flex items-center justify-center bg-white bg-opacity-50 text-black rounded-full hover:bg-opacity-70 transition-all md:w-10 md:h-10 " +
+                "z-10 w-8 h-8 flex items-center justify-center bg-background bg-opacity-50 text-grey-800 rounded-full hover:bg-opacity-70 transition-all md:w-10 md:h-10 " +
                 (isIndicatorVisible ? "block" : "hidden")
               }
               title="이전 이미지"
             >
-              <span className="text-2xl leading-none">‹</span>
+              <ChevronLeftIcon className="w-8 h-8" />
             </button>
           </section>
         )}
@@ -195,7 +197,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
             onDragEnd={handleDragEnd}
             onClick={toggleIndicator}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="relative m-12 md:m-4 rounded-lg overflow-hidden bg-white"
+            className="relative m-12 md:m-4 rounded-lg overflow-hidden"
           >
             <div className=" flex-grow flex items-center justify-center">
               <Image
@@ -211,7 +213,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
         )}
 
         {/* Next button */}
-        {images.length > 1 && (
+        {images.length > 1 && currentIndex < images.length - 1 && (
           <section
             ref={(el) => {
               if (el) controlsRef.current[1] = el;
@@ -225,12 +227,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 goToNext();
               }}
               className={
-                "z-10 w-8 h-8 flex items-center justify-center bg-white bg-opacity-50 text-black rounded-full hover:bg-opacity-70 transition-all md:w-10 md:h-10 " +
+                "z-10 w-8 h-8 flex items-center justify-center bg-background bg-opacity-50 text-grey-800 rounded-full hover:bg-opacity-70 transition-all md:w-10 md:h-10 " +
                 (isIndicatorVisible ? "block" : "hidden")
               }
               title="다음 이미지"
             >
-              <span className="text-2xl leading-none">›</span>
+              <ChevronRightIcon className="w-8 h-8" />
             </button>
           </section>
         )}
@@ -241,7 +243,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
             ref={(el) => {
               if (el) controlsRef.current[2] = el;
             }}
-            className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 px-3 py-2 bg-black bg-opacity-50 text-white text-sm rounded-full ${
+            className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 px-3 py-2 bg-background bg-opacity-50 text-grey-800 text-sm rounded-full ${
               isIndicatorVisible ? "block" : "hidden"
             }`}
           >

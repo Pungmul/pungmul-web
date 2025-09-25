@@ -1,15 +1,11 @@
 import * as React from "react";
-
-interface ShortAnswerOutlineProps extends React.SVGProps<SVGSVGElement> {
-  title?: string;
-  titleId?: string;
-}
+import { IconProps } from "../../types/type";
 
 function ShortAnswerOutline({
   title,
   titleId,
   ...props
-}: ShortAnswerOutlineProps, svgRef: React.Ref<SVGSVGElement>) {
+}: IconProps, svgRef: React.Ref<SVGSVGElement>) {
   return /*#__PURE__*/React.createElement("svg", Object.assign({
     width: "24",
     height: "24",
@@ -28,5 +24,5 @@ function ShortAnswerOutline({
   }));
 }
 
-const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, ShortAnswerOutlineProps>(ShortAnswerOutline);
-export default ForwardRef;
+const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, IconProps>(ShortAnswerOutline);
+export default React.memo(ForwardRef);

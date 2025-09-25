@@ -1,8 +1,7 @@
-import { SVGProps } from "react";
+import { IconProps } from "../../types/type";
+import { memo } from "react";
 
-type EyeSlashIconProps = SVGProps<SVGSVGElement>;
-
-export default function EyeSlashIcon(props: EyeSlashIconProps) {
+const EyeSlashIcon = memo(function EyeSlashIcon(props: IconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -20,4 +19,6 @@ export default function EyeSlashIcon(props: EyeSlashIconProps) {
       />
     </svg>
   );
-}
+});
+
+export default EyeSlashIcon;

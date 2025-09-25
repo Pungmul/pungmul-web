@@ -1,15 +1,11 @@
 import * as React from "react";
-
-interface CheckBoxOutlineProps extends React.SVGProps<SVGSVGElement> {
-  title?: string;
-  titleId?: string;
-}
+import { IconProps } from "../../types/type";
 
 function CheckBoxOutline({
   title,
   titleId,
   ...props
-}: CheckBoxOutlineProps, svgRef: React.Ref<SVGSVGElement>) {
+}: IconProps, svgRef: React.Ref<SVGSVGElement>) {
   return /*#__PURE__*/React.createElement("svg", Object.assign({
     width: "24",
     height: "24",
@@ -39,8 +35,8 @@ function CheckBoxOutline({
   }));
 }
 
-const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, CheckBoxOutlineProps>(CheckBoxOutline);
-export default ForwardRef;
+const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, IconProps>(CheckBoxOutline);
+export default React.memo(ForwardRef);
 
 {/* <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="2.75" y="2.75" width="18.5" height="18.5" rx="1.25" stroke="#A4A6AA" stroke-width="1.5"/>

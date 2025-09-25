@@ -12,6 +12,7 @@ interface ModalProps {
   style?: React.CSSProperties;
   className?: string;
   headerClassName?: string;
+  overflow?: "visible" | "hidden" | "auto";
 }
 
 const Modal = forwardRef<HTMLDivElement, ModalProps>(
@@ -25,6 +26,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       style,
       className,
       headerClassName,
+      overflow = "auto",
     },
     ref
   ) => {
@@ -53,7 +55,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     return ReactDOM.createPortal(
       <div
         ref={ref}
-        className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-50"
+        className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50"
       >
         <div
           className="absolute top-0 left-0 w-full h-full"
@@ -64,7 +66,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
         />
         <div
           className={
-            "relative flex flex-col bg-white rounded-md shadow-lg p-4 " +
+            "relative flex flex-col bg-background rounded-md shadow-lg p-4 " +
             `${className}`
           }
           style={{ minWidth: 386, ...style }}
@@ -74,7 +76,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
         >
           {hasHeader && (
             <div
-              className={`relative flex flex-row justify-center items-center px-4 border-b flex-shrink-0 ${headerClassName}`}
+              className={`relative flex flex-row justify-center items-center px-4 border-b border-b-grey-100 flex-shrink-0 ${headerClassName}`}
               style={{
                 height: "56px",
               }}
@@ -94,7 +96,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
               </div>
             </div>
           )}
-          <div className="relative flex-grow overflow-y-auto overflow-x-visible">
+          <div className={`relative flex-grow overflow-y-${overflow} overflow-x-visible`}>
             {children}
           </div>
         </div>

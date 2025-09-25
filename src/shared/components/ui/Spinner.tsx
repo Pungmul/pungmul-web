@@ -1,3 +1,5 @@
+import "@pThunder/app/globals.css";
+
 interface SpinnerProps {
   size?: number;
   baseColor?: string;

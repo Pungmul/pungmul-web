@@ -1,9 +1,26 @@
 "use client";
-import { toastStore } from "@pThunder/store/share/toastStore";
+
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
+
+import { cn } from "@/shared/lib";
 import { useView } from "@/shared/lib/useView";
-import { useEffect, useState } from "react";
+import { toastStore } from "@/shared/store";
+
+const TOAST_BACKGROUND = {
+  success: "bg-emerald-500",
+  error: "bg-red-500",
+  warning: "bg-amber-500",
+  info: "bg-blue-500",
+} as const;
+
+const TOAST_TEXT = {
+  success: "text-white",
+  error: "text-white",
+  warning: "text-gray-900",
+  info: "text-white",
+} as const;
 
 export default function Toast() {
   const { toast, visible } = toastStore();
@@ -36,8 +53,18 @@ export default function Toast() {
             minWidth: "280px",
           }}
         >
-          <div className="bg-blue-500 rounded-lg shadow-lg border border-gray-200 p-4">
-            <div className="font-semibold text-white text-sm text-left">
+          <div
+            className={cn(
+              "rounded-lg shadow-lg border border-gray-200 p-4",
+              TOAST_BACKGROUND[toast.type] ?? TOAST_BACKGROUND.info
+            )}
+          >
+            <div
+              className={cn(
+                "font-semibold text-sm text-left",
+                TOAST_TEXT[toast.type] ?? TOAST_TEXT.info
+              )}
+            >
               {toast.message}
             </div>
           </div>
@@ -46,4 +73,4 @@ export default function Toast() {
     </AnimatePresence>,
     container
   );
-} 
+}

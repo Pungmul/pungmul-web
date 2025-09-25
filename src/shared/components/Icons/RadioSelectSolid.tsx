@@ -1,15 +1,11 @@
 import * as React from "react";
-
-interface RadioSelectSolidProps extends React.SVGProps<SVGSVGElement> {
-  title?: string;
-  titleId?: string;
-}
+import { IconProps } from "../../types/type";
 
 function RadioSelectSolid({
   title,
   titleId,
   ...props
-}: RadioSelectSolidProps, svgRef: React.Ref<SVGSVGElement>) {
+}: IconProps, svgRef: React.Ref<SVGSVGElement>) {
   return /*#__PURE__*/React.createElement("svg", Object.assign({
     width: "24",
     height: "24",
@@ -34,5 +30,5 @@ function RadioSelectSolid({
   }));
 }
 
-const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, RadioSelectSolidProps>(RadioSelectSolid);
-export default ForwardRef;
+const ForwardRef = /*#__PURE__*/ React.forwardRef<SVGSVGElement, IconProps>(RadioSelectSolid);
+export default React.memo(ForwardRef);
