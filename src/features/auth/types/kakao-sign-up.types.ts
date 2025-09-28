@@ -43,6 +43,7 @@ export interface SignUpRequestForm {
   clubName?: string;
   clubId?: number | null;
   phoneNumber: string;
+  clubAge: number;
   invitationCode: string;
 }
 

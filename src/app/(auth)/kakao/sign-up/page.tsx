@@ -3,9 +3,9 @@ import { KaKaoSignUpForm } from "@/features/auth/components/widget/KaKaoSignUpFo
 
 export default function SignUpPageContent() {
   return (
-    <div className="h-full w-full flex flex-col justify-center">
+    <main className="h-full w-full flex flex-col min-h-dvh">
       <Header title="회원가입" />
       <KaKaoSignUpForm />
-    </div>
+    </main>
   );
 }

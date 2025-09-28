@@ -1,26 +1,25 @@
-import { useMutation } from "@tanstack/react-query";
 import { LoginResponse } from "../types/login-response";
-import { LoginRequest } from "../types/login-request";
 
-async function loginApi(
+export async function loginApi(
   loginId: string,
   password: string
 ): Promise<LoginResponse> {
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ loginId, password }),
-  })
-    .then((res) => res.json())
-    .catch((err) => {
-      throw new Error(err);
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ loginId, password }),
     });
 
-  return response;
-}
+    if (!response.ok) {
+      const { error } = await response.json();
+      throw new Error(error);
+    }
 
-export const useLoginRequest = () => {
-  return useMutation({
-    mutationFn: ({ loginId, password }: LoginRequest) =>
-      loginApi(loginId, password),
-  });
-};
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "프록시 처리 실패"
+    );
+  }
+}

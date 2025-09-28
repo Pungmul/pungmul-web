@@ -1,68 +1,40 @@
 import { useForm } from "react-hook-form";
-import { useCallback, useState } from "react";
-
-interface TermFormData {
-  usingTermAgree: boolean;
-  personalInfoAgree: boolean;
-}
+import {
+  termsAgreementSchema,
+  TermsStepFormData,
+} from "../types/kakao-sign-up.schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useEffect } from "react";
 
 export const useTermStep = () => {
-  const [allAgree, setAllAgree] = useState(false);
-  
-  const form = useForm<TermFormData>({
+  const { watch, ...form } = useForm<TermsStepFormData>({
     defaultValues: {
       usingTermAgree: false,
       personalInfoAgree: false,
     },
     mode: "onChange",
     reValidateMode: "onChange",
+    resolver: zodResolver(termsAgreementSchema),
   });
 
-  // Form 값들을 watch로 실시간 추적
-  const { usingTermAgree, personalInfoAgree } = form.watch();
+  const [isAllchecked, setIsAllchecked] = useState(false);
 
+  useEffect(() => {
+    const subscription = watch(({ usingTermAgree, personalInfoAgree }) => {
+      setIsAllchecked(usingTermAgree! && personalInfoAgree!);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
-  const handleTermAgree = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const checked = e.target.checked;
-      form.setValue("usingTermAgree", checked);
-      setAllAgree(checked && form.getValues("personalInfoAgree"));
-    },
-    [form]
-  );
-
-  const handlePersonalInfoAgree = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const checked = e.target.checked;
-      form.setValue("personalInfoAgree", checked);
-      setAllAgree(checked && form.getValues("usingTermAgree"));
-    },
-    [form]
-  );
-
-  const handleAllAgree = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const checked = e.target.checked;
-      form.setValue("usingTermAgree", checked);
-      form.setValue("personalInfoAgree", checked);
-      setAllAgree(checked);
-    },
-    [form]
-  );
-
-  // 진행 가능 여부는 allAgree와 동일
-  const isProgressable = allAgree;
+  const handleAllCheck = (checked: boolean) => {
+    form.setValue("usingTermAgree", checked);
+    form.setValue("personalInfoAgree", checked);
+  };
 
   return {
-    form,
-    handleTermAgree,
-    handlePersonalInfoAgree,
-    handleAllAgree,
-    allAgree,
-    isProgressable,
-    // Form 값들도 직접 노출
-    usingTermAgree,
-    personalInfoAgree,
+    ...form,
+    isAllchecked,
+    handleAllCheck,
   };
 };
 

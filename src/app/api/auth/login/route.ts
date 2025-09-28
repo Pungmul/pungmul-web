@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     // 프록시 응답 받기
     const proxyResponse = await response.json();
-    
+
     const { accessToken, expiresIn, refreshToken, refreshTokenExpiresIn } =
       proxyResponse.response;
 
@@ -54,6 +54,11 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error("프록시 처리 중 에러:", error);
-    return new Response(`프록시 처리 실패${error} `, { status: 500 });
+    return Response.json(
+      {
+        error,
+      },
+      { status: 500 }
+    );
   }
 }

@@ -3,66 +3,59 @@
 import { TermsStep } from "./TermsStep";
 import { PersonalStep } from "./PersonalStep";
 import { CompleteStep } from "./CompleteStep";
-import { useSignUpForm } from "../../hooks/useKaKoSignUpForm";
+import { useSignUpForm } from "../../hooks/useKaKaoSignUpForm";
 import { SignUpStep } from "../../types/kakao-sign-up.types";
+import { FullSignUpFormData } from "../../types/kakao-sign-up.schemas";
 import { match } from "ts-pattern";
-import { StepIndicator } from "./SignUpStepIndicator";
-import { PersonalFormData } from "../../types";
+import { useKakaoSignUpRequest } from "../../hooks/useKakaoSignUpRequest";
+import useTermsStep from "../../hooks/useTermStep";
+import usePersonalStep from "../../hooks/usePersonalStep";
+import { useRouter } from "next/navigation";
 
 export const KaKaoSignUpForm = () => {
-  const {
-    currentStep,
-    handleTermsSubmit,
-    handlePersonalSubmit,
-    submitFinalSignUp,
-    isPending,
-    error,
-  } = useSignUpForm();
+  const form = useSignUpForm();
 
   return (
-    <div className="h-full w-full flex flex-col justify-center">
-      <div className="flex flex-col flex-grow flex-shrink-0">
-        <StepIndicator currentStep={currentStep} />
-
-        <SignUpStepForms
-          currentStep={currentStep}
-          handleTermsSubmit={handleTermsSubmit}
-          handlePersonalSubmit={handlePersonalSubmit}
-          submitFinalSignUp={submitFinalSignUp}
-          isPending={isPending}
-          error={error}
-        />
-      </div>
-    </div>
+    <section className="flex flex-col flex-grow flex-shrink-0">
+      <KaKaoSignUpStepForms {...form} />
+    </section>
   );
 };
 
-function SignUpStepForms({
-  currentStep,
-  handleTermsSubmit,
-  handlePersonalSubmit,
-  submitFinalSignUp,
-  isPending,
-  error,
-}: {
+interface KaKaoSignUpStepFormsProps {
+  data: FullSignUpFormData;
+  onSubmit: (data: Partial<FullSignUpFormData>) => void;
   currentStep: SignUpStep;
-  handleTermsSubmit: (data: {
-    usingTermAgree: boolean;
-    personalInfoAgree: boolean;
-  }) => void;
-  handlePersonalSubmit: (data: PersonalFormData) => void;
-  submitFinalSignUp: () => Promise<void>;
-  isPending: boolean;
-  error: Error | null;
-}) {
+  onNextStep: () => void;
+}
+
+function KaKaoSignUpStepForms({
+  currentStep,
+  onNextStep,
+  ...rest
+}: KaKaoSignUpStepFormsProps) {
+  const router = useRouter();
+  const { submitFinalSignUp, isPending, error } = useKakaoSignUpRequest();
+  const termsForm = useTermsStep();
+  const personalForm = usePersonalStep();
+
   return match(currentStep)
-    .with("약관동의", () => <TermsStep onSubmit={handleTermsSubmit} />)
+    .with("약관동의", () => <TermsStep {...termsForm} onSubmit={onNextStep} />)
     .with("개인정보입력", () => (
-      <PersonalStep onSubmit={handlePersonalSubmit} />
+      <PersonalStep {...personalForm} onSubmit={onNextStep} />
     ))
     .with("완료", () => (
       <CompleteStep
-        submitFinalSignUp={submitFinalSignUp}
+        submitFinalSignUp={() =>
+          submitFinalSignUp(rest.data, {
+            onSuccess: () => {
+              router.push("/home");
+            },
+            onError: (error) => {
+              console.error(error);
+            },
+          })
+        }
         isPending={isPending}
         error={error}
       />

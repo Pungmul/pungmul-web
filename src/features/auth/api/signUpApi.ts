@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { SignUpRequestForm, SignUpResponse } from "../types/sign-up.types";
 
 // 회원가입 API 함수 - FormData 지원
@@ -23,10 +22,3 @@ export const signUpRequest = async (data: SignUpRequestForm): Promise<SignUpResp
     throw error;
   }
 };
-
-// React Query Hook
-export const useSignUpRequest = () => {
-  return useMutation({
-    mutationFn: signUpRequest
-  });
-}; 

@@ -11,7 +11,6 @@ export { useLoginForm } from './hooks/useLoginForm';
 export { useSignUpForm } from './hooks/useSignUpForm';
 
 // API
-export { useSignUpRequest } from './api/signUpApi';
 
 // Types
 export type { SignUpStep, SignUpRequest, SignUpResponse } from './types/sign-up.types';
@@ -23,6 +22,7 @@ export { fullSignUpSchema, accountSchema, personalSchema } from './types/sign-up
 // Auth feature barrel exports
 export * from './components'
 export * from './hooks'
-export * from './stores'
+export * from './store'
+export * from './queries'
 export * from './types'
 export * from './api'

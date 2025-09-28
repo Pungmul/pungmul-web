@@ -39,20 +39,6 @@ export interface PersonalInfo {
   inviteCode: string;
 }
 
-// 로컬 스토리지 저장용 타입
-export interface StoredFormData {
-  usingTermAgree?: boolean;
-  personalInfoAgree?: boolean;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  name?: string;
-  nickname?: string;
-  club?: number | null;
-  tellNumber?: string;
-  inviteCode?: string;
-}
-
 // API 요청용 타입
 export interface SignUpRequest {
   email: string;
@@ -70,6 +56,7 @@ export interface SignUpRequestForm {
   name: string;
   clubName?: string;
   clubId?: number | null;
+  clubAge: number;
   phoneNumber: string;
   invitationCode: string;
 }

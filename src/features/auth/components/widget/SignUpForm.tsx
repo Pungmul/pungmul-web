@@ -1,78 +1,87 @@
 "use client";
 
 import { TermsStep } from "./TermsStep";
-import { AccountStep } from "./AccountStep";
 import { PersonalStep } from "./PersonalStep";
 import { CompleteStep } from "./CompleteStep";
 import { useSignUpForm } from "../../hooks/useSignUpForm";
 import { SignUpStep } from "../../types/sign-up.types";
+import { FullSignUpFormData } from "../../types/sign-up.schemas";
 import { match } from "ts-pattern";
-import { StepIndicator } from "./SignUpStepIndicator";
-import { PersonalFormData } from "../../types";
+import { useSignUpRequest } from "../../hooks/useSignUpRequest";
+import useTermsStep from "../../hooks/useTermStep";
+import usePersonalStep from "../../hooks/usePersonalStep";
+import { useRouter } from "next/navigation";
+import { AccountStep } from "./AccountStep";
+import useAccountStep from "../../hooks/useAccountStep";
 
 export const SignUpForm = () => {
-  const {
-    currentStep,
-    handleTermsSubmit,
-    handleAccountSubmit,
-    handlePersonalSubmit,
-    submitFinalSignUp,
-    isPending,
-    error,
-  } = useSignUpForm();
+  const form = useSignUpForm();
 
   return (
-    <div className="h-full w-full flex flex-col justify-center">
-      <div className="flex flex-col flex-grow flex-shrink-0">
-        <StepIndicator currentStep={currentStep} />
-
-        <SignUpStepForms
-          currentStep={currentStep}
-          handleTermsSubmit={handleTermsSubmit}
-          handleAccountSubmit={handleAccountSubmit}
-          handlePersonalSubmit={handlePersonalSubmit}
-          submitFinalSignUp={submitFinalSignUp}
-          isPending={isPending}
-          error={error}
-        />
-      </div>
-    </div>
+    <section className="flex flex-col flex-grow flex-shrink-0">
+      <SignUpStepForms {...form} />
+    </section>
   );
 };
 
+interface SignUpStepFormsProps {
+  data: FullSignUpFormData;
+  onSubmit: (data: Partial<FullSignUpFormData>) => void;
+  currentStep: SignUpStep;
+  onNextStep: () => void;
+}
+
 function SignUpStepForms({
   currentStep,
-  handleTermsSubmit,
-  handleAccountSubmit,
-  handlePersonalSubmit,
-  submitFinalSignUp,
-  isPending,
-  error,
-}: {
-  currentStep: SignUpStep;
-  handleTermsSubmit: (data: {
-    usingTermAgree: boolean;
-    personalInfoAgree: boolean;
-  }) => void;
-  handleAccountSubmit: (data: {
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }) => void;
-  handlePersonalSubmit: (data: PersonalFormData) => void;
-  submitFinalSignUp: () => Promise<void>;
-  isPending: boolean;
-  error: Error | null;
-}) {
+  onNextStep,
+  ...rest
+}: SignUpStepFormsProps) {
+  const router = useRouter();
+  const { submitFinalSignUp, isPending, error } = useSignUpRequest();
+  const termsForm = useTermsStep();
+  const accountForm = useAccountStep();
+  const personalForm = usePersonalStep();
+
   return match(currentStep)
-    .with("약관동의", () => <TermsStep onSubmit={handleTermsSubmit} />)
-    .with("계정정보입력", () => <AccountStep onSubmit={handleAccountSubmit} />)
+    .with("약관동의", () => (
+      <TermsStep
+        {...termsForm}
+        onSubmit={(data) => {
+          rest.onSubmit({ ...rest.data, ...data });
+          onNextStep();
+        }}
+      />
+    ))
+    .with("계정정보입력", () => (
+      <AccountStep
+        {...accountForm}
+        onSubmit={(data) => {
+          rest.onSubmit({ ...rest.data, ...data });
+          onNextStep();
+        }}
+      />
+    ))
     .with("개인정보입력", () => (
-      <PersonalStep onSubmit={handlePersonalSubmit} />
+      <PersonalStep
+        {...personalForm}
+        onSubmit={(data) => {
+          rest.onSubmit({ ...rest.data, ...data });
+          onNextStep();
+        }}
+      />
     ))
     .with("완료", () => (
       <CompleteStep
-        submitFinalSignUp={submitFinalSignUp}
+        submitFinalSignUp={() =>
+          submitFinalSignUp(rest.data, {
+            onSuccess: () => {
+              router.push("/home");
+            },
+            onError: (error) => {
+              console.error(error);
+            },
+          })
+        }
         isPending={isPending}
         error={error}
       />

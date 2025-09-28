@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Spinner } from "@pThunder/shared";
 
 interface CompleteStepProps {
-  submitFinalSignUp: () => Promise<void>;
+  submitFinalSignUp: () => void;
   isPending: boolean;
   error: Error | null;
 }
@@ -29,10 +29,10 @@ export const CompleteStep = ({
   // 로딩 상태
   if (isPending) {
     return (
-      <div className="flex flex-col items-center justify-center h-full space-y-6">
+      <div className="flex flex-col items-center justify-center h-full space-y-6 flex-grow">
         <div className="text-center flex flex-col items-center justify-center">
           <Spinner size={64}/>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-grey-800">
             회원가입 신청서 보내는 중...
           </h2>
         </div>
@@ -43,7 +43,7 @@ export const CompleteStep = ({
   // 에러 상태
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full space-y-6">
+      <div className="flex flex-col items-center justify-center h-full space-y-6 flex-grow">
         <div className="text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
@@ -60,17 +60,17 @@ export const CompleteStep = ({
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-grey-800 mb-2">
             회원가입 실패
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-grey-600 mb-4">
             {error.message || "회원가입 중 오류가 발생했습니다."}
           </p>
         </div>
 
         <button
-          onClick={() => submitFinalSignUp()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          onClick={submitFinalSignUp}
+          className="px-6 py-2 bg-grey-800 text-background rounded-lg hover:bg-grey-700 transition-colors"
         >
           다시 시도
         </button>
@@ -80,11 +80,11 @@ export const CompleteStep = ({
 
   // 성공 상태
   return (
-    <div className="flex flex-col items-center justify-center h-full space-y-6">
+    <div className="flex flex-col items-center justify-center h-full space-y-6 flex-grow">
       <div className="text-center">
-        <div className="w-16 h-16 bg-[#816DFF] rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
-            className="w-8 h-8 text-white"
+            className="w-8 h-8 text-background"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -97,15 +97,15 @@ export const CompleteStep = ({
             />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-grey-800 mb-2">
           회원가입이 완료되었어요!
         </h2>
-        <p className="text-gray-600 mb-4">즐거운 풍물 생활을 시작해봐요</p>
+        <p className="text-grey-600 mb-4">즐거운 풍물 생활을 시작해봐요</p>
       </div>
 
       <button
         onClick={() => router.push("/login")}
-        className="px-6 py-2 bg-[#816DFF] text-white rounded-lg hover:bg-[#6353C3] transition-colors"
+        className="px-6 py-2 bg-primary text-background rounded-lg hover:bg-primary-light transition-colors"
       >
         로그인 하러가기
       </button>

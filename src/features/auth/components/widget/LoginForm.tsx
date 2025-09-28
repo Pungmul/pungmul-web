@@ -1,14 +1,37 @@
 "use client";
 
-import { useLoginForm } from "../../hooks/useLoginForm";
-import { Input, Spinner } from "@/shared/components";
+import { Input, Spinner, Button } from "@/shared/components";
+import { HookFormReturn } from "@pThunder/shared";
 
-function LoginForm() {
-  const { register, inputErrors, onSubmit, isPending, requestError } =
-    useLoginForm();
+interface LoginFormProps
+  extends HookFormReturn<{
+    loginId: string;
+    password: string;
+  }> {
+  onSubmit: ({
+    loginId,
+    password,
+  }: {
+    loginId: string;
+    password: string;
+  }) => void;
+  isPending: boolean;
+  requestError: Error | null;
+}
 
+function LoginForm({
+  register,
+  inputErrors,
+  handleSubmit,
+  onSubmit,
+  isPending,
+  requestError,
+}: LoginFormProps) {
   return (
-    <form className="flex w-full flex-col gap-4" onSubmit={onSubmit}>
+    <form
+      className="flex w-full flex-col gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Input
         label="ID"
         errorMessage={inputErrors.loginId?.message || ""}
@@ -20,25 +43,20 @@ function LoginForm() {
         isEncrypted={true}
         {...register("password")}
       />
-      <div className="fexl-col w-full" style={{ padding: "0 12px" }}>
-        {requestError && (
-          <div className="w-56 text-red-400">
-            로그인 실패: {requestError.message}
-          </div>
-        )}
-      </div>
-      <div className="w-full px-[8px]">
-        <button
-          disabled={isPending}
-          type="submit"
-          className={
-            "w-full border-[#816DFF] bg-[#816DFF] text-white py-2 rounded-md flex justify-center items-center " +
-            (isPending ? " bg-[#CDC5FF]" : " cursor-pointer")
-          }
-        >
-          {isPending ? <Spinner /> : "로그인"}
-        </button>
-      </div>
+
+      {requestError && (
+        <p className="w-full text-red-400 px-[12px]">
+          로그인 실패: {requestError.message}
+        </p>
+      )}
+
+      <Button
+        className="bg-primary text-background"
+        type="submit"
+        disabled={isPending}
+      >
+        {isPending ? <Spinner /> : "로그인"}
+      </Button>
     </form>
   );
 }

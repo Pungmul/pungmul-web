@@ -2,9 +2,8 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
     loginId: z
-      .string()
-      .min(1, "이메일을 입력해주세요.")
-      .email({ message: "이메일 형식이 올바르지 않습니다." }),
+      .email({ message: "이메일 형식이 올바르지 않습니다." })
+      .min(1, "이메일을 입력해주세요."),
   
     password: z
       .string()

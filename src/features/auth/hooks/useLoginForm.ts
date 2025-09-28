@@ -3,18 +3,23 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 
-import { useLoginRequest } from "../api/loginApi";
+import { useLoginRequest } from "../queries";
 import { LoginFormType, loginSchema } from "../types/login.schema";
+import { useLoginStore } from "../store";
 
 export const useLoginForm = () => {
   const router = useRouter();
-  
-  const { mutate: loginRequest, error: requestError, isPending } = useLoginRequest();
+  const setLogin = useLoginStore((state) => state.setLogin);
+  const {
+    mutate: loginRequest,
+    error: requestError,
+    isPending,
+  } = useLoginRequest();
 
   const {
     register,
     handleSubmit,
-    formState: { errors:inputErrors, isValid },
+    formState: { errors: inputErrors, isValid },
   } = useForm<LoginFormType>({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
@@ -24,23 +29,21 @@ export const useLoginForm = () => {
     },
   });
 
-  const onSubmit = handleSubmit(async (data: LoginFormType) => {
-    console.log(data);
+  const onSubmit = (data: LoginFormType) => {
     loginRequest(data, {
       onSuccess: () => {
+        setLogin("email");
         router.replace("/home");
       },
-      onError: (error) => {
-        console.log(error);
-      }
     });
-  });
+  };
 
   return {
     register,
     inputErrors,
     isValid,
     isPending,
+    handleSubmit,
     onSubmit,
     requestError,
   };

@@ -1,5 +1,4 @@
 import { getQueryClient } from "@pThunder/core";
-import { useQuery } from "@tanstack/react-query";
 
 const getToken = async (): Promise<string> => {
   const token = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/auth/token`, {
@@ -11,13 +10,6 @@ const getToken = async (): Promise<string> => {
   return accessToken;
 };
 
-const useGetToken = () => {
-  return useQuery({
-    queryKey: ["token"],
-    queryFn: getToken,
-  });
-};
-
 const prefetchToken = () => {
   const queryClient = getQueryClient();
   queryClient.prefetchQuery({
@@ -27,4 +19,4 @@ const prefetchToken = () => {
   return queryClient;
 };
 
-export { getToken, useGetToken, prefetchToken };
+export { getToken, prefetchToken };

@@ -34,14 +34,9 @@ export const isStepValid = (
 export const kakaoValidateStep = async (
   step: SignUpStep,
   form: UseFormReturn<FullSignUpFormData>,
-  usingTermAgree?: boolean,
-  personalInfoAgree?: boolean
 ): Promise<boolean> => {
   switch (step) {
     case "약관동의":
-      if (!usingTermAgree || !personalInfoAgree) {
-        return false;
-      }
       return true;
     case "개인정보입력":
       const fieldsToValidate = getStepValidationFields(step);

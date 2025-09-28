@@ -1,88 +1,113 @@
 "use client";
 
-import { Input } from "@/shared/components";
-import { Selector } from "@/shared/components/form/Selector";
-import { CLUB_OPTIONS } from "@/features/club/types/constant";
+import { Input, Space, Select, BottomFixedButton } from "@/shared/components";
+import { useClubOptions } from "@/features/club/hooks";
 import usePersonalStep from "../../hooks/usePersonalStep";
 import { PersonalFormData } from "../../types";
+import { formatPhoneNumber } from "../../lib";
+import { HookFormReturn } from "@pThunder/shared";
+import { Controller } from "react-hook-form";
 
-interface PersonalStepProps {
+interface PersonalStepProps extends HookFormReturn<PersonalFormData> {
   onSubmit: (data: PersonalFormData) => void;
 }
 
 export const PersonalStep: React.FC<PersonalStepProps> = ({ onSubmit }) => {
-  const { form, isProgressable, club, handlePhoneNumberChange } =
+  const { register, handleSubmit, inputErrors, isValid, control } =
     usePersonalStep();
+  const clubOptions = useClubOptions();
 
   return (
     <form
-      className="flex flex-col flex-grow overflow-y-auto"
-      style={{ gap: 20 }}
-      onSubmit={(e) => {
-        e.preventDefault();
-        const data: PersonalFormData = form.getValues();
-        onSubmit(data);
-      }}
+      className="flex flex-col flex-grow px-[24px]"
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <Input
-        label="이름"
-        errorMessage={form.formState.errors.name?.message || ""}
-        placeholder="이름을 입력해주세요."
-        className="w-full"
-        {...form.register("name")}
-      />
+      <div className="flex-grow px-6">
+        <Space h={24} />
+        <Input
+          label="이름"
+          errorMessage={inputErrors.name?.message || ""}
+          placeholder="이름을 입력해주세요."
+          className="w-full"
+          {...register("name")}
+        />
 
-      <Input
-        label="패명"
-        errorMessage={form.formState.errors.nickname?.message || ""}
-        placeholder="패명을 입력해주세요."
-        className="w-full"
-        {...form.register("nickname")}
-      />
+        <Space h={24} />
+        <Input
+          label="패명"
+          errorMessage={inputErrors.nickname?.message || ""}
+          placeholder="패명을 입력해주세요."
+          className="w-full"
+          {...register("nickname")}
+        />
 
-      <Selector
-        label="소속패"
-        items={CLUB_OPTIONS}
-        selectedItem={club ?? undefined}
-        onSelect={(item) => form.setValue("club", item)}
-        errorMessage={form.formState.errors.club?.message || ""}
-        hasSearch={true}
-      />
+        <Space h={24} />
+        <Controller
+          control={control}
+          name="club"
+          render={({ field }) => (
+            <Select
+              name="club"
+              label="소속패"
+              errorMessage={inputErrors.club?.message || ""}
+              hasSearch={true}
+              onChange={(value) => {
+                field.onChange(value);
+              }}
+              value={field.value}
+            >
+              {clubOptions.map((option) => (
+                <Select.Option key={option.value} value={option.value}>
+                  {option.label}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        />
 
-      <Input
-        label="전화번호"
-        errorMessage={form.formState.errors.tellNumber?.message || ""}
-        placeholder="전화번호를 입력해주세요."
-        className="w-full"
-        type="tel"
-        {...form.register("tellNumber", {
-          onChange: handlePhoneNumberChange,
-        })}
-      />
+        <Space h={24} />
+        <Input
+          label="학번"
+          errorMessage={inputErrors.clubAge?.message || ""}
+          placeholder="학번을 입력해주세요."
+          className="w-full"
+          {...register("clubAge")}
+        />
 
-      <Input
-        label="초대 코드"
-        errorMessage={form.formState.errors.inviteCode?.message || ""}
-        placeholder="초대 코드를 입력해주세요."
-        className="w-full"
-        type="number"
-        {...form.register("inviteCode")}
-      />
+        <Space h={24} />
+        <Controller
+          control={control}
+          name="tellNumber"
+          render={({ field }) => (
+            <Input
+              label="전화번호"
+              errorMessage={inputErrors.tellNumber?.message || ""}
+              placeholder="전화번호를 입력해주세요."
+              className="w-full"
+              type="tel"
+              {...field}
+              onChange={(e) => {
+                const formattedValue = formatPhoneNumber(e.target.value);
+                field.onChange(formattedValue);
+              }}
+            />
+          )}
+        />
 
-      <div className="w-full py-4" style={{ padding: "12px 36px" }}>
-        <button
-          type="submit"
-          disabled={!isProgressable}
-          className="w-full flex items-center justify-center text-white rounded"
-          style={{
-            height: 48,
-            backgroundColor: isProgressable ? "#816DFF" : "#e2deff",
-            cursor: isProgressable ? "pointer" : "not-allowed",
-          }}
-        >
-          {isProgressable ? "회원가입 완료" : "모든 필드를 입력해주세요"}
-        </button>
+        <Space h={24} />
+        <Input
+          label="초대 코드"
+          errorMessage={inputErrors.inviteCode?.message || ""}
+          placeholder="초대 코드를 입력해주세요."
+          className="w-full"
+          type="number"
+          {...register("inviteCode")}
+        />
       </div>
+
+      <BottomFixedButton disabled={!isValid} type="submit">
+        {isValid ? "회원가입 완료" : "모든 필드를 입력해주세요"}
+      </BottomFixedButton>
     </form>
   );
 };

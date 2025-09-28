@@ -3,9 +3,11 @@ import { SignUpForm } from "@/features/auth/components/widget/SignUpForm";
 
 export default function SignUpPageContent() {
   return (
-    <div className="h-full w-full flex flex-col justify-center">
-      <Header title="회원가입" />
-      <SignUpForm />
+    <div className="w-full min-h-dvh h-full flex flex-col justify-center items-center">
+      <div className="w-full max-w-[768px] mx-auto flex-1 flex flex-col">
+        <Header title="회원가입" />
+        <SignUpForm />
+      </div>
     </div>
   );
 }

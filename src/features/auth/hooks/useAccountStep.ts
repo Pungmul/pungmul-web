@@ -2,9 +2,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AccountFormData, accountSchema } from "../types/sign-up.schemas";
 
-
 export const useAccountStep = () => {
-  const form = useForm<AccountFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: inputErrors, isValid },
+  } = useForm<AccountFormData>({
     resolver: zodResolver(accountSchema),
     mode: "onBlur",
     defaultValues: {
@@ -14,16 +17,11 @@ export const useAccountStep = () => {
     },
   });
 
-  const { email, password, confirmPassword } = form.watch();
-
-  const isProgressable = email && password && confirmPassword && form.formState.isValid;
-
   return {
-    form,
-    isProgressable,
-    email,
-    password,
-    confirmPassword,
+    register,
+    inputErrors,
+    isValid,
+    handleSubmit,
   };
 };
 
