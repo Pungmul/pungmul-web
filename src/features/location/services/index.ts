@@ -1,0 +1,2 @@
+export { updateLocation } from "./updateLocation";
+

@@ -35,3 +35,4 @@ export const useLocationWatcher = () => {
     stopWatching,
   };
 };
+

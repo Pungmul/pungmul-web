@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { throttle } from "lodash";
-import { LocationType } from "@/shared/types/location/type";
+import { LocationType } from "@pThunder/features/location";
 
 // 클라이언트 상태만 관리하는 인터페이스
 interface LocationState {
@@ -116,4 +116,5 @@ export const locationStore = create<LocationState>((set, get) => ({
       set({ isWatching: false, watchId: null });
     }
   },
-})); 
+}));
+
