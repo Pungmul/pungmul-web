@@ -1,5 +1,5 @@
 "use client";
-import { Address } from "@pThunder/features";
+import { Address } from "@/features/promote";
 import { useUpcomingPerformanceList } from "../..";
 import Image from "next/image";
 import dayjs from "dayjs";

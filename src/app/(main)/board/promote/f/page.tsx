@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { PromotionPostingPage } from "@/features";
+import { PromotionPostingPage } from "@/features/promote";
 import { Spinner } from "@/shared";
 
 export const metadata = {

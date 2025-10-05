@@ -1,4 +1,4 @@
-import { PromotionManagePage } from "@pThunder/features";
+import { PromotionManagePage } from "@/features/promote";
 
 export const dynamic = "force-dynamic";
 
