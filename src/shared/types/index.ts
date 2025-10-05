@@ -1,6 +1,6 @@
 export * from './image'
 export * from './instrument'
-export * from './lightning'
 export * from './member'
 export * from './notification'
 export * from './post' 
+export * from './type'
