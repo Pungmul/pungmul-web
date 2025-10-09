@@ -1,18 +1,17 @@
 "use client";
 
-import PostBox from "@pThunder/features/post/components/element/PostBox";
-import { useMyPostList } from "@/features/board/api/myPost";
-import PostBoxSkelleton from "@pThunder/features/post/components/element/PostBoxSkelleton";
-import { Post } from "@pThunder/features/post/model/index";
+import { useMyPostList } from "@/features/board/queries";
+import { PostBoxWithCategory } from "@/features/board";
+import type { PostWithCategoryName } from "@/features/post";
 
 export default function MyPostList() {
-  const { data: myPostList, isLoading } = useMyPostList();
+  const { data: myPostList } = useMyPostList();
 
   return (
     <div className="h-full overflow-y-auto w-full">
       {myPostList?.list.length && myPostList?.list.length > 0 ? (
-        myPostList?.list.map((post: Post) => (
-          <PostBox post={post} key={post.postId} />
+        myPostList?.list.map((post: PostWithCategoryName) => (
+          <PostBoxWithCategory post={post} key={post.postId} />
         ))
       ) : (
         <div className="flex items-center justify-center h-full bg-gray-100">
@@ -21,7 +20,6 @@ export default function MyPostList() {
           </div>
         </div>
       )}
-      {isLoading && <PostBoxSkelleton length={6} />}
     </div>
   );
 }

@@ -1,15 +1,19 @@
-import { getQueryClient } from "@/shared/lib/getQueryClient";
+import { getQueryClient } from "@pThunder/core";
 import {
   BoardHeader,
-  fetchBoardInformations,
+  BoardListNav,
+  loadBoardInfoList,
+  loadMyPostList,
 } from "@pThunder/features/board";
-import { fetchMyPostList } from "@pThunder/features/board/api/myPost";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import Suspense from "@/shared/components/SuspenseComponent";
+import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+export const dynamic = "force-static";
 
+export const metadata: Metadata = {
+  title: "풍덩 | 내 게시글",
+  description: "내가 작성한 게시글 목록 입니다.",
+};
 export default async function MyPostLayout({
   children,
 }: {
@@ -19,12 +23,12 @@ export default async function MyPostLayout({
 
   queryClient.prefetchQuery({
     queryKey: ["boardList"],
-    queryFn: () => fetchBoardInformations(),
+    queryFn: () => loadBoardInfoList(),
   });
 
   queryClient.prefetchQuery({
     queryKey: ["board", "my-post"],
-    queryFn: () => fetchMyPostList(),
+    queryFn: () => loadMyPostList(),
   });
 
   const dehydratedState = dehydrate(queryClient);
@@ -32,16 +36,14 @@ export default async function MyPostLayout({
   return (
     <div className="flex flex-col w-full h-full">
       <HydrationBoundary state={dehydratedState}>
-        <div className="z-20 sticky top-0">
-          <BoardHeader boardName={"내가 작성한 게시글"} />
-        </div>
+        <BoardHeader boardID={"my-post"} />
+
         <div className="flex flex-col w-full flex-grow relative items-center">
-          <Suspense>
+          <div className="flex flex-row justify-center w-full h-full">
+            <BoardListNav />
             <div className="w-full max-w-[768px]">{children}</div>
-          </Suspense>
+          </div>
         </div>
-        <div className="z-30" id="post-detail-section" />
-        <div className="z-40" id="posting-section" />
       </HydrationBoundary>
     </div>
   );

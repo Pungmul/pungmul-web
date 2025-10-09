@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { useLikePost } from "@/features/post/api";
+import { useLikePost } from "@/features/post";
+import { alertStore, Toast } from "@pThunder/shared";
 
 function PostLikeButton({
   postId,
@@ -14,31 +15,37 @@ function PostLikeButton({
 }) {
   const [isLikedState, setIsLikedState] = useState(isLiked);
   const [likedNum, setLikedNumb] = useState(initialLikedNum);
-  const likeMutation = useLikePost();
+  const Alert = alertStore();
+  const { mutate: likePost } = useLikePost();
 
   const LikeHandler = useCallback(async () => {
-    if (
-      !confirm(
-        isLikedState
-          ? "추천을 취소하시겠습니까?"
-          : "이 게시글을 추천하시겠습니까?"
-      )
-    )
-      return;
-
-    likeMutation.mutate(postId, {
-      onSuccess: (data) => {
-        setLikedNumb(data.likedNum);
-        setIsLikedState(data.liked);
-        alert(
-          data.liked ? "게시글을 추천했습니다." : "추천이 취소 되었습니다."
-        );
-      },
-      onError: (error) => {
-        alert(error.message);
+    Alert.confirm({
+      title: "추천",
+      message: isLikedState
+        ? "추천을 취소하시겠습니까?"
+        : "이 게시글을 추천하시겠습니까?",
+      onConfirm: () => {
+        likePost(postId, {
+          onSuccess: (data) => {
+            setLikedNumb(data.likedNum);
+            setIsLikedState(data.liked);
+            Toast.show({
+              message: data.liked
+                ? "게시글을 추천했습니다."
+                : "추천이 취소 되었습니다.",
+              type: "success",
+            });
+          },
+          onError: (error) => {
+            Alert.alert({
+              title: "오류",
+              message: error.message,
+            });
+          },
+        });
       },
     });
-  }, [postId, isLikedState, likeMutation]);
+  }, [postId, isLikedState, likePost]);
 
   return (
     <div

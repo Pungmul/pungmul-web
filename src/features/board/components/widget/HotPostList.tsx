@@ -1,25 +1,28 @@
 "use client";
 
-import PostBox from "@pThunder/features/post/components/element/PostBox";
-import PostBoxSkelleton from "@pThunder/features/post/components/element/PostBoxSkelleton";
-import { useHotPostList } from "../../api/hotPost";
-import { Post } from "@pThunder/shared";
-
+import { useHotPostList } from "@/features/board/queries";
+import { PostWithCategoryNameList } from "@pThunder/features/post/components";
 
 export default function HotPostList() {
   const { data: hotPostList, isLoading } = useHotPostList();
 
   return (
-    <div className="h-full overflow-y-auto">
-      {hotPostList?.list.length>0 ?
-      hotPostList?.list.map((post: Post) => (
-        <PostBox post={post} key={post.postId} />
-      )):
-      <div className="flex items-center justify-center h-full bg-gray-100">
-        <div className="text-gray-500 text-lg">인기 게시글이 없습니다.</div>
+    <PostWithCategoryNameList
+      posts={hotPostList.list}
+      isLoading={isLoading}
+      hasNextPage={false}
+      onLoadMore={() => {}}
+      ListEmptyComponent={<DefaultListEmptyComponent/>}
+    />
+  );
+}
+
+function DefaultListEmptyComponent(){
+  return (
+    <div className="h-full flex-grow flex items-center justify-center py-12 px-4">
+      <div className="text-grey-500 text-center">
+        <p className="text-lg font-medium mb-2">아직 뜨는 인기글이 없습니다</p>
       </div>
-      }
-      {isLoading && <PostBoxSkelleton length={6} />}
     </div>
   );
 }

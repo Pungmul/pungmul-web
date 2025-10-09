@@ -1,24 +1,24 @@
 "use client";
-import { useFrequentBoard } from "@pThunder/store/board/frequantBoard";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 import { XMarkIcon } from "@heroicons/react/24/outline";
+
+import { useFrequentBoard } from "@/features/board/store";
 
 export default function FrequentBoards() {
   const { boardList, removeBoard } = useFrequentBoard();
-  const router = useRouter();
-  console.log(boardList);
 
   if (boardList.length === 0) return null;
   return (
-    <div className="flex flex-row px-[24px] py-[4px] gap-[16px]">
-      <h2 className="text-[16px] font-normal flex-shrink-0 text-[#AAA]">자주 가는 게시판</h2>
-      <div className="flex flex-row gap-[8px] overflow-x-auto w-fit"
-        style={{ scrollbarWidth: "none" }}
-      >
+    <div className="flex flex-col lg:flex-row px-[24px] py-[4px] gap-[4px] lg:gap-[16px] lg:items-center">
+      <h2 className="text-[16px] font-normal flex-shrink-0 text-grey-500">
+        자주 가는 게시판
+      </h2>
+      <ul className="flex flex-row gap-[8px] overflow-x-auto w-fit list-none scrollbar-hide">
         {boardList.map((board) => (
-          <div
+          <li
             key={board.id}
-            className="flex flex-row items-center gap-[8px] p-[4px] flex-shrink-0 rounded-[8px] bg-[#E3D7FF] text-[#663399]"
+            className="flex flex-row items-center gap-[8px] p-[8px] flex-shrink-0 rounded-[8px] bg-primary text-background"
           >
             <button
               onClick={(e) => {
@@ -29,15 +29,16 @@ export default function FrequentBoards() {
             >
               <XMarkIcon className="w-[16px] h-[16px] cursor-pointer" />
             </button>
-            <span
-              className="text-[14px] cursor-pointer"
-              onClick={() => router.push(`/board/${board.id}`)}
+            <Link
+              href={`/board/${board.id}`}
+              className="text-[14px] cursor-pointer leading-[16px]"
+              prefetch
             >
               {board.name}
-            </span>
-          </div>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

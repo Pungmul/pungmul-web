@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { ImageObject } from "@/shared/types/image/type";
+import { ImageObject } from "@/shared/types/image";
 
 export default function PostImage({ imageData }: { imageData: ImageObject }) {
 

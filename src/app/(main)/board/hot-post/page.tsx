@@ -1,20 +1,18 @@
 import { HotPostList } from "@/features/board";
-import { PostDetailPage } from "@pThunder/features/post/components/widget/PostDetailPage";
+import { Suspense } from "react";
+import { PostBoxSkelleton } from "@pThunder/features/post";
 
 export const dynamic = "force-dynamic";
 
 export default async function HotPostPage() {
   return (
-    <>
-      <div
-        key="hot-post-list-section"
-        className="relative h-full flex flex-col"
-      >
+    <div
+      key="hot-post-list-section"
+      className="relative flex flex-col w-full bg-background min-h-full"
+    >
+      <Suspense fallback={<PostBoxSkelleton length={8} />}>
         <HotPostList />
-      </div>
-      <PostDetailPage
-        boardName={"핫 게시글"}
-      />
-    </>
+      </Suspense>
+    </div>
   );
 }

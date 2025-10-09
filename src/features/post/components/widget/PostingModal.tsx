@@ -27,7 +27,7 @@ const PostingModal: React.FC<{
       style={{ padding: 0 }}
       className="rounded-xl overflow-hidden w-[80dvw] h-[80dvh]"
     >
-      <Suspense>
+      <Suspense clientOnly>
         <DraftEditor boardID={boardId} />
       </Suspense>
     </Modal>

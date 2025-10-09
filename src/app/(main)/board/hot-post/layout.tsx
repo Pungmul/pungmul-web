@@ -2,18 +2,16 @@ import { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { getQueryClient } from "@/core";
-import Suspense from "@/shared/components/SuspenseComponent";
 
 import {
-  fetchHotPostList,
-  BriefBoardInfo,
-  fetchBoardInformations,
+  prefetchHotPostList,
+  loadBoardInfoList,
   BoardListNav,
   BoardHeader,
 } from "@/features/board";
 
 export const metadata: Metadata = {
-  title: "풍물 머시기 | 인기 게시글",
+  title: "풍덩 | 인기 게시글",
 };
 
 export default async function BoardPageLayout({
@@ -23,16 +21,14 @@ export default async function BoardPageLayout({
 }) {
   const queryClient = getQueryClient();
 
-  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
-
   queryClient.prefetchQuery({
     queryKey: ["boardList"],
-    queryFn: () => fetchBoardInformations(),
+    queryFn: () => loadBoardInfoList(),
   });
 
   queryClient.prefetchQuery({
     queryKey: ["board", "hot-post"],
-    queryFn: () => fetchHotPostList(),
+    queryFn: () => prefetchHotPostList(),
   });
 
   const dehydratedState = dehydrate(queryClient);
@@ -40,18 +36,13 @@ export default async function BoardPageLayout({
   return (
     <div className="flex flex-col w-full h-full">
       <HydrationBoundary state={dehydratedState}>
-        <div className="z-20 sticky top-0">
-          <BoardHeader boardName={"인기 게시글"} />
-        </div>
+        <BoardHeader boardID={"hot-post"} />
         <div className="flex flex-col w-full flex-grow relative">
-          <div className="flex flex-row justify-center gap-[12px] w-full h-full">
-            <BoardListNav boardList={boardList} currentBoardID={"hot-post"} />
-            <div className="w-full max-w-[768px]">
-              <Suspense>{children}</Suspense>
-            </div>
+          <div className="flex flex-row justify-center w-full h-full">
+            <BoardListNav />
+            <div className="w-full md:max-w-[768px] z-10">{children}</div>
           </div>
         </div>
-        <div className="z-30" id="post-detail-section" />
       </HydrationBoundary>
     </div>
   );

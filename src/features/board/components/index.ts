@@ -6,6 +6,8 @@ export { default as BoardMainPageContent } from './widget/BoardMainPageContent';
 export { default as HotPostList } from './widget/HotPostList';
 export { default as HomeHotPostList } from './widget/HomeHotPostList';
 export { default as MyPostList } from './widget/MyPostList';
+export { PostBoxWithCategory } from './element/PostBoxWithCategory';
+export { default as SearchResult } from './widget/SearchResult';
 
 // Element Components
 export { default as BoardHeader } from './element/BoardHeader';

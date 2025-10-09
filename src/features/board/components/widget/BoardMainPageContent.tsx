@@ -1,92 +1,86 @@
-"use client";
-
 import Link from "next/link";
 import BoardList from "./BoardList";
 import LastUpdateTime from "../element/LastUpdateTime";
-import { BriefBoardInfo } from "../../model";
+import { BriefBoardInfo } from "../../types";
 
-import { HandThumbUpIcon, FireIcon } from "@heroicons/react/24/solid";
-import { ChatBubbleBottomCenterTextIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { FireIcon, TicketIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { CommentOutline } from "@pThunder/shared/components/Icons";
 
 interface BoardMainPageContentProps {
   boardList: BriefBoardInfo[];
 }
+
+const boardMainPageContentItemList = [
+  {
+    icon: <PencilSquareIcon className="size-[24px] text-grey-400" />,
+    title: "내가 쓴 글",
+    href: "/board/my-post",
+  },
+  {
+    icon: <CommentOutline className="size-[24px] text-grey-400" />,
+    title: "내가 쓴 댓글",
+    href: "/board/my-comment",
+  },
+  {
+    icon: <TicketIcon className="size-[24px] text-blue-200" />,
+    title: "관람 예정인 공연",
+    href: "/board/promote/upcoming",
+  },
+  {
+    icon: <FireIcon className="size-[24px] text-warning" />,
+    title: "HOT 게시판",
+    href: "/board/hot-post",
+  },
+];
 
 export default function BoardMainPageContent({
   boardList,
 }: BoardMainPageContentProps) {
   return (
     <div className="flex flex-col h-full w-full ">
-      <div
-        className="w-full h-full flex-grow px-6 py-2"
-        style={{ backgroundColor: "#F9F8FF" }}
-      >
+      <div className="w-full h-fit flex-grow px-6 py-2 bg-grey-100">
         <div className=" flex flex-col">
           <div className="text-[22px] font-semibold p-[4px]">게시판</div>
           <div className="px-[8px] pb-[8px]">
             <LastUpdateTime />
           </div>
-          <div className="flex flex-col lg:flex-row" style={{ gap: 16 }}>
-            <ul className="py-3 px-2 border-0.5 border-white bg-white rounded-md flex flex-col flex-grow gap-2 list-none">
-              <li key="my-post">
-                <Link
-                  href={`/board/my-post`}
-                  className="w-full px-2 py-1 flex flex-row items-center gap-4 cursor-pointer"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <PencilSquareIcon className="size-6" />
-                  </div>
-                  <div className="text-[17px] text-gray-600 font-[200]">
-                    내가 쓴 글
-                  </div>
-                </Link>
-              </li>
-              <li key="my-comment">
-                <Link
-                  href={`/board/1`}
-                  className="w-full px-2 py-1 flex flex-row items-center gap-4 cursor-pointer"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <ChatBubbleBottomCenterTextIcon className="size-6" color="#bfdbfe"/>
-                  </div>
-                  <div className="text-[17px] text-gray-600 font-[200]">
-                    내가 쓴 댓글
-                  </div>
-                </Link>
-              </li>
-              <li key="like-post">
-                <Link
-                  href={`/board/1`}
-                  className="w-full px-2 py-1 flex flex-row items-center gap-4 cursor-pointer"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <HandThumbUpIcon className="size-6" color="#ffadad"/>
-                  </div>
-                  <div className="text-[17px] text-gray-600 font-[200]">
-                    좋아요 누른 글
-                  </div>
-                </Link>
-              </li>
-              <li key="hot-post">
-                <Link
-                  href={`/board/hot-post`}
-                  className="w-full px-2 py-1 flex flex-row items-center gap-4 cursor-pointer"
-                >
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <FireIcon className="size-6" color="#ff4d4d" />
-                  </div>
-                  <div className="text-[17px] text-gray-600 font-[200]">
-                    HOT 게시판
-                  </div>
-                </Link>
-              </li>
+          <div className="flex flex-col lg:flex-row gap-[16px]">
+            <ul className="py-3 px-2 border-0.5 border-grey-200 bg-background rounded-md flex flex-col flex-grow gap-[8px] list-none h-fit">
+              {boardMainPageContentItemList.map((item) => (
+                <BoardMainPageContentItem key={item.title} {...item} />
+              ))}
             </ul>
-            <div className="flex-grow">
-              <BoardList boardList={boardList} />
-            </div>
+            <BoardList boardList={[...boardList.filter((board) => typeof board.id === "number" || board.id === "promote")]} />
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+const BoardMainPageContentItem = ({
+  icon,
+  title,
+  href,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  href: string;
+}) => {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="w-full px-[12px] py-[8px] flex flex-row items-end gap-[12px] cursor-pointer"
+      >
+        <div className="flex justify-center items-center size-[28px]">
+          {icon}
+        </div>
+        <div className="text-[15px] text-grey-600">
+          {title}
+        </div>
+      </Link>
+    </li>
+  );
+};

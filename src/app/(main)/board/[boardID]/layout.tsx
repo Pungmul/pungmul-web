@@ -1,12 +1,9 @@
 import { getQueryClient } from "@pThunder/core";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { fetchBoardInfoAPI } from "@/features/board/api";
+import { loadBoardDetails, loadBoardInfoList } from "@/features/board/api";
 import { BoardListNav, BoardHeader } from "@/features/board";
-import {
-  BriefBoardInfo,
-  fetchBoardInformations,
-} from "@pThunder/features/board";
+import PostingButton from "@pThunder/features/board/components/element/PostingButton";
 
 export async function generateMetadata({
   params,
@@ -14,15 +11,14 @@ export async function generateMetadata({
   params: Promise<{ boardID: string }>;
 }) {
   const { boardID } = await params;
-  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
+  const boardList = await loadBoardInfoList();
   const boardName =
     boardList.find((board) => board.id === Number(boardID))?.name ||
     "알 수 없는 게시판";
   return {
-    title: `풍물 머시기 | ${boardName}`,
+    title: `풍덩 | ${boardName}`,
   };
 }
-
 
 export const dynamic = "force-static";
 
@@ -37,39 +33,30 @@ export default async function BoardPageLayout({
 }) {
   const { boardID } = await params;
   const queryClient = getQueryClient();
-  const boardList: BriefBoardInfo[] = await fetchBoardInformations();
 
   queryClient.prefetchQuery({
+    queryKey: ["boardList"],
+    queryFn: () => loadBoardInfoList(),
+  });
+  queryClient.prefetchQuery({
     queryKey: ["board", boardID],
-    queryFn: () => fetchBoardInfoAPI(Number(boardID)),
+    queryFn: () => loadBoardDetails(Number(boardID)),
   });
 
   const dehydratedState = dehydrate(queryClient);
 
   return (
     <HydrationBoundary state={dehydratedState}>
-      <div className="relative w-full flex flex-col flex-grow overflow-y-auto max-w-[100dvw]">
-        <BoardHeader
-          boardName={
-            boardList.find((board) => board.id === Number(boardID))?.name ||
-            "알 수 없는 게시판"
-          }
-        />
+      <div className="relative flex flex-col flex-grow">
+        <BoardHeader boardID={boardID} />
+        <PostingButton boardID={Number(boardID)} />
         <div className="flex flex-col w-full flex-grow relative">
-          <div className="flex flex-row justify-center gap-[12px] w-full h-full">
-            <BoardListNav
-
-              boardList={boardList}
-              currentBoardID={Number(boardID)}
-            />
-            <div className="w-full md:max-w-[768px] z-10">
-              {children}
-            </div>
+          <div className="flex flex-row justify-center w-full h-full">
+            <BoardListNav />
+            <div className="w-full md:max-w-[768px] z-10">{children}</div>
           </div>
         </div>
       </div>
-      <div className="z-30" id="post-detail-section"/>
-      <div className="z-40" id="posting-section"/>
     </HydrationBoundary>
   );
 }

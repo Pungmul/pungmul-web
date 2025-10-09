@@ -3,9 +3,10 @@
 import PostContentSkeleton from "../element/PostContentSkeleton";
 import PostContent from "../widget/PostContent";
 import PostMenu from "../element/PostMenu";
+import ReportPostModal from "./ReportPostModal";
 import CommentList from "@pThunder/features/comment/components/widget/CommentsList";
 
-import { useLoadPostDetail } from "@/features/post/api";
+import { useLoadPostDetail } from "@/features/post";
 
 export default function DesktopPostDetail({ postId }: { postId: number }) {
   const { data: post, isLoading } = useLoadPostDetail(postId);
@@ -34,6 +35,7 @@ export default function DesktopPostDetail({ postId }: { postId: number }) {
           </div>
         </div>
       </div>
+      <ReportPostModal />
     </div>
   );
 }

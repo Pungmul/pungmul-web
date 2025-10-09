@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { postStore } from "@pThunder/store/post/postStore";
+import { postStore } from "../../store";
 
 export default function ImageListPreview() {
   const { imageFiles, setImageFiles } = postStore();
