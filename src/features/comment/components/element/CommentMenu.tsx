@@ -4,16 +4,19 @@ import { throttle } from "lodash";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
-import { useReportComment } from "@pThunder/features/comment/store/ReportCommentStore";
-import { Comment as CommentType } from "../../model/index";
-import { useDeleteComment } from "../../../comment/api/deleteComment";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+
+import type { Comment as CommentType } from "../../types";
+import { reportCommentStore } from "../../store/reportCommentStore";
+import { useDeleteComment } from "../../queries";
+import { Alert } from "@pThunder/shared";
 
 interface CommentMenuProps {
   comment: CommentType;
 }
 
 function CommentMenu({ comment }: CommentMenuProps) {
-  const { openModalToReport } = useReportComment();
+  const { openModalToReport } = reportCommentStore.getState();
   const [isOpen, setOpen] = useState(false);
   const [isBelowHalf, setIsBelowHalf] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
@@ -61,8 +64,15 @@ function CommentMenu({ comment }: CommentMenuProps) {
   }, 1000);
 
   const handleDeleteClick = () => {
-    deleteComment(comment.commentId, {
-      onSuccess: () => router.refresh(),
+
+    Alert.confirm({
+      title: "삭제",
+      message: "정말 삭제하시겠습니까?",
+      onConfirm: () => {
+        deleteComment(comment.commentId, {
+          onSuccess: () => router.refresh(),
+        });
+      },
     });
   };
 
@@ -81,37 +91,24 @@ function CommentMenu({ comment }: CommentMenuProps) {
       <div
         ref={targetRef}
         className={
-          "relative select-none cursor-pointer w-full h-full flex justify-center items-center"
+          "relative select-none cursor-pointer w-full h-full flex justify-center items-center p-[4px]"
         }
         onClick={() => {
           setOpen((prev) => !prev);
         }}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
-          />
-        </svg>
+        <EllipsisVerticalIcon className="size-[24px]" />
         {isOpen && (
           <ul
-            className={`absolute right-0 px-3 py-2 border bg-white rounded-sm flex flex-col gap-2 z-10 ${
+            className={`absolute right-0 px-3 py-2 border border-grey-200 bg-background rounded-sm flex flex-col gap-2 z-10 ${
               isBelowHalf ? " -top-[112px] mb-1" : " top-full mt-1"
             }`}
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <li className="w-12 text-right">수정</li>
-            <li className="w-12 text-right" onClick={handleReportClick}>
+            <li className="w-12 text-right text-grey-800">수정</li>
+            <li className="w-12 text-right text-grey-800" onClick={handleReportClick}>
               신고
             </li>
             <li

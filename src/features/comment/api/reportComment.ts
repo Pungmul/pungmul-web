@@ -1,7 +1,5 @@
-import { ReportCommentBody } from "../model/index";
+import { ReportCommentBody } from '../types';
 import { CommentReportType } from "@/shared/constants/comment";
-import { useMutation } from "@tanstack/react-query";
-import { getQueryClient } from "@/core";
 
 interface ReportCommentParams {
   commentId: number;
@@ -26,15 +24,4 @@ export const reportComment = async ({
   });
 
   return response.json();
-};
-
-export const useReportComment = () => {
-  const queryClient = getQueryClient();
-  return useMutation({
-    mutationFn: reportComment,
-    mutationKey: ["reportComment"],
-    onSuccess: () => {
-      return queryClient.invalidateQueries({ queryKey: ["postDetail"] });
-    },
-  });
 };

@@ -1,7 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Comment as CommentType } from "../model/index";
-
-const postCommentAPI = async (id: number, comment: string, anonymity: boolean) => {
+export const postComment = async (id: number, comment: string, anonymity: boolean) => {
   const response = await fetch(`/api/posts/${id}/comment`, {
     method: "POST",
     body: JSON.stringify({ content: comment, anonymity }),
@@ -15,26 +12,3 @@ const postCommentAPI = async (id: number, comment: string, anonymity: boolean) =
 
   return response.json();
 };
-
-export const usePostComment = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ postId, comment, anonymity }: { postId: number; comment: string; anonymity: boolean }) =>
-      postCommentAPI(postId, comment, anonymity),
-    onSuccess: (newComment, variables) => {
-      // 기존 댓글 목록 캐시를 가져와서 새 댓글을 추가
-      queryClient.setQueryData(
-        ["comments", variables.postId],
-        (oldComments: CommentType[]) => {
-          if (!oldComments) return [newComment];
-          return [...oldComments, newComment];
-        }
-      );
-    },
-    onError: (error) => {
-      console.error("댓글 작성 중 에러:", error);
-    },
-  });
-};
-

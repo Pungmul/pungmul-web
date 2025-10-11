@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ReportedComment } from "../model/index";
+import { ReportedComment } from '../types';
 
 interface ReportCommentState {
   // 상태

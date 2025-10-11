@@ -3,20 +3,21 @@ import "@/app/globals.css";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { PaperAirplaneIcon, CheckIcon } from "@heroicons/react/24/outline";
 
-import sendIcon from "@public/icons/sendIcon.svg";
-import checkMark from "@public/icons/checkMark.svg";
-
+import type { Comment as CommentType } from '../../types';
+import { useCommentNavigation } from "../../hooks";
 import {
-  usePostComment,
-  usePostReply,
-} from "../../api";
+  buildCommentTree,
+  extractCommentData,
+  handleCommentSuccess,
+  handleReplySuccess,
+} from "../../services";
+import { usePostComment, usePostReply } from "../../queries";
+
 import Comment from "../element/Comment";
 import Reply from "../element/Reply";
-import { Comment as CommentType } from "../../model/index";
-import ReportCommentModal from "@pThunder/features/comment/components/widget/ReportCommentModal";
+import ReportCommentModal from "./ReportCommentModal";
 
 interface CommentListProps {
   comments: CommentType[];
@@ -29,125 +30,117 @@ export const CommentList: React.FC<CommentListProps> = ({
 }) => {
   const [commentList, setCommentList] = useState<CommentType[]>(comments);
   const [isReplying, setReply] = useState<CommentType | null>(null);
-  const commentInputRef = useRef<HTMLInputElement>(null);
-  const searchParams = useSearchParams();
-  const commentId = searchParams.get("commentId");
+  const commentInputRef = useRef<HTMLTextAreaElement>(null);
+  const commentsRef = useRef<Record<number, HTMLDivElement | null>>({});
   const { mutate: postComment } = usePostComment();
   const { mutate: postReply } = usePostReply();
-
-  const CommentHandler = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-
-      const form = e.currentTarget;
-      const comment = new FormData(form).get("comment") as string;
-      const anonymity = new FormData(form).get("anonymity") as string;
-
-      console.log(comment, anonymity);
-
-      postComment(
-        { postId, comment, anonymity: anonymity === "true" },
-        {
-          onSuccess: (newComment) => {
-            // 로컬 상태에 새 댓글 추가
-            setCommentList((prev) => [...prev, newComment]);
-            // 입력 필드 초기화
-            if (commentInputRef.current) {
-              commentInputRef.current.value = "";
-            }
-          },
-        }
-      );
-    },
-    [postId, postComment]
-  );
-
-  const ReplyHandler = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const form = e.currentTarget;
-      const comment = new FormData(form).get("comment") as string;
-      const anonymity = new FormData(form).get("anonymity") as string;
-
-      if (!isReplying) {
-        alert("댓글을 입력해주세요");
-        return;
-      }
-
-      postReply(
-        {
-          postId,
-          comment,
-          anonymity: anonymity === "true",
-          parentId: isReplying.commentId,
-        },
-        {
-          onSuccess: (newReply) => {
-            // 로컬 상태에 새 대댓글 추가
-            setCommentList((prev) => [...prev, newReply]);
-            // 답글 모드 해제 및 입력 필드 초기화
-            setReply(null);
-            if (commentInputRef.current) {
-              commentInputRef.current.value = "";
-            }
-          },
-        }
-      );
-    },
-    [isReplying, postId, postReply]
-  );
-
-  const buildCommentTree = (commentArray: CommentType[]): CommentType[] => {
-    const commentMap = new Map<number, CommentType>();
-    const rootComments: CommentType[] = [];
-
-    // 각 댓글을 ID 기반으로 매핑 (불변성을 유지하면서 새로운 객체 생성)
-    commentArray.forEach((comment) => {
-      commentMap.set(comment.commentId, { ...comment, replies: [] });
-    });
-
-    // 모든 댓글을 순회하여 부모-자식 관계 구성
-    commentArray.forEach((comment) => {
-      if (comment.parentId === null) {
-        rootComments.push(commentMap.get(comment.commentId)!);
-      } else {
-        const parentComment = commentMap.get(comment.parentId);
-        if (parentComment) {
-          parentComment.replies.push(commentMap.get(comment.commentId)!);
-        }
-      }
-    });
-
-    return rootComments;
-  };
-
-  const moveToHash = useCallback(() => {
-    if (commentId) {
-      const element = document.getElementById(commentId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [commentId]);
-
-  useEffect(() => {
-    moveToHash();
-  }, [commentId]);
+  const formRef = useRef<HTMLFormElement>(null);
+  const { moveToHash } = useCommentNavigation({
+    commentId: null,
+    commentsRef,
+  });
 
   // props로 받은 comments가 변경되면 commentList 상태도 업데이트
   useEffect(() => {
     setCommentList(comments);
   }, [comments]);
 
+  const adjustHeight = () => {
+    if (commentInputRef.current) {
+      commentInputRef.current.style.height = "auto";
+      commentInputRef.current.style.height = `${commentInputRef.current.scrollHeight}px`;
+    }
+  };
+
+  const submitComment = useCallback(
+    (comment: string) => {
+      if (!comment.trim()) return;
+      
+      const anonymity = true; // 기본값
+      commentInputRef.current!.value = "";
+      adjustHeight();
+      
+      if (isReplying) {
+        postReply(
+          {
+            postId,
+            comment,
+            anonymity,
+            parentId: isReplying.commentId,
+          },
+          {
+            onSuccess: (newReply) => {
+              handleReplySuccess(
+                newReply,
+                setCommentList,
+                setReply,
+                commentInputRef
+              );
+            },
+          }
+        );
+      } else {
+        postComment(
+          { postId, comment, anonymity },
+          {
+            onSuccess: (newComment) => {
+              handleCommentSuccess(newComment, setCommentList, commentInputRef);
+            },
+          }
+        );
+      }
+    },
+    [isReplying, postId, postComment, postReply, adjustHeight, setCommentList, setReply]
+  );
+
+  const CommentHandler = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const { comment } = extractCommentData(form);
+      submitComment(comment);
+    },
+    [submitComment]
+  );
+
+  const ReplyHandler = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (!isReplying) {
+        alert("댓글을 입력해주세요");
+        return;
+      }
+
+      const form = e.currentTarget;
+      const { comment } = extractCommentData(form);
+      submitComment(comment);
+    },
+    [isReplying, submitComment]
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    },
+    [submitComment]
+  );
+
   return (
     <>
-      <div className="w-full flex-col flex flex-grow h-full">
+      <div className="w-full flex-col flex flex-grow h-full bg-grey-100">
         <div className="flex-col flex flex-grow">
           {buildCommentTree(commentList).map((comment) => (
             <div
+              ref={(el) => {
+                commentsRef.current[comment.commentId] = el;
+              }}
               key={comment.commentId}
               id={comment.commentId.toString()}
-              className="w-full bg-white "
+              className="w-full bg-background "
             >
               <Comment
                 comment={comment}
@@ -165,6 +158,7 @@ export const CommentList: React.FC<CommentListProps> = ({
         </div>
 
         <form
+          ref={formRef}
           onSubmit={isReplying ? ReplyHandler : CommentHandler}
           className="sticky bottom-0 w-fullshadow-up-md"
         >
@@ -182,16 +176,11 @@ export const CommentList: React.FC<CommentListProps> = ({
               }}
               onClick={moveToHash}
             >
-              <div style={{ fontSize: 12, color: "#816DFF" }}>
+              <div className="text-[12px] text-primary">
                 @{isReplying.userName}
               </div>
               <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  cursor: "pointer",
-                  backgroundColor: "#816DFF",
-                }}
+                className="w-6 h-6 p-1 cursor-pointer bg-primary"
                 onClick={(e) => {
                   e.stopPropagation();
                   setReply(null);
@@ -199,14 +188,11 @@ export const CommentList: React.FC<CommentListProps> = ({
               ></div>
             </div>
           )}
-          <div className=" bg-white items-center px-2 py-2 ">
-            <div
-              className="flex flex-row items-center px-4 py-1 rounded-full"
-              style={{ backgroundColor: "#F9F9F9" }}
-            >
+          <div className=" bg-background items-center px-3 py-3 ">
+            <div className="flex flex-row items-end px-4 py-2 rounded-md bg-grey-100">
               <label
                 htmlFor="anonymity"
-                className="flex flex-row gap-2 items-center cursor-pointer"
+                className="flex flex-row gap-2 items-center cursor-pointer py-2"
               >
                 <input
                   type="checkbox"
@@ -215,31 +201,28 @@ export const CommentList: React.FC<CommentListProps> = ({
                   id="anonymity"
                   className="hidden peer"
                 />
-                <div
-                  className="hidden w-5 h-5 peer-checked:flex rounded-sm items-center justify-center"
-                  style={{ backgroundColor: "#816DFF" }}
-                >
-                  <Image src={checkMark} width={12} alt="" />
+                <div className="hidden w-5 h-5 peer-checked:flex rounded-sm items-center justify-center bg-primary">
+                  <CheckIcon className="w-[12px] h-[12px] text-white stroke-[4px]" />
                 </div>
-                <div className="block w-5 h-5 bg-white peer-checked:hidden rounded-sm" />
-                <div
-                  style={{ fontSize: 12 }}
-                  className="text-gray-400 peer-checked:text-black"
-                >
+                <div className="block w-5 h-5 bg-background peer-checked:hidden rounded-sm" />
+                <div className="text-grey-400 peer-checked:text-grey-800 text-[12px]">
                   익명
                 </div>
               </label>
-              <input
+              <textarea
                 ref={commentInputRef}
-                type="text"
+                onChange={adjustHeight}
                 name="comment"
-                style={{ fontSize: 12 }}
                 placeholder="댓글을 입력하세요..."
-                className="bg-transparent outline-none px-2 py-1 flex-grow"
+                onKeyDown={handleKeyDown}
+                className="bg-transparent border-none outline-none px-4 py-2 flex-grow text-[12px] resize-none overflow-y-auto min-h-[20px] max-h-[120px] scrollbar-thin scrollbar-thumb-grey-300 scrollbar-track-transparent hover:scrollbar-thumb-grey-400"
+                rows={1}
               />
-              <button type="submit" className="w-6 h-6 p-1">
-                <Image src={sendIcon} width={32} alt="" />
-              </button>
+              <div className="flex flex-row items-center justify-center py-2">
+                <button type="submit" className="w-6 h-6 p-1">
+                  <PaperAirplaneIcon className="text-primary" />
+                </button>
+              </div>
             </div>
           </div>
         </form>
