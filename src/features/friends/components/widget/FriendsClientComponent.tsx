@@ -7,8 +7,8 @@ import { default as FindFriends } from "./FindFriendSection";
 import {
   acceptFriendRequest,
   rejectFriendRequest,
-} from "@pThunder/features/friends/api/utils";
-import { Friend } from "@pThunder/shared/types/friend/type";
+} from "@/features/friends/api";
+import { Friend } from "@pThunder/features/friends";
 
 type FriendList = Friend[];
 

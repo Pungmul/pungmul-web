@@ -10,7 +10,6 @@ export async function POST(req:Request) {
 
         const proxyUrl = `${process.env.BASE_URL}/api/friends/decline?friendRequestId=${friendRequestId}`;
 
-
         const response = await fetchWithRefresh(proxyUrl, {
             method:'POST',
         })

@@ -1,7 +1,7 @@
 // src/app/(main)/friends/FriendRequest.tsx
 import React from "react";
 import Image from "next/image";
-import { Friend } from "@pThunder/shared/types/friend/type";
+import { Friend } from "@pThunder/features/friends";
 
 interface FriendRequestProps {
   requests: Friend[];

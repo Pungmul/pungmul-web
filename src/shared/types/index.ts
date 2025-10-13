@@ -1,7 +1,5 @@
 export * from './type'
 export * from './image'
 export * from './club'
-export * from './friend'
 export * from './instrument'
-export * from './member'
 export * from './notification'

@@ -1,17 +1,19 @@
-import { Friend } from "@/shared/types/friend/type";
-import { useAcceptFriendMutation } from "../../api/api";
-import { Toast } from "@pThunder/store/share/toastStore";
 
-export default function FriendAcceptButton({ friend }: { friend: Friend }) {
-  console.log(friend, "friend");
+import { useAcceptFriendMutation } from "../../queries";
+import { Toast } from "@/shared/store";
+import { useQueryClient } from "@tanstack/react-query";
+
+export default function FriendAcceptButton({ friendRequestId }: { friendRequestId: number }) {
   const { mutate: acceptFriend } = useAcceptFriendMutation();
+  const queryClient = useQueryClient();
 
   const handleAccept = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    console.log(friend.friendRequestId, "friend.friendRequestId");
-    acceptFriend(friend.friendRequestId, {
+    console.log(friendRequestId, "friendRequestId");
+    acceptFriend(friendRequestId, {
       onSuccess: () => {
         Toast.show({ message: "친구 수락 완료", type: "success" });
+        queryClient.invalidateQueries({ queryKey: ["friends"] });
       },
       onError: () => {
         alert("친구 수락 실패");

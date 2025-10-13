@@ -1,6 +1,6 @@
 // src/app/(main)/friends/FriendList.tsx
 import React from "react";
-import { Friend } from "@/shared/types/friend/type";
+import { Friend } from "@pThunder/features/friends";
 import Image from "next/image";
 
 interface FriendListProps {
