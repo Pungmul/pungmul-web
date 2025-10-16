@@ -1,41 +1,24 @@
-import Image from "next/image";
-import { Suspense } from "react";
-import { AddChatRoomButton } from "@/features/chat";
+import { lazy, Suspense } from "react";
+import { ChatIconOutline } from "@pThunder/shared/components/Icons";
 
 // 동적 렌더링 강제 - 프리렌더 에러 해결
 export const dynamic = "force-dynamic";
+const AddChatRoomButton = lazy(() => import("@/features/chat/components/element/AddChatRoomButton"));
 
-// useSearchParams를 사용하는 컴포넌트를 Suspense로 감싸기
 function InboxContent() {
   return (
     <div className="flex flex-col flex-grow h-full w-full justify-center items-center">
       <div className="flex flex-col items-center gap-[24px]">
-        <Image
-          src={"/icons/Chat-icon-outline.svg"}
-          height={64}
-          width={64}
-          color={"#EEE"}
-          alt=""
-        />
-        <div className="text-[24px] font-semibold text-black">
+        <ChatIconOutline className="w-[64px] h-[64px]" />
+        <div className="text-[24px] font-semibold text-grey-800">
           채팅을 선택해서 대화를 시작해보세요
         </div>
-        <AddChatRoomButton />
+        <Suspense fallback={<div>로딩 중...</div>}>
+          <AddChatRoomButton />
+        </Suspense>
       </div>
     </div>
   );
 }
 
-export default async function InboxPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col flex-grow h-full w-full justify-center items-center">
-          <div className="text-[24px] font-semibold text-black">로딩 중...</div>
-        </div>
-      }
-    >
-      <InboxContent />
-    </Suspense>
-  );
-}
+export default InboxContent;

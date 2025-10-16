@@ -2,19 +2,28 @@
 import { useParams } from "next/navigation";
 import { Responsive } from "@/shared/components/Responsive";
 
-export default function RoomPageContent({ children }: { children: React.ReactNode }) {
-    const { roomId } = useParams();
-    
-    return (
-      <Responsive
-        mobile={
-          roomId ? (
-            <div className="absolute top-0 left-0 w-full h-dvh z-50">{children}</div>
-          ) : null
-        }
-        desktop={<div className="min-w-[50dvw] flex-grow">{children}</div>}
-        key="responsive-room-page"
-      />
-    );
-  }
-  
+export default function RoomPageContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { roomId } = useParams();
+
+  return (
+    <Responsive
+      key="responsive-room-page"
+      mobile={
+        roomId ? (
+          <div className="absolute top-0 left-0 w-full h-dvh z-50">
+            {children}
+          </div>
+        ) : null
+      }
+      desktop={
+        <div className="w-full min-w-[50dvw] h-dvh overflow-y-auto">
+          {children}
+        </div>
+      }
+    />
+  );
+}

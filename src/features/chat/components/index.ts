@@ -8,7 +8,7 @@ export { ChatTabBadge, default as ChatTabBadgeDefault } from "./element/ChatTabB
 
 //widget
 export { default as ChatDrawer } from "./widget/ChatDrawer";
-export { default as ChatRoomList } from "./widget/ChatList";
+export { default as ChatRoomList } from "./widget/ChatRoomList";
 export { ChatSendForm } from "./widget/ChatSendForm";
 export { MessageList as ChatMessageList } from "./widget/MessageList";
 export { ChatRoomBox, ChatRoomBoxSkeleton } from "./widget/ChatRoomBox";

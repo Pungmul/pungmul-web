@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
-import { useGetToken } from "@pThunder/features/auth/api";
+import { useGetToken } from "@pThunder/features/auth";
 import { useGetMyPageInfo } from "@pThunder/features/my-page";
-import { useChatRoomStore } from "@/store/chat/chatRoomStore";
+import { useChatRoomStore } from "@pThunder/features/chat/store/chatRoomStore";
 import { ChatRoomUpdateMessage } from "../types";
-
-
 
 export function useRoomListSocket() {
   const { data: token } = useGetToken();
   const { data: userData } = useGetMyPageInfo();
+
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  
   // Zustand 스토어에서 메시지 핸들러 가져오기
   const { handleSocketMessage } = useChatRoomStore();
 
@@ -44,24 +42,20 @@ export function useRoomListSocket() {
         // 채팅 알림 구독
         const notificationTopic = `/sub/chat/notification/${userData.username}`;
         sharedSocketManager.subscribe(notificationTopic, (data: unknown) => {
-          
-          const message = data as ChatRoomUpdateMessage;          
+          const message = data as ChatRoomUpdateMessage;
           try {
-            
             // 채팅 메시지인 경우 스토어 업데이트
+            console.log("채팅 메시지:", data);
             if (message) {
-             
-              
               // 소켓 메시지 핸들러로도 전달 (추가 처리 필요시)
               handleSocketMessage(message);
             }
           } catch (error) {
-            console.error('Socket message parsing error:', error, message);
+            console.error("Socket message parsing error:", error, message);
           }
         });
 
         console.log("채팅 알림 소켓 연결 성공 - username:", userData.name);
-
       } catch (error) {
         console.error("채팅 알림 소켓 연결 실패:", error);
         setIsConnected(false);
@@ -100,4 +94,4 @@ export function useRoomListSocket() {
   }, [token, userData, handleSocketMessage]);
 
   return { isConnected };
-} 
+}

@@ -1,9 +1,11 @@
-import Suspense from "@/shared/components/SuspenseComponent";
-import RoomPageContent from "./RoomContent";
+import { lazy } from "react";
+import { SuspenseComponent as Suspense } from "@pThunder/shared";
+
+const RoomPageContent = lazy(() => import("./RoomContent"));
 
 export default function RoomPage({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<div className="min-w-[50dvw] flex-grow"></div>}>
+    <Suspense clientOnly fallback={<div className="min-w-[50dvw] flex-grow"></div>}>
       <RoomPageContent>{children}</RoomPageContent>
     </Suspense>
   );

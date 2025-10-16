@@ -25,6 +25,24 @@ export type Message =
       imageUrlList: string[];
       chatRoomUUID: string;
       createdAt: string;
+    }
+  | {
+      id: number | string;
+      senderUsername: string;
+      content: null;
+      chatType: "LEAVE";
+      imageUrlList: null;
+      chatRoomUUID: string;
+      createdAt: string;
+    }
+  | {
+      id: number | string;
+      senderUsername: string;
+      content: string;
+      chatType: "JOIN";
+      imageUrlList: null;
+      chatRoomUUID: string;
+      createdAt: string;
     };
 
 export interface ChatMessage {
@@ -65,7 +83,6 @@ export interface MessageList {
   navigateLastPage: number;
 }
 
-
 export interface ChatRoomListItemDto {
   chatRoomUUID: string;
   lastMessageTime: string | null;
@@ -82,7 +99,7 @@ export interface ChatRoomListItemDto {
   group: boolean;
 }
 
-
+export type ChatMessageDto = MessageList;
 
 export interface ChatRoomDto {
   chatRoomInfo: ChatRoomInfo;
@@ -107,7 +124,6 @@ export interface AlarmMessage {
   stompDest: string;
   content: string;
 }
-
 
 export interface ChatRoomUpdateMessage {
   chatRoomUUID: string;

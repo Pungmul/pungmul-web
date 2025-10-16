@@ -1,9 +1,8 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { formatRelativeDate } from "@/shared/lib/parseDateString";
 import { SkeletonView } from "@/shared/components";
+import Link from "next/link";
+import { PhotoIcon } from "@heroicons/react/24/outline";
 
 interface ChatRoomDto {
   chatRoomUUID: string;
@@ -22,32 +21,21 @@ interface ChatRoomDto {
 }
 
 const ChatRoomBox = ({ room }: { room: ChatRoomDto }) => {
-  const router = useRouter();
-
   return (
-    <div
-      className="flex flex-row items-center cursor-pointer bg-white hover:bg-[#F5F5F5] "
-      style={{
-        paddingLeft: 28,
-        paddingRight: 28,
-        gap: 12,
-        paddingTop: 12,
-        paddingBottom: 12,
-      }}
-      onClick={() => router.push(`/chats/r/${room.chatRoomUUID}`)}
+    <Link
+      className="flex flex-row items-center cursor-pointer bg-background hover:bg-grey-100 px-[28px] py-[12px] gap-[12px]"
+      href={`/chats/r/${room.chatRoomUUID}`}
     >
       <div
         className="flex-shrink-0 w-[64px] 
         aspect-square 
-        md:min-w-[96px] 
-        md:w-full
         lg:w-[48px] 
         lg:h-[48px] 
-        lg:min-w-[48px]"
-        style={{
-          borderRadius: 5,
-          backgroundColor: "#D9D9D9",
-        }}
+        lg:min-w-[48px]
+        rounded-[4px]
+        bg-grey-200"
+        // md:min-w-[96px]
+        // md:w-full
       >
         {/* 여기 이미지 삽입 */}
         {room.profileImageUrl && (
@@ -55,82 +43,74 @@ const ChatRoomBox = ({ room }: { room: ChatRoomDto }) => {
             src={room.profileImageUrl}
             alt=""
             fill
-            style={{ objectFit: "cover", borderRadius: 5 }}
+            className="object-cover rounded-[4px]"
           />
         )}
       </div>
-      <div className="md:hidden lg:flex flex-col flex-grow" style={{ gap: 4 }}>
-        <div
-          className="flex flex-row items-start justify-between"
-          style={{ lineHeight: "125%", gap: 4 }}
-        >
-          <div style={{ fontSize: 13, fontWeight: 600 }}>{room.roomName}</div>
-          <div style={{ fontSize: 11 , flexShrink: 0}}>
+      <div className="md:flex flex-col flex-grow gap-[4px] overflow-hidden">
+        <div className="flex flex-row items-start justify-between gap-[4px] leading-[125%]">
+          <div className="text-[13px] font-semibold">{room.roomName}</div>
+          <div className="text-[11px] flex-shrink-0">
             {room.lastMessageTime ? (
               formatRelativeDate(new Date(room.lastMessageTime))
             ) : (
-              <div style={{ color: "#816DFF" }}>신규</div>
+              <div className="text-primary">신규</div>
             )}
           </div>
         </div>
         <div className="flex-grow flex flex-row items-start justify-center">
-          <div
-            className="flex-grow text-ellipsis overflow-hidden"
-            style={{
-              whiteSpace: "pre-line",
-              fontSize: 13,
-              lineHeight: "125%",
-              color: "#AEADAD",
-            }}
-          >
-            {room.lastMessageContent}
+          <div className="flex-grow text-ellipsis overflow-hidden text-grey-600 text-[13px] leading-[125%] whitespace-pre-line line-clamp-2">
+            {room.lastMessageContent?.includes("이미지") ? (
+              <span className="flex flex-row items-center gap-[4px]">
+                <PhotoIcon className="size-[16px] text-grey-600" />
+                {"이미지를 보냈습니다."}
+              </span>
+            ) : (
+              room.lastMessageContent
+            )}
           </div>
           {(room?.unreadCount ?? 0) > 0 && (
-            <div
-              className="flex rounded-full items-center justify-center"
-              style={{
-                width: 20,
-                height: 20,
-                backgroundColor: "#816DFF",
-                fontSize: 11,
-                color: "#FFF",
-                lineHeight: "100%",
-              }}
-            >
+            <div className="flex rounded-full items-center justify-center bg-primary text-background text-[11px] leading-[100%] w-[20px] h-[20px]">
               {room.unreadCount}
             </div>
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
-const ChatRoomBoxSkeleton = () => {
+const ChatRoomBoxSkeleton: React.FC<{ length?: number }> = ({ length = 8 }) => {
   return (
-    <div
-      className="flex flex-row items-center cursor-pointer bg-white hover:bg-[#F5F5F5] "
-      style={{
-        paddingLeft: 28,
-        paddingRight: 28,
-        gap: 12,
-        paddingTop: 12,
-        paddingBottom: 12,
-      }}
-    >
+    <div className="flex flex-col h-full md:w-[360px] lg:w-[400px] md:border-r md:border-grey-200 w-full">
       <div
-        className="flex-shrink-0 w-[64px] aspect-square md:min-w-[96px] md:w-full lg:w-[48px] lg:h-[48px] lg:min-w-[48px]"
-      >
-        <SkeletonView className="w-full h-full" style={{ backgroundColor: "#D9D9D9", borderRadius: 5 }} />
-      </div>
-      <div className="flex-grow flex flex-col gap-2">
-        <div className="flex-grow flex flex-row items-start justify-center h-[16px]">
-          <SkeletonView className="w-full h-full" style={{ backgroundColor: "#D9D9D9", borderRadius: 5 }} />
+        className="flex flex-row items-center justify-between flex-shrink-0"
+        style={{ height: 50, paddingLeft: 24, paddingRight: 24 }}
+      />
+      {Array.from({ length }).map((_, index) => (
+        <div
+          key={"room-skeleton-" + index}
+          className="flex flex-row items-center bg-background px-[28px] py-[12px] gap-[12px] w-full"
+        >
+          {/* 프로필 이미지 스켈레톤 */}
+          <div className="flex-shrink-0 w-[64px] aspect-square lg:w-[48px] lg:h-[48px] lg:min-w-[48px] rounded-[4px] bg-grey-200">
+            <SkeletonView className="w-full h-full rounded-[4px]" />
+          </div>
+
+          {/* 텍스트 영역 스켈레톤 */}
+          <div className="flex flex-col flex-grow gap-[4px] overflow-hidden">
+            {/* 상단: 방 이름과 시간 */}
+            <div className="flex flex-row items-start justify-between gap-[4px]">
+              <SkeletonView className="h-[16px] w-[120px] rounded-[2px]" />
+            </div>
+
+            {/* 하단: 마지막 메시지 */}
+            <div className="flex flex-row items-start justify-between gap-[8px]">
+              <SkeletonView className="h-[16px] w-[96%] rounded-[2px]" />
+            </div>
+          </div>
         </div>
-        <div className="flex-grow flex flex-row items-start justify-center h-[16px]">
-          <SkeletonView className="w-full h-full" style={{ backgroundColor: "#D9D9D9", borderRadius: 5 }} />
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useChatRoomStore } from '@/store/chat/chatRoomStore';
+import { useChatRoomStore } from '@pThunder/features/chat/store/chatRoomStore';
 
 /**
  * 채팅 알림용 간단한 훅
@@ -41,5 +41,3 @@ export const useChatNotification = () => {
     shouldShowBadge: totalUnreadCount > 0,
   };
 };
-
-export type UseChatNotificationReturn = ReturnType<typeof useChatNotification>;

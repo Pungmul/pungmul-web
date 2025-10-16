@@ -14,10 +14,17 @@ export async function POST(
 
     const proxyResponse = await fetchWithRefresh(proxyUrl, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     });
 
-    if (!proxyResponse.ok) throw Error("서버 불안정" + proxyResponse.status);
+    if (!proxyResponse.ok) {
+      const errorText = await proxyResponse.text();
+      console.error("서버 오류:", errorText);
+      throw Error("서버 불안정" + proxyResponse.status + " " + errorText);
+    }
 
     return Response.json({ status: 200 });
   } catch (error) {

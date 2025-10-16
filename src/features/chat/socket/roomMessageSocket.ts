@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
-import { useGetToken } from "@pThunder/features/auth/api";
+import { useGetToken } from "@pThunder/features/auth";
 import { Message } from "../types";
 
 export function useRoomMessageSocket(roomId: string, {

@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
-import { Header } from "@/shared/components";
+import { Header, Spinner } from "@/shared/components";
 import {
-  useChatRoomQuery,
+  useChatRoomInfiniteQuery,
   useSendTextMessageMutation,
   useSendImageMessageMutation,
   useExitChatMutation,
-} from "@/features/chat/api/chatRoomHooks";
+  useChatRoomQuery,
+} from "@/features/chat/queries";
 import {
   useRoomReadSocket,
   useRoomMessageSocket,
@@ -21,11 +22,21 @@ import {
   ChatMessageList,
   ChatDrawer,
   Message,
+  ChatRoomListItemDto,
 } from "@/features/chat";
 import { useSuspenseGetMyPageInfo } from "@/features/my-page";
 import dayjs from "dayjs";
 import { PendingMessageList } from "@pThunder/features/chat/components/widget/PendingMessageList";
 import { Space } from "@pThunder/shared/components";
+import ObserveTrigger from "@/shared/components/ObserveTrigger";
+import { debounce } from "lodash";
+import { useMessageList } from "@/features/chat/hooks/useMessageList";
+import { useSocketMessageHandler } from "@/features/chat/hooks/useSocketMessageHandler";
+import { useScrollPosition } from "@/features/chat/hooks/useScrollPosition";
+import InviteUserModal from "@pThunder/features/chat/components/widget/InviteUserModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { Alert, Toast } from "@pThunder/shared";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 
 // CSR로 완전 전환 - 서버 렌더링 비활성화
 
@@ -34,68 +45,82 @@ export default function Page() {
   const { data: myInfo } = useSuspenseGetMyPageInfo();
   const router = useRouter();
 
-  const wholeRef = useRef<HTMLDivElement>(null);
-
   const [title, setTitle] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // React Query 훅 사용
-  const { data: chatRoomData, isLoading } = useChatRoomQuery(roomId as string);
-  const [chatLog, setChatLog] = useState<Message[]>(
-    chatRoomData?.messageList.list || []
+  const [inviteUserModalOpen, setInviteUserModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  // 스크롤 위치 관리 훅
+  const {
+    wholeRef,
+    messageContainerRef,
+    saveScrollPosition,
+    maintainScrollPosition,
+    scrollToTop,
+  } = useScrollPosition();
+
+  // 무한 스크롤을 위한 React Query 훅 사용
+  const { data: chatRoomData, isLoading: isChatRoomLoading } = useChatRoomQuery(
+    roomId as string
   );
+  const {
+    data: infiniteData,
+    isLoading: isInfiniteLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useChatRoomInfiniteQuery(roomId as string);
+
   const [pendingMessages, setPendingMessages] = useState<
     (Message & { state: "pending" | "failed" })[]
   >([]);
+
+  // 소켓에서 받은 실시간 메시지들을 저장
+  const [socketMessages, setSocketMessages] = useState<Message[]>([]);
+
+  // 메시지 리스트 최적화된 훅 사용
+  const messageList = useMessageList({
+    chatRoomData,
+    infiniteData,
+    socketMessages,
+  });
 
   const sendTextMessageMutation = useSendTextMessageMutation();
   const sendImageMessageMutation = useSendImageMessageMutation();
   const exitChatMutation = useExitChatMutation();
 
-  // 소켓 훅 사용
+  const onTrigger = useCallback(
+    debounce(
+      () => {
+        if (isFetchingNextPage) return;
+        saveScrollPosition();
+        fetchNextPage();
+      },
+      1000,
+      { leading: true, trailing: false }
+    ),
+    [fetchNextPage, isFetchingNextPage, saveScrollPosition]
+  );
+  // 소켓 readSign 훅
   const { readSign } = useRoomReadSocket(roomId as string);
+
+  // 소켓 메시지 핸들러 훅 사용
+  const { handleTextMessage, handleImageMessage } = useSocketMessageHandler({
+    roomId: roomId as string,
+    myInfo,
+    setSocketMessages,
+    setPendingMessages,
+    readSign,
+  });
+
+  // 소켓 훅 사용
   const { isConnected: messageConnected } = useRoomMessageSocket(
     roomId as string,
     {
       onMessage: (message: Message) => {
-        // 내가 보낸 메시지인 경우 pendingMessages에서 같은 시간의 메시지 제거
-        if (message.senderUsername === myInfo?.username) {
-          setPendingMessages((prev) => {
-            const idx = prev.findIndex(
-              (msg) => msg.content === message.content
-            );
-            if (idx === -1) return prev;
-
-            return [...prev.slice(0, idx), ...prev.slice(idx + 1)];
-          });
-        }
-
         if (message.chatType === "TEXT") {
-          const chatMessage: Message = {
-            id: message.id,
-            senderUsername: message.senderUsername,
-            content: message.content,
-            chatType: message.chatType,
-            imageUrlList: message.imageUrlList,
-            chatRoomUUID: message.chatRoomUUID,
-            createdAt:
-              message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          };
-          setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
-          readSign();
+          handleTextMessage(message);
         } else if (message.chatType === "IMAGE") {
-          const chatMessage: Message = {
-            id: message.id,
-            senderUsername: message.senderUsername,
-            content: message.content,
-            chatType: message.chatType,
-            imageUrlList: message.imageUrlList,
-            chatRoomUUID: message.chatRoomUUID,
-            createdAt:
-              message.createdAt || dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          };
-
-          setChatLog((prevChatLog) => [...prevChatLog, chatMessage]);
-          readSign();
+          handleImageMessage(message);
         }
       },
       onAlarm: (message) => {
@@ -104,9 +129,30 @@ export default function Page() {
     }
   );
 
-  // 채팅방 데이터에서 필요한 정보 추출
-  const userList = chatRoomData?.userInfoList || [];
-  const loading = isLoading;
+  // 무한 스크롤 시 스크롤 위치 유지
+  useEffect(() => {
+    maintainScrollPosition();
+  }, [messageList, maintainScrollPosition]);
+
+  // 채팅방 데이터에서 필요한 정보 추출 (첫 번째 페이지에서 가져오기)
+  const userList =
+    chatRoomData?.userInfoList.sort((a, b) => a.name.localeCompare(b.name)) ||
+    [];
+  const userImageMap = useMemo(() => {
+    return userList.reduce((acc, user) => {
+      acc[user.username] = user.profileImage?.fullFilePath || "";
+      return acc;
+    }, {} as Record<string, string | null>);
+  }, [chatRoomData]);
+
+  const userNameMap = useMemo(() => {
+    return userList.reduce((acc, user) => {
+      acc[user.username] = user.name || "";
+      return acc;
+    }, {} as Record<string, string | null>);
+  }, [chatRoomData]);
+
+  const loading = isChatRoomLoading || isInfiniteLoading;
 
   const onSendMessage = useCallback(
     async (message: string) => {
@@ -129,6 +175,9 @@ export default function Page() {
       const messagePayload = {
         content: message,
       };
+
+      scrollToTop();
+
       try {
         sendTextMessageMutation.mutate(
           {
@@ -136,7 +185,14 @@ export default function Page() {
             message: messagePayload,
           },
           {
-            onSuccess: () => {},
+            onSuccess: () => {
+              setPendingMessages((prevPendingMessages) =>
+                prevPendingMessages.filter(
+                  (pendingMsg) => pendingMsg.id !== pendingUniqueId
+                )
+              );
+              readSign();
+            },
             onError: () => {
               setPendingMessages((prevPendingMessages) =>
                 prevPendingMessages.map((pendingMsg) =>
@@ -149,7 +205,10 @@ export default function Page() {
           }
         );
       } catch {
-        alert("채팅 전송에 실패했습니다.");
+        Toast.show({
+          message: "채팅 전송에 실패했습니다.",
+          type: "error",
+        });
         setPendingMessages((prevPendingMessages) =>
           prevPendingMessages.map((pendingMsg) =>
             pendingMsg.id === pendingUniqueId
@@ -173,12 +232,16 @@ export default function Page() {
           senderUsername: myInfo?.username ?? "",
           content: null,
           chatType: "IMAGE",
-          imageUrlList: Array.from(files).map((file) => file.name),
+          imageUrlList: Array.from(files).map((file) =>
+            URL.createObjectURL(file)
+          ),
           chatRoomUUID: roomId as string,
           createdAt: createdAt,
           state: "pending",
         },
       ]);
+
+      scrollToTop();
       try {
         const formData = new FormData();
         if (!files) throw new Error("파일이 없습니다.");
@@ -191,7 +254,14 @@ export default function Page() {
             formData,
           },
           {
-            onSuccess: () => {},
+            onSuccess: () => {
+              setPendingMessages((prevPendingMessages) =>
+                prevPendingMessages.filter(
+                  (pendingMsg) => pendingMsg.id !== pendingUniqueId
+                )
+              );
+              readSign();
+            },
             onError: () => {
               setPendingMessages((prevPendingMessages) =>
                 prevPendingMessages.map((pendingMsg) =>
@@ -205,9 +275,15 @@ export default function Page() {
         );
       } catch (error) {
         if (error instanceof Error) {
-          alert("채팅 전송에 실패했습니다.\n" + error.message);
+          Toast.show({
+            message: "채팅 전송에 실패했습니다.\n" + error.message,
+            type: "error",
+          });
         } else {
-          alert("채팅 전송에 실패했습니다.");
+          Toast.show({
+            message: "채팅 전송에 실패했습니다.",
+            type: "error",
+          });
         }
 
         setPendingMessages((prevPendingMessages) =>
@@ -223,16 +299,42 @@ export default function Page() {
   );
 
   const onExitChat = useCallback(async () => {
-    if (!confirm("채팅방을 나가시겠습니까?")) return;
-    exitChatMutation.mutate(roomId as string, {
-      onSuccess: () => {
-        router.push("/chats/r/inbox");
-      },
-      onError: (error) => {
-        console.error("채팅방 나가기 실패", error);
+    Alert.confirm({
+      title: "채팅방 나가기",
+      message: "채팅방을 나가시겠습니까?",
+      confirmColor: "var(--color-red-500)",
+      onConfirm: () => {
+        exitChatMutation.mutate(roomId as string, {
+          onSuccess: async () => {
+            // 1. 현재 채팅방 데이터 완전히 제거
+            queryClient.removeQueries({
+              queryKey: ["chatRoom", roomId],
+            });
+            queryClient.removeQueries({
+              queryKey: ["chatRoomInfinite", roomId],
+            });
+
+            // 2. 페이지 이동
+            router.replace("/chats/r/inbox");
+
+            // 3. 채팅방 리스트 갱신
+            await queryClient.setQueryData(
+              ["chatRoomList"],
+              (old: ChatRoomListItemDto[]) => {
+                return old.filter((chatRoom) => chatRoom.chatRoomUUID !== roomId);
+              }
+            );
+          },
+          onError: () => {
+            Alert.alert({
+              title: "채팅방 나가기 실패",
+              message: "채팅방 나가기에 실패했습니다.\n다시 시도해주세요.",
+            });
+          },
+        });
       },
     });
-  }, [roomId, router, exitChatMutation]);
+  }, [roomId, router, exitChatMutation, queryClient]);
 
   const onDeleteMessage = useCallback(
     (message: Message & { state: "pending" | "failed" }) => {
@@ -246,7 +348,6 @@ export default function Page() {
   // 채팅방 데이터가 로드되면 title 설정
   useEffect(() => {
     if (chatRoomData) {
-      setChatLog(chatRoomData.messageList.list);
       setTitle(
         chatRoomData.chatRoomInfo.group
           ? `${chatRoomData.chatRoomInfo.roomName} (${chatRoomData.userInfoList.length})`
@@ -257,15 +358,15 @@ export default function Page() {
 
   useEffect(() => {
     if (title) {
-      document.title = `풍물 머시기 | ${title}`;
+      document.title = `풍덩 | ${title}`;
     } else {
-      document.title = "풍물 머시기 | 채팅";
+      document.title = "풍덩 | 채팅";
     }
   }, [title]);
 
   return (
     <AnimatePresence mode="wait">
-      <div className="flex flex-col h-full bg-white relative overflow-y-auto overflow-x-hidden">
+      <div className="flex flex-col h-full bg-background relative overflow-y-auto overflow-x-hidden">
         <Header
           title={title}
           onLeftClick={() => router.push("/chats/r/inbox")}
@@ -274,38 +375,45 @@ export default function Page() {
               className="w-10 h-10 flex items-center justify-center cursor-pointer"
               onClick={() => setDrawerOpen(true)}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 32 32"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-12 fill-current"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                />
-              </svg>
+              <Bars3Icon className="size-6 text-grey-500" />
             </div>
           }
         />
         {loading || !messageConnected ? (
           <div className="flex justify-center items-center h-full">
-            {roomId}번 방 로딩중...
+            <Spinner size={36} />
           </div>
         ) : (
-          <div className="h-full flex flex-col-reverse gap-2 flex-grow overflow-y-auto">
+          <div
+            ref={wholeRef}
+            className="h-full flex flex-col-reverse gap-2 flex-grow overflow-y-auto"
+          >
             <div
-              ref={wholeRef}
-              style={{ backgroundColor: "#FFF", padding: "24px 0" }}
-              className="flex-grow"
+              ref={messageContainerRef}
+              className="flex-grow bg-background py-[24px] px-[16px]"
             >
+              {/* 무한 스크롤 트리거 (채팅은 위로 스크롤하므로 상단에 배치) */}
+              {hasNextPage && (
+                <>
+                  {/* 로딩 인디케이터 */}
+                  <ObserveTrigger
+                    trigger={onTrigger}
+                    unmountCondition={!hasNextPage}
+                    triggerCondition={{ rootMargin: "100px" }}
+                  />
+
+                  {isFetchingNextPage && (
+                    <div className="flex justify-center py-4 flex-col items-center">
+                      <Spinner size={36} />
+                    </div>
+                  )}
+                </>
+              )}
               <ChatMessageList
-                messages={chatLog}
-                userList={userList}
+                messages={messageList}
                 currentUserId={myInfo?.username ?? ""}
+                userImageMap={userImageMap}
+                userNameMap={userNameMap}
               />
               <Space h={12} />
               <PendingMessageList
@@ -323,6 +431,15 @@ export default function Page() {
           onExitChat={onExitChat}
           userList={userList}
           onClose={() => setDrawerOpen(false)}
+          onInviteUser={() => setInviteUserModalOpen(true)}
+        />
+        <InviteUserModal
+          roomId={roomId as string}
+          currentUsernames={userList.map((user) => user.username)}
+          isOpen={inviteUserModalOpen}
+          onClose={() => {
+            setInviteUserModalOpen(false);
+          }}
         />
       </div>
     </AnimatePresence>

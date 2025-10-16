@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
-import { useGetToken } from "@pThunder/features/auth/api";
-import { useChatRoomStore } from "@/store/chat/chatRoomStore";
+import { useGetToken } from "@pThunder/features/auth";
+import { useChatRoomStore } from "@pThunder/features/chat/store/chatRoomStore";
 
 export function useRoomReadSocket(roomId: string) {
   const { data: token } = useGetToken();
   const { userCheckIn, userCheckOut } = useChatRoomStore();
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-
+  
   useEffect(() => {
     if (!roomId || !token) {
       return;
@@ -41,9 +41,6 @@ export function useRoomReadSocket(roomId: string) {
         });
 
         console.log("채팅 읽음 소켓 연결 성공 - roomId:", roomId);
-
-        // 초기 읽음 상태 전송
-        readSign();
       } catch (error) {
         console.error("채팅 읽음 소켓 연결 실패:", error);
         setIsConnected(false);
@@ -63,6 +60,7 @@ export function useRoomReadSocket(roomId: string) {
     return () => {
       // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
       const readTopic = `/sub/chat/read/${roomId}`;
+      
       sharedSocketManager.unsubscribe(readTopic);
 
       // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
@@ -94,6 +92,14 @@ export function useRoomReadSocket(roomId: string) {
 
     sharedSocketManager.sendMessage(`/pub/chat/read/${roomId}`, message);
   }, [roomId, isConnected]);
+
+
+  useEffect(() => {
+    if (!isConnected) {
+      return;
+    }
+    readSign();
+  }, [readSign, isConnected]);
 
   return {
     readSign,

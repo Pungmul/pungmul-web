@@ -28,9 +28,12 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
           <ChatMessage
             key={message.id}
             message={message.content}
+            isUser={true}
+            userImageUrl={null}
+            senderUsername={""}
             sideContent={
               message.state === "pending" ? (
-                <div className="text-[#DDD] text-[11px] lg:text-[12px]">
+                <div className="text-grey-300 text-[11px] lg:text-[12px]">
                   전송중
                 </div>
               ) : (
@@ -58,7 +61,6 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
                 </div>
               )
             }
-            isUser={true}
           />
         </li>
       );
@@ -66,6 +68,10 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
       return (
         <li key={message.id}>
           <ImageMessage
+            isUser={true}
+            userImageUrl={null}
+            senderUsername={""}
+            isProfileRevealed={false}
             imageList={message.imageUrlList || []}
             sideContent={
               message.state === "pending" ? (
@@ -76,7 +82,7 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
                     height={16}
                     color="#ff6767"
                   />
-                  <div className="text-[#DDD] text-[11px] lg:text-[12px]">
+                  <div className="text-grey-300 text-[11px] lg:text-[12px]">
                     전송중
                   </div>
                 </div>
@@ -109,7 +115,6 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
                 </div>
               )
             }
-            isUser={true}
           />
         </li>
       );
@@ -119,7 +124,7 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
   }, []);
 
   return (
-    <ul className="flex flex-col list-none" style={{ gap: 12 }}>
+    <ul className="flex flex-col list-none gap-[12px]">
       {messages.map((message) => renderMessage(message))}
     </ul>
   );
