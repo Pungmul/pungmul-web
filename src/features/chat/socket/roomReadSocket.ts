@@ -19,6 +19,10 @@ export function useRoomReadSocket(roomId: string) {
       return;
     }
 
+    const handleReadMessage = (message: unknown) => {
+      console.log("Received read message:", message);
+    }
+
     const connectSharedSocket = async () => {
       try {
         setIsConnecting(true);
@@ -36,11 +40,8 @@ export function useRoomReadSocket(roomId: string) {
         userCheckIn(roomId);
         // 채팅 읽음 상태 구독
         const readTopic = `/sub/chat/read/${roomId}`;
-        sharedSocketManager.subscribe(readTopic, (message) => {
-          console.log("Received read message:", message);
-        });
+        sharedSocketManager.subscribe(readTopic, handleReadMessage);
 
-        console.log("채팅 읽음 소켓 연결 성공 - roomId:", roomId);
       } catch (error) {
         console.error("채팅 읽음 소켓 연결 실패:", error);
         setIsConnected(false);
@@ -61,7 +62,7 @@ export function useRoomReadSocket(roomId: string) {
       // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
       const readTopic = `/sub/chat/read/${roomId}`;
       
-      sharedSocketManager.unsubscribe(readTopic);
+      sharedSocketManager.unsubscribe(readTopic, handleReadMessage);
 
       // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
       if (
@@ -74,7 +75,6 @@ export function useRoomReadSocket(roomId: string) {
       setIsConnected(false);
       setIsConnecting(false);
       userCheckOut();
-      console.log("채팅 읽음 소켓 구독 해제 및 연결 해제 - roomId:", roomId);
     };
   }, [roomId, token]);
 
@@ -87,9 +87,7 @@ export function useRoomReadSocket(roomId: string) {
     const message = {
       chatRoomUUID: roomId,
     };
-
-    console.log("Sending read sign:", message);
-
+    
     sharedSocketManager.sendMessage(`/pub/chat/read/${roomId}`, message);
   }, [roomId, isConnected]);
 

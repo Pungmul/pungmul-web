@@ -3,13 +3,16 @@ import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
 import { useGetToken } from "@pThunder/features/auth";
 import { Message } from "../types";
 
-export function useRoomMessageSocket(roomId: string, {
-  onMessage,
-  onAlarm,
-}: {
-  onMessage: (message: Message) => void;
-  onAlarm: (message: Message) => void;
-}) {
+export function useRoomMessageSocket(
+  roomId: string,
+  {
+    onMessage,
+    onAlarm,
+  }: {
+    onMessage: (message: Message) => void;
+    onAlarm: (message: Message) => void;
+  }
+) {
   const { data: token } = useGetToken();
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -24,12 +27,22 @@ export function useRoomMessageSocket(roomId: string, {
       return;
     }
 
+    const handleAlarm = (message: unknown) => {
+      const parsedMessage = message as Message;
+      onAlarm(parsedMessage);
+    };
+
+    const handleMessage = (message: unknown) => {
+      const parsedMessage = message as Message;
+      onMessage(parsedMessage);
+    };
     const connectSharedSocket = async () => {
       try {
         setIsConnecting(true);
 
         await sharedSocketManager.connect({
-          url: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:8080/ws',
+          url:
+            process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8080/ws",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -40,31 +53,18 @@ export function useRoomMessageSocket(roomId: string, {
 
         // 채팅 알림 구독
         const alarmTopic = `/sub/chat/alarm/${roomId}`;
-        console.log('🔍 채팅 알림 구독 시도:', alarmTopic);
-        
-        sharedSocketManager.subscribe(alarmTopic, (message) => {
-          console.log('🔍 채팅 알림 메시지 수신:', message);
-          const parsedMessage = message as Message;
-          onAlarm(parsedMessage);
-        });
+
+        sharedSocketManager.subscribe(alarmTopic, handleAlarm);
 
         // 채팅 메시지 구독
         const messageTopic = `/sub/chat/message/${roomId}`;
-        console.log('🔍 채팅 메시지 구독 시도:', messageTopic);
-        
-        sharedSocketManager.subscribe(messageTopic, (message) => {
-          console.log('🔍 채팅 메시지 수신:', message);
-          const parsedMessage = message as Message;
-          onMessage(parsedMessage);
-        });
 
-        console.log("채팅 메시지 소켓 연결 성공 - roomId:", roomId);
+        sharedSocketManager.subscribe(messageTopic, handleMessage);
 
       } catch (error) {
-        console.error("채팅 메시지 소켓 연결 실패:", error);
         setIsConnected(false);
         setIsConnecting(false);
-        
+
         // 연결 실패 시 3초 후 재시도
         setTimeout(() => {
           if (!isConnected && !isConnecting) {
@@ -80,17 +80,19 @@ export function useRoomMessageSocket(roomId: string, {
       // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
       const alarmTopic = `/sub/chat/alarm/${roomId}`;
       const messageTopic = `/sub/chat/message/${roomId}`;
-      sharedSocketManager.unsubscribe(alarmTopic);
-      sharedSocketManager.unsubscribe(messageTopic);
-      
+      sharedSocketManager.unsubscribe(alarmTopic, handleAlarm);
+      sharedSocketManager.unsubscribe(messageTopic, handleMessage);
+
       // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
-      if (sharedSocketManager.getConnectionStatus() && sharedSocketManager.getSubscriptionCount() === 0) {
+      if (
+        sharedSocketManager.getConnectionStatus() &&
+        sharedSocketManager.getSubscriptionCount() === 0
+      ) {
         sharedSocketManager.disconnect();
       }
-      
+
       setIsConnected(false);
       setIsConnecting(false);
-      console.log("채팅 메시지 소켓 구독 해제 및 연결 해제 - roomId:", roomId);
     };
   }, [roomId, token]);
 
@@ -99,4 +101,4 @@ export function useRoomMessageSocket(roomId: string, {
     isConnecting,
     workerType: sharedSocketManager.getWorkerType(),
   };
-} 
+}
