@@ -1,11 +1,13 @@
 "use client";
 import { create } from "zustand";
 import { useMediaQuery } from "react-responsive"; // 이미 있다면 이거 그대로 써라
+import { useEffect } from "react";
 
 type ViewType = "webview" | "mobile" | "desktop";
 
 interface ViewState {
   view: ViewType;
+  setView: (view: ViewType) => void;
 }
 
 // 최초 실행 시 한 번만 userAgent 검사
@@ -27,19 +29,31 @@ const getInitialView = (): ViewType => {
 
 export const useViewStore = create<ViewState>(() => ({
   view: getInitialView(),
+  setView: (view: ViewType) => {
+    useViewStore.setState({ view });
+  },
 }));
 
 export function useView(): ViewType {
-  const initial = useViewStore((state) => state.view);
+  const view = useViewStore((state) => state.view);
+  const setView = useViewStore((state) => state.setView);
 
   const isMobile = useMediaQuery({
     query: "(max-width: 768px)",
   });
 
-  // webview면 무조건 webview
-  if (initial === "webview") return  "webview" ;
-  // 아니면 너비로 모바일/데스크톱 분기
-  if (isMobile) return "mobile";
+  useEffect(() => {
+    setView(
+      (() => {
+        if (view === "webview") return "webview";
+        // 아니면 너비로 모바일/데스크톱 분기
+        if (isMobile) return "mobile";
 
-  return "desktop";
-} 
+        return "desktop";
+      })()
+    );
+  }, [isMobile]);
+
+  // webview면 무조건 webview
+  return view;
+}

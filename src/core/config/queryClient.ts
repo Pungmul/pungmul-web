@@ -5,10 +5,11 @@ export function makeQueryClient() {
     defaultOptions: {
       queries: {
         // SSR에서는 클라이언트에서 즉시 refetch하지 않도록 설정
-        staleTime: 1000 * 60, // 1분
-        gcTime: 1000 * 60 * 5, // 5분 (이전 cacheTime)
+        staleTime: 1000 * 60 * 5, // 5분 - 데이터를 더 오래 신선하게 유지
+        gcTime: 1000 * 60 * 10, // 10분 - 캐시를 더 오래 유지하여 뒤로가기 시 데이터 보존
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
+        refetchOnMount: false, // 컴포넌트 마운트 시 자동 리페칭 비활성화
         retry: (failureCount, error: unknown) => {
           // 4xx 에러는 재시도하지 않음
           if (error instanceof Error && error.message.includes("400")) {

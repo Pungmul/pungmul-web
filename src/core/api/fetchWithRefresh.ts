@@ -7,18 +7,18 @@ interface RefreshTokenResponse {
   refreshToken?: string;
 }
 
+const MAX_RETRY = 5;
+
 export async function fetchWithRefresh(
   input: RequestInfo | URL,
   init?: RequestInit,
   retryCount = 0
 ): Promise<Response> {
-  const MAX_RETRY = 1;
 
   try {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
-
 
     if (!refreshToken) {
       console.warn("refreshToken is not exist");
@@ -28,8 +28,6 @@ export async function fetchWithRefresh(
     // accessToken이 없으면 먼저 재발급 시도
     if (!accessToken) {
       const newTokens = await refreshAccessToken(refreshToken);
-      // 새 토큰들을 쿠키에 저장
-      console.log("reissue accessToken", newTokens);
       updateTokenCookies(newTokens);
     }
 
@@ -62,8 +60,8 @@ export async function fetchWithRefresh(
     // 토큰 관련 에러인 경우 쿠키 정리
     if (
       error instanceof Error &&
-      (error.message.includes("Authentication") ||
-        error.message.includes("token"))
+      // (error.message.includes("Authentication") ||
+        error.message.includes("token")
     ) {
       clearTokenCookies();
     }

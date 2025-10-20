@@ -1,14 +1,10 @@
-
-export interface SocketConfig {
-  url: string;
-  headers?: Record<string, string>;
-}
+import { SocketConfig } from "./types";
 
 export class SharedSocketManager {
   private static instance: SharedSocketManager;
   private worker: SharedWorker | Worker | null = null;
   private port: MessagePort | null = null;
-  private subscriptions = new Map<string, (data: unknown) => void>();
+  private subscriptions = new Map<string, Set<(data: unknown) => void>>();
   private pendingSubscriptions = new Set<string>(); // 대기 중인 구독들
   private isConnected = false;
   private isSharedWorkerSupported: boolean;
@@ -67,9 +63,16 @@ export class SharedSocketManager {
           case 'MESSAGE':
             const { topic, message } = data;
             console.log('🔍 Worker: 메시지 수신 - topic:', topic, 'message:', message);
-            const callback = this.subscriptions.get(topic);
-            if (callback) {
-              callback(message);
+            const callbacks = this.subscriptions.get(topic);
+            console.log("callbacks size", callbacks?.size ?? 0, topic, message);
+            if (callbacks && callbacks.size > 0) {
+              callbacks.forEach((callback) => {
+                try {
+                  callback(message);
+                } catch (err) {
+                  console.error('🔍 구독 콜백 에러:', err);
+                }
+              });
             }
             break;
           case 'ERROR':
@@ -99,30 +102,63 @@ export class SharedSocketManager {
 
   subscribe(topic: string, callback: (data: unknown) => void): void {
     console.log('🔍 구독 시도 - topic:', topic);
-    this.subscriptions.set(topic, callback);
-    
-    if (this.port && this.isConnected) {
-      this.port.postMessage({
-        type: 'SUBSCRIBE',
-        data: { topic }
-      });
-      console.log('🔍 구독 요청 전송 - topic:', topic);
+    console.log("callback", callback, topic);
+
+    const existingSet = this.subscriptions.get(topic);
+    const isFirstSubscriber = !existingSet || existingSet.size === 0;
+
+    if (!existingSet) {
+      this.subscriptions.set(topic, new Set([callback]));
     } else {
-      if (!this.isConnected) {
-        console.log('🔍 연결되지 않음, 구독 대기');
-        // 대기 중인 구독으로 저장
-        this.pendingSubscriptions.add(topic);
-        console.log('🔍 대기 중인 구독 추가:', topic);
-      }
-      if (!this.port) {
-        console.log('🔍 port 없음'); 
+      existingSet.add(callback);
+    }
+    
+    // 첫 구독자일 때만 워커에 SUBSCRIBE 전송 또는 대기열 추가
+    if (isFirstSubscriber) {
+      if (this.port && this.isConnected) {
+        this.port.postMessage({
+          type: 'SUBSCRIBE',
+          data: { topic }
+        });
+        console.log('🔍 구독 요청 전송 - topic:', topic);
+      } else {
+        if (!this.isConnected) {
+          console.log('🔍 연결되지 않음, 구독 대기');
+          // 대기 중인 구독으로 저장
+          this.pendingSubscriptions.add(topic);
+          console.log('🔍 대기 중인 구독 추가:', topic);
+        }
+        if (!this.port) {
+          console.log('🔍 port 없음'); 
+        }
       }
     }
   }
 
-  unsubscribe(topic: string): void {
+  unsubscribe(topic: string, callback?: (data: unknown) => void): void {
+    const callbacks = this.subscriptions.get(topic);
+
+    if (!callbacks) {
+      return;
+    }
+
+    if (callback) {
+      callbacks.delete(callback);
+      // 남은 구독자가 없으면 실제로 해제
+      if (callbacks.size === 0) {
+        this.subscriptions.delete(topic);
+        if (this.port && this.isConnected) {
+          this.port.postMessage({
+            type: 'UNSUBSCRIBE',
+            data: { topic }
+          });
+        }
+      }
+      return;
+    }
+
+    // 콜백 미지정 시 전체 해제
     this.subscriptions.delete(topic);
-    
     if (this.port && this.isConnected) {
       this.port.postMessage({
         type: 'UNSUBSCRIBE',
@@ -162,7 +198,9 @@ export class SharedSocketManager {
   }
 
   getSubscriptionCount(): number {
-    return this.subscriptions.size;
+    let count = 0;
+    this.subscriptions.forEach((set) => (count += set.size));
+    return count;
   }
 
   private retryPendingSubscriptions(): void {
