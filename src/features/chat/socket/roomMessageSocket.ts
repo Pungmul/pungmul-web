@@ -61,7 +61,7 @@ export function useRoomMessageSocket(
 
         sharedSocketManager.subscribe(messageTopic, handleMessage);
 
-      } catch (error) {
+      } catch {
         setIsConnected(false);
         setIsConnecting(false);
 

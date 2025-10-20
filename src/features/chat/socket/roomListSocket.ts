@@ -55,7 +55,7 @@ export function useRoomListSocket() {
         const notificationTopic = `/sub/chat/notification/${userData.username}`;
         sharedSocketManager.subscribe(notificationTopic, handleSocketMessage);
 
-      } catch (error) {
+      } catch {
         setIsConnected(false);
         setIsConnecting(false);
 
