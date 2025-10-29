@@ -1,51 +1,76 @@
-import { Pagination } from "swiper/modules";
 import { SwiperSlide } from "swiper/react";
 import { Swiper, SwiperRef } from "swiper/react";
 import AddLightningCard from "../element/AddLightningCard";
 import LightningCard from "../element/LightningCard";
-import { LightningMeeting } from "@pThunder/shared";
-import { useJoinLightningMeeting } from "../../api";
+import {
+  LightningMeeting,
+  UserParticipationData,
+  LightningCardRefType,
+} from "../../types";
+import { useJoinLightningMeeting } from "../../queries";
+import { useCallback, useEffect, useRef } from "react";
 
 interface LightningCardListProps {
   lightningList: LightningMeeting[];
-  userPartinLightning:  | (LightningMeeting & {
-    isOrganizer: boolean;
-    participationStatus: boolean;
-    chatRoomUUID: string | null;
-  })
-| null;
-  ref: React.RefObject<SwiperRef|null>;
-  onCardClick: (lightningMeeting: LightningMeeting) => void;
+  userPartinLightning: UserParticipationData | undefined;
+  ref: React.RefObject<SwiperRef | null>;
+  callSheetUp?: () => void;
 }
 
 export function LightningCardList({
   lightningList,
   userPartinLightning,
   ref,
-  onCardClick,
+  callSheetUp,
 }: LightningCardListProps) {
   const { mutate: joinLightning } = useJoinLightningMeeting();
+  const itemRefs = useRef<Map<string, LightningCardRefType>>(new Map());
+  const currentFocusedRef = useRef<LightningCardRefType | null>(null);
+  const refObjects = useRef<
+    Map<string, React.RefObject<LightningCardRefType | null>>
+  >(new Map());
+
+  const getRef = useCallback((id: string) => {
+    if (!refObjects.current.has(id)) {
+      const refObj = { current: null as LightningCardRefType | null };
+      refObjects.current.set(id, refObj);
+    }
+    return refObjects.current.get(id)!;
+  }, []);
+
+  useEffect(() => {
+    if (ref.current && lightningList.length > 0) {
+      ref.current?.swiper.on("slideChange", (swiper) => {
+        console.log("slideChange", swiper.activeIndex);
+        const id = lightningList[swiper.activeIndex]?.id ?? "";
+        currentFocusedRef.current?.blur();
+        currentFocusedRef.current = getRef(id.toString())?.current;
+        currentFocusedRef.current?.focus();
+      });
+    }
+  }, [lightningList]);
 
   return (
     <Swiper
       ref={ref}
       slidesPerView={"auto"}
-      spaceBetween={36}
+      spaceBetween={12}
       centeredSlides={true}
-      pagination={{
-        dynamicBullets: true,
-        clickable: true,
-      }}
-      modules={[Pagination]}
+      // pagination={{
+      //   dynamicBullets: true,
+      //   clickable: true,
+      // }}
+      // modules={[Pagination]}
       className="w-full py-[24px]"
     >
       {/* 스와이프 영역 */}
       <>
-        {lightningList.length === 0 && userPartinLightning?.participationStatus ? (
+        {lightningList.length === 0 && userPartinLightning?.participant ? (
           <SwiperSlide
             style={{
-              width: 280,
-              height: 168,
+              width: "calc(100% - 48px)",
+              maxWidth: 342,
+              height: 328,
             }}
           >
             <div className="w-full h-full flex items-center justify-center">
@@ -53,67 +78,60 @@ export function LightningCardList({
             </div>
           </SwiperSlide>
         ) : (
-          lightningList.map((lightningMeeting, index) => (
+          [...lightningList].map((lightningMeeting, index) => (
             <SwiperSlide
               key={"lightning-card-" + lightningMeeting.id}
               style={{
-                width: 280,
-                height: 168,
+                width: "calc(100% - 48px)",
+                maxWidth: 342,
+                height: 328,
                 position: "relative",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
               onClick={async () => {
-                if (
-                  lightningMeeting.id ===
-                  userPartinLightning?.id
-                ) {
-                  // setWaitingView(true);
+                const focusedIndex = ref.current?.swiper.activeIndex;
+                if (focusedIndex === index) {
+                  callSheetUp?.();
                 } else if (ref) {
                   ref.current?.swiper.slideTo(index);
+                  currentFocusedRef.current?.blur();
+                  currentFocusedRef.current = getRef(
+                    lightningMeeting.id.toString()
+                  )?.current;
+                  currentFocusedRef.current?.focus();
+                }
+              }}
+            >
+              <LightningCard
+                isParticipated={
+                  lightningMeeting.id ===
+                  userPartinLightning?.lightningMeeting?.id
+                }
+                onJoinLightning={({ meetingId }) => {
                   if (
                     confirm(
                       "번개에 참여하시겠습니까? 번개 참여 후 참여 취소는 불가능합니다."
                     )
                   ) {
                     // TanStack Query mutation 사용
-                    joinLightning(lightningMeeting.id);
+                    joinLightning({ meetingId });
                   }
-                }
-                onCardClick(lightningMeeting);
-              }}
-            >
-              {lightningMeeting.id ===
-                userPartinLightning?.id && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -2,
-                    left: -2,
-                    width: "calc(100% + 4px)",
-                    height: "calc(100% + 4px)",
-                    zIndex: -1,
-                    backgroundColor: "rgba(91, 43, 153, 0.12)",
-                    borderRadius: 24,
-                    overflow: "hidden",
-                  }}
-                >
-                  <div className="ligtning-card-sign" />
-                </div>
-              )}
-              <LightningCard
-                isParticipated={
-                  lightningMeeting.id ===
-                  userPartinLightning?.id
+                }}
+                ref={getRef(lightningMeeting.id.toString())}
+                onRefSet={(ref) =>
+                  itemRefs.current.set(lightningMeeting.id.toString(), ref)
                 }
                 {...lightningMeeting}
               />
             </SwiperSlide>
           ))
         )}
-        {!userPartinLightning?.participationStatus && (
-          <SwiperSlide style={{ width: 270, height: 160 }}>
+        {!userPartinLightning?.participant && (
+          <SwiperSlide
+            style={{ width: "calc(100% - 48px)", maxWidth: 342, height: 328 }}
+          >
             <AddLightningCard />
           </SwiperSlide>
         )}

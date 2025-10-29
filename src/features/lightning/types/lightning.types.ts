@@ -1,10 +1,8 @@
-import { Instrument } from "../../instrument-status/model/index";
-
-export const LIGHTNING_TAGS = ["새내기", "뒷풀이", "주체부터"] as const;
+import type { Instrument } from "@/features/instrument-status";
 
 export interface LightningMeetingMessage {
   messageLogId: number;
-  domainType: "LIGHTNING_MEETING"; // string literal로 고정
+  domainType: "LIGHTNING_MEETING";
   businessIdentifier: string;
   identifier: string | null;
   stompDest: string;
@@ -14,20 +12,20 @@ export interface LightningMeetingMessage {
 export interface LightningMeeting {
   id: number;
   meetingName: string;
-  recruitmentEndTime: string; // ISO 날짜 문자열
+  recruitmentEndTime: string;
   startTime: string;
   endTime: string;
   minPersonNum: number;
   maxPersonNum: number;
   organizerId: number;
-  meetingType: "FREE" | "PLAY" | "STUDY" | string; // 다른 타입이 있을 수 있으므로 string 포함
+  meetingType: "FREE" | "PLAY" | "STUDY" | string;
   latitude: number;
   longitude: number;
   buildingName: string;
   locationDetail: string;
-  tags: (typeof LIGHTNING_TAGS)[number][];
-  lightningMeetingParticipantList: unknown[]; // 타입이 정의되지 않아 any[]로 처리
-  instrumentAssignmentList: unknown[]; // 타입이 정의되지 않아 any[]로 처리
+  tags: string[];
+  lightningMeetingParticipantList: unknown[];
+  instrumentAssignmentList: unknown[];
   status: "OPEN" | "CLOSED" | "CANCELLED" | "SUCCESS" | "READY";
   notificationSent: boolean;
   visibilityScope: "ALL" | "PRIVATE" | string;
@@ -59,7 +57,7 @@ export type InstrumentAssignRequestDTOList = [
 export type CreateLightningMeetingRequest =
   | {
       meetingName: string;
-      recruitmentEndTime: string; // ISO 문자열, 빈 문자열도 가능
+      recruitmentEndTime: string;
       startTime: string;
       endTime: string;
       minPersonNum: number;
@@ -70,11 +68,11 @@ export type CreateLightningMeetingRequest =
       buildingName: string;
       locationDetail: string;
       visibilityScope: "ALL" | "SCHOOL_ONLY";
-      tags: string[]; // 태그 이름만 배열로 전달
+      tags: string[];
     }
   | {
       meetingName: string;
-      recruitmentEndTime: string; // ISO 문자열, 빈 문자열도 가능
+      recruitmentEndTime: string;
       startTime: string;
       endTime: string;
       minPersonNum: number;
@@ -85,13 +83,32 @@ export type CreateLightningMeetingRequest =
       buildingName: string;
       locationDetail: string;
       visibilityScope: "ALL" | "SCHOOL_ONLY";
-      tags: string[]; // 태그 이름만 배열로 전달
-      // instrumentAssignRequestDTOList: InstrumentAssignRequestDTOList;
+      tags: string[];
     };
 
-
-export type NearLightning = {
+export type NearLightningType = {
   distanceInMeters: number;
   lightningMeeting: LightningMeeting;
   organizerName: string;
-}; 
+};
+
+export interface LightningCardRefType {
+  focus: () => void;
+  blur: () => void;
+}
+
+export interface LightningBottomSheetRefType {
+  getLevel: () => number;
+  onLevelChange: (
+    callback: (oldLevel: number, newLevel: number) => void
+  ) => void;
+}
+
+export interface UserParticipationData {
+  isOrganizer: boolean;
+  participant: boolean;
+  lightningMeeting: LightningMeeting | null;
+  chatRoomUUID: string | null;
+}
+
+

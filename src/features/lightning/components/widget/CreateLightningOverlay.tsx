@@ -8,7 +8,7 @@ export function LightningOverlay() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  
+
   const isCreate = searchParams.get("create") === "true";
   const [container, containerAnimate] = useAnimate<HTMLDivElement>();
   const [backdrop, backdropAnimate] = useAnimate<HTMLDivElement>();
@@ -21,8 +21,16 @@ export function LightningOverlay() {
       router.replace(pathname);
     } else {
       // 원위치로 돌아가기
-      containerAnimate(container.current, { y: 0 }, { duration: 0.3, ease: "easeOut" });
-      backdropAnimate(backdrop.current, { opacity: 1 }, { duration: 0.3, ease: "easeOut" });
+      containerAnimate(
+        container.current,
+        { y: 0 },
+        { duration: 0.3, ease: "easeOut" }
+      );
+      backdropAnimate(
+        backdrop.current,
+        { opacity: 1 },
+        { duration: 0.3, ease: "easeOut" }
+      );
     }
   };
 
@@ -56,19 +64,21 @@ export function LightningOverlay() {
           exit={{ y: "100%" }}
           onDragEnd={handleDragEnd}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="absolute top-0 left-0 w-dvw z-50 mt-[6vh]"
+          className="absolute top-0 left-0 w-dvw z-50 mt-[6vh] o"
         >
           <div
             onClick={(e) => {
               e.stopPropagation();
             }}
-            className="relative bg-white h-dvh pt-[8px] overflow-hidden md:max-w-[960px] md:mx-auto z-50"
+            className="relative bg-background h-full pt-[8px] md:max-w-[960px] md:mx-auto z-50"
             style={{
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
             }}
           >
-            <LightningCreateForm />
+            <div className="pt-[12px]">
+              <LightningCreateForm />
+            </div>
           </div>
         </motion.div>
       )}

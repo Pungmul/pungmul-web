@@ -1,4 +1,4 @@
-import { LightningMeeting } from "@pThunder/shared/types/lightning/type";
+import { LightningMeeting } from "@pThunder/features/lightning";
 import { create } from "zustand";
 
 interface ParticipatingLightningStore {
@@ -14,7 +14,7 @@ export const participatingLightningStore =
     setParticipatingLightning: (participatingLightning: LightningMeeting) =>
       set({ participatingLightning: participatingLightning }),
     fetch: async () => {
-      const response = await fetch(`/lightning/status`, {
+      const response = await fetch(`/api/lightning/status`, {
         credentials: "include",
       });
       set({ participatingLightning: await response.json() });

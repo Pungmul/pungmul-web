@@ -1,18 +1,13 @@
 "use client";
-import { useCallback, useEffect } from "react";
 import { SwiperRef } from "swiper/react";
-import { LightningMeeting } from "@/shared/types/lightning/type";
+import type { UserParticipationData } from "@/features/lightning";
 import { lightningMapStore } from "../../store/lightningMapStore";
 import { LightningCardList } from "./LightningCardList";
 
 interface LightningListProps {
   userPartinLightning:
-    | (LightningMeeting & {
-        isOrganizer: boolean;
-        participationStatus: boolean;
-        chatRoomUUID: string | null;
-      })
-    | null;
+    | UserParticipationData
+    | undefined;
   ref: React.RefObject<SwiperRef | null>;
 }
 
@@ -20,30 +15,10 @@ export function LightningList(props: LightningListProps) {
   const { userPartinLightning, ref } = props;
   const {
     lightningList,
-    focusedLightningIndex,
     target,
     setTarget,
-    focusLightningByIndex,
   } = lightningMapStore();
 
-  const onCardClick = useCallback(
-    (lightningMeeting: LightningMeeting) => {
-      // 카드 클릭 시 해당 lightning에 포커스
-      const index = lightningList.findIndex(
-        (lightning) => lightning.id === lightningMeeting.id
-      );
-      if (index !== -1) {
-        focusLightningByIndex(index);
-      }
-    },
-    [lightningList, focusLightningByIndex]
-  );
-
-  useEffect(() => {
-    if (ref.current && focusedLightningIndex !== null) {
-      ref.current.swiper.slideTo(focusedLightningIndex);
-    }
-  }, [focusedLightningIndex]);
 
   return (
     <div className="relative z-10 bottom-0 w-full rounded-xl shadow-up-md bg-white overflow-hidden flex flex-col lg:h-full lg:w-[640px] gap-[16px] py-[16px] lg:py-[32px] lg:gap-[24px]">
@@ -70,7 +45,6 @@ export function LightningList(props: LightningListProps) {
         ref={ref}
         lightningList={lightningList}
         userPartinLightning={userPartinLightning}
-        onCardClick={onCardClick}
       />
     </div>
   );

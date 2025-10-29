@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { LightningMeeting } from '@/shared/types/lightning/type';
+import { LightningMeeting } from '@pThunder/features/lightning';
 
 interface LightningMapStore {
   // 상태

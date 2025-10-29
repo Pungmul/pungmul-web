@@ -1,69 +1,84 @@
 'use client';
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
+import { memo, useEffect, useRef } from "react";
 
-export const TimeGapPannel = ({ timeString }: { timeString: string }) => {
-
-  const [min, sec] = useMemo(
-    () => {
-      const diff = dayjs(timeString).diff(dayjs(), "seconds");
-      return [Math.floor(diff / 60), diff % 60];
-    },
-    [timeString]
-  );
-  const [minutes, setMinutes] = useState(Number(min));
-  const [seconds, setSeconds] = useState(Number(sec));
-
-  const [minBg, setMinBg] = useState("#ffffff");
-  const [secBg, setSecBg] = useState("#ffffff");
+/**
+ * 
+ * @param timeString 시간 문자열 (HH:mm:ss)
+ * @returns 
+ */
+export const TimeGapPannel = memo(({ timeString }: { timeString: string }) => {
+  const minRef = useRef<HTMLDivElement>(null);
+  const secRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const updateTime = () => {
       const diff = dayjs(timeString).diff(dayjs(), "seconds");
-      setMinutes(Math.floor(diff / 60));
-      setSeconds(diff % 60);
-    }, 1000);
+      const newMinutes = Math.floor(diff / 60);
+      const newSeconds = diff % 60;
+
+      // 현재 표시된 값과 비교
+      const currentMinText = minRef.current?.textContent;
+      const currentSecText = secRef.current?.textContent;
+      const currentMinutes = currentMinText ? parseInt(currentMinText) ?? 0 : 0;
+      const currentSeconds = currentSecText ? parseInt(currentSecText) ?? 0 : 0;
+
+      // 분이 변경되었을 때 애니메이션 및 업데이트
+      if (currentMinutes !== newMinutes) {
+        if (minRef.current) {
+          minRef.current.style.backgroundColor = "var(--color-grey-100)";
+          minRef.current.style.transition = "var(--background) 0.2s ease-in-out";
+          minRef.current.textContent = newMinutes.toString().padStart(2, "0");
+          setTimeout(() => {
+            if (minRef.current) {
+              minRef.current.style.backgroundColor = "var(--background)";
+            }
+          }, 200);
+        }
+      }
+
+      // 초가 변경되었을 때 애니메이션 및 업데이트
+      if (currentSeconds !== newSeconds) {
+        if (secRef.current) {
+          secRef.current.style.backgroundColor = "var(--color-grey-100)";
+          secRef.current.style.transition = "var(--background) 0.2s ease-in-out";
+          secRef.current.textContent = newSeconds.toString().padStart(2, "0");
+          setTimeout(() => {
+            if (secRef.current) {
+              secRef.current.style.backgroundColor = "var(--background)";
+            }
+          }, 200);
+        }
+      }
+    };
+
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, [timeString]);
-
-  // 초 애니메이션 트리거
-  useEffect(() => {
-    setSecBg("#d1d5db");
-    const timeout = setTimeout(() => setSecBg("#ffffff"), 200);
-    return () => clearTimeout(timeout);
-  }, [seconds]);
-
-  // 분 애니메이션 트리거
-  useEffect(() => {
-    setMinBg("#d1d5db");
-    const timeout = setTimeout(() => setMinBg("#ffffff"), 200);
-    return () => clearTimeout(timeout);
-  }, [minutes]);
+  }, []);
 
   return (
     <div className="flex flex-row justify-center items-center gap-[8px]">
       <div className="flex flex-col items-center w-[64px]">
-        <motion.div
-          animate={{ backgroundColor: minBg }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
+        <div
+          ref={minRef}
           className="text-[28px] font-bold px-2 rounded"
         >
-          {minutes.toString().padStart(2, "0")}
-        </motion.div>
+          {/* 초기값은 useEffect에서 설정 */}
+        </div>
         <div className="text-[16px]">분</div>
       </div>
 
       <div className="flex flex-col items-center w-[64px]">
-        <motion.div
-          animate={{ backgroundColor: secBg }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
+        <div
+          ref={secRef}
           className="text-[28px] font-bold px-2 rounded"
         >
-          {seconds.toString().padStart(2, "0")}
-        </motion.div>
+          {/* 초기값은 useEffect에서 설정 */}
+        </div>
         <div className="text-[16px]">초</div>
       </div>
     </div>
   );
-};
+});
+
+TimeGapPannel.displayName = 'TimeGapPannel';

@@ -5,9 +5,9 @@ import checkMark from "@public/icons/checkMark.svg";
 import {
   InstrumentAssignRequestDTO,
   InstrumentAssignRequestDTOList,
-} from "../../model/index";
-import { instrumentNamesMap } from "../../../instrument-status/model/constant";
-import { Instrument } from "../../../instrument-status/model/index";
+} from "@/features/lightning";
+import { instrumentNamesMap } from "@/features/instrument-status";
+import type { Instrument } from "@/features/instrument-status";
 import { useEffect, useState } from "react";
 
 interface InstrumentAssignFormProps {
@@ -61,38 +61,16 @@ const InstrumentAssignForm: React.FC<InstrumentAssignFormProps> = ({
   return (
     <div
       key={instrument + "Personnel"}
-      className="flex flex-col items-center"
-      style={{
-        gap: 8,
-        width: 96,
-        height: 160,
-      }}
+      className="flex flex-col items-center gap-[8px] w-[96px] h-[160px]"
     >
       <div
-        style={{
-          fontSize: 14,
-          color: "#9A9A9A",
-          width: "100%",
-          textAlign: "center",
-        }}
+        className="text-[14px] text-grey-400 w-full text-center"
       >
         {instrumentNamesMap[instrument]}
       </div>
       {isNotRecruit ? (
         <div
-          style={{
-            fontSize: 16,
-            lineHeight: "16px",
-            color: "#9A9A9A",
-            height: 100,
-            width: "100%",
-            backgroundColor: "#F5F5F5",
-            borderRadius: 8,
-
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+        className="text-[16px] leading-[16px] text-grey-400 h-[100px] w-full bg-grey-200 rounded-[8px] flex items-center justify-center"
         >
           모집 안함
         </div>
@@ -108,8 +86,7 @@ const InstrumentAssignForm: React.FC<InstrumentAssignFormProps> = ({
       )}
       <label
         htmlFor={instrument + "notRecruit"}
-        className="flex w-full flex-row items-center cursor-pointer justify-center"
-        style={{ gap: 8 }}
+        className="flex w-full flex-row items-center cursor-pointer justify-center gap-[8px]"
       >
         <input
           type="checkbox"
@@ -149,26 +126,15 @@ const InstrumentAssignForm: React.FC<InstrumentAssignFormProps> = ({
           className="hidden peer"
         />
         <div
-          className="hidden w-5 h-5 peer-checked:flex rounded-sm items-center justify-center"
-          style={{
-            backgroundColor: "#816DFF",
-            width: 16,
-            height: 16,
-          }}
+          className="hidden size-[16px] peer-checked:flex rounded-sm items-center justify-center bg-primary"
         >
           <Image src={checkMark} width={12} alt="" />
         </div>
         <div
-          className="block w-5 h-5 border border-[#979797] peer-checked:hidden rounded-sm"
-          style={{
-            backgroundColor: "#FFF",
-            width: 16,
-            height: 16,
-          }}
+          className="block size-[16px] border border-grey-400 peer-checked:hidden rounded-sm bg-background"
         />
         <div
-          style={{ fontSize: 14, lineHeight: "16px", color: "#9A9A9A" }}
-          className="text-[#818181] peer-checked:text-black peer-checked:font-semibold"
+          className="text-[14px] line-height-[16px] text-grey-400 peer-checked:text-grey-800 peer-checked:font-semibold"
         >
           모집 안함
         </div>
@@ -198,22 +164,13 @@ const InstrumentAssignRange: React.FC<InstrumentAssignRangeProps> = ({
 }) => {
   return (
     <div
-      style={{
-        height: 100,
-        flexDirection: "column",
-        display: "flex",
-        justifyContent: "space-evenly",
-      }}
+      className="flex flex-col items-center justify-evenly h-[100px]"
     >
       <div
-        className="flex flex-row items-center justify-center"
-        style={{ gap: 8 }}
+        className="flex flex-row items-center justify-center gap-[8px]"
       >
         <div
-          className="rounded-full border-gray-300 text-gray-500 cursor-pointer border w-6 h-6 items-center justify-center flex"
-          style={{
-            backgroundColor: minPersonNum > 0 ? "#FFF" : "#DDD",
-          }}
+          className={"rounded-full border-gray-300 text-gray-500 cursor-pointer border size-[24px] items-center justify-center flex " + (minPersonNum > 0 ? "bg-grey-100" : "bg-grey-200")}
           onClick={() => {
             if (minPersonNum > 0) decreaseMinPersonNum();
           }}
@@ -222,10 +179,7 @@ const InstrumentAssignRange: React.FC<InstrumentAssignRangeProps> = ({
         </div>
         <div>{minPersonNum}</div>
         <div
-          className="rounded-full border-gray-300 text-gray-500 cursor-pointer border w-6 h-6 items-center justify-center flex"
-          style={{
-            backgroundColor: maxPersonNum - 1 > minPersonNum ? "#FFF" : "#DDD",
-          }}
+          className={"rounded-full border-gray-300 text-gray-500 cursor-pointer border size-[24px] items-center justify-center flex " + (maxPersonNum - 1 > minPersonNum ? "bg-grey-100" : "bg-grey-200")}
           onClick={() => {
             increaseMinPersonNum();
           }}
@@ -234,14 +188,10 @@ const InstrumentAssignRange: React.FC<InstrumentAssignRangeProps> = ({
         </div>
       </div>
       <div
-        className="flex flex-row items-center justify-center"
-        style={{ gap: 8 }}
+        className="flex flex-row items-center justify-center gap-[8px]"
       >
         <div
-          className="rounded-full border-gray-300 text-gray-500 cursor-pointer border w-6 h-6 items-center justify-center flex"
-          style={{
-            backgroundColor: maxPersonNum - 1 > minPersonNum ? "#FFF" : "#DDD",
-          }}
+          className={"rounded-full border-gray-300 text-gray-500 cursor-pointer border size-[24px] items-center justify-center flex " + (maxPersonNum - 1 > minPersonNum ? "bg-grey-100" : "bg-grey-200")}
           onClick={() => {
             decreaseMaxPersonNum();
           }}
@@ -250,10 +200,7 @@ const InstrumentAssignRange: React.FC<InstrumentAssignRangeProps> = ({
         </div>
         <div>{maxPersonNum}</div>
         <div
-          className="rounded-full border-gray-300 text-gray-500 cursor-pointer border w-6 h-6 items-center justify-center flex"
-          style={{
-            backgroundColor: maxPersonNum < 100 ? "#FFF" : "#DDD",
-          }}
+          className={"rounded-full border-gray-300 text-gray-500 cursor-pointer border size-[24px] items-center justify-center flex " + (maxPersonNum < 100 ? "bg-grey-100" : "bg-grey-200")}
           onClick={() => {
             increaseMaxPersonNum();
           }}
