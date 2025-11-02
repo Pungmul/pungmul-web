@@ -3,8 +3,8 @@ import {
   instrumentNamesMap,
   abilityNamesMap,
   instrumentAbilities,
-} from "../../model/constant";
-import { Instrument, InstrumentStatus } from "../../model";
+} from "../../constant";
+import { Instrument, InstrumentStatus } from "../../types";
 import { useEffect, useRef, useState } from "react";
 
 interface InstrumentStatusProps {
