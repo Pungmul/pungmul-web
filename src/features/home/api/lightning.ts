@@ -1,6 +1,6 @@
-import { NearLightning } from "@pThunder/features/lightning/model/index";
+import type { NearLightningType } from "@/features/lightning";
 
-export async function loadNearLightning(): Promise<NearLightning[]> {
+export async function loadNearLightning(): Promise<NearLightningType[]> {
   try {
     const proxyUrl = `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/lightning/nearby`;
 

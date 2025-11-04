@@ -1,144 +1,157 @@
 "use client";
 
-import { EffectCards } from "swiper/modules";
+import { Navigation, FreeMode } from "swiper/modules";
 import { SwiperSlide, Swiper } from "swiper/react";
-import LightningCard from "../element/LightningCard";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { SkeletonView } from "@pThunder/shared/components";
-import { useUserLocation } from "@pThunder/features/location";
-import { updateLocation } from "@pThunder/features/location/hooks/useLocation"; 
+import { useUserLocation, updateLocation } from "@pThunder/features/location";
 import React, { use } from "react";
 import { useNearLightningQuery } from "@pThunder/features/home";
+import NearLightningCard from "../element/NearLightningCard";
+import { ThunderIconFilled } from "@pThunder/shared/components/Icons";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import { NearLightningSkeleton } from "../element/NearLightningSkeleton";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { SuspenseComponent as Suspense } from "@/shared";
 
-export default function NearLightningContent() {
+// 모듈 레벨에서 Promise를 캐싱 (컴포넌트 리마운트 시에만 새로 생성)
+// 리렌더링 되어도 같은 Promise를 사용
+let updateLocationPromise: Promise<unknown> | null = null;
+
+export function NearLightningContent() {
+  const [retryKey, setRetryKey] = useState(0);
+  const queryClient = useQueryClient();
+
+  const handleRetry = async () => {
+    // React Query 캐시 무효화
+    await queryClient.invalidateQueries({ queryKey: ["location", "user"] });
+    await queryClient.resetQueries({ queryKey: ["location", "user"] });
+
+    await queryClient.invalidateQueries({ queryKey: ["nearLightning"] });
+    await queryClient.resetQueries({ queryKey: ["nearLightning"] });
+    
+    // 새로운 Promise 생성 (리마운트 시 사용)
+    updateLocationPromise = updateLocation();
+
+    // 컴포넌트 리마운트
+    setRetryKey((prev) => prev + 1);
+  };
+  return (
+    <ErrorBoundary
+      resetKeys={[retryKey]}
+      onReset={handleRetry}
+      FallbackComponent={(props) => <NearLightningContentError {...props} />}
+    >
+      <Suspense clientOnly fallback={<NearLightningSkeleton />}>
+        <NearLightning key={retryKey} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
+export default function NearLightning() {
   const { data: serverLocation } = useUserLocation();
+
+  // 위치 정보가 없을 때만 Promise 생성 및 사용
   if (
     !serverLocation ||
-    !serverLocation.latitude ||
-    !serverLocation.longitude
+    !serverLocation?.latitude ||
+    !serverLocation?.longitude
   ) {
-    use(updateLocation);
+    // Promise가 없으면 새로 생성
+    if (!updateLocationPromise) {
+      updateLocationPromise = updateLocation();
+    }
+    use(updateLocationPromise);
+  } else {
+    // 위치 정보가 있으면 Promise 초기화 (다음에 필요할 때 새로 생성)
+    updateLocationPromise = null;
   }
+
   const { data: nearLightning, isError } = useNearLightningQuery();
 
   const router = useRouter();
 
   // 에러 발생 시 에러 메시지 표시
   if (isError) {
-    return (
-      <div className="w-full h-[240px] md:h-[400px] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 mb-2">정보를 불러오는데 실패했습니다.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-blue-500 hover:text-blue-700 underline"
-          >
-            다시 시도
-          </button>
-        </div>
-      </div>
-    );
+    throw new Error("Near Lightning 데이터를 불러오는데 실패했습니다.");
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center px-[24px]">
-      <div className="w-full md:w-[640px] h-[240px] md:h-[400px]">
-        <Swiper
-          effect={"cards"}
-          grabCursor={true}
-          modules={[EffectCards]}
-          className="mySwiper flex items-center justify-center w-full h-full"
-        >
-          <>
-            {nearLightning && nearLightning.length > 0
-              ? nearLightning.map(
-                  ({ lightningMeeting, ...lightning }, index) => {
-                    console.log(lightning);
-                    return (
-                      <SwiperSlide
-                        className="h-full cursor-pointer"
-                        key={index + "card-slide"}
-                        style={{
-                          backgroundColor: "#FFF",
-                          borderRadius: 16,
-                        }}
-                      >
-                        <LightningCard
-                          organizerName={lightning.organizerName}
-                          {...lightningMeeting}
-                        />
-                      </SwiperSlide>
-                    );
+    <div className="relative w-full px-[16px]">
+      <Swiper
+        grabCursor={true}
+        modules={[Navigation, FreeMode]}
+        className="mySwiper w-full h-full"
+        slidesPerView="auto"
+        spaceBetween={12}
+      >
+        <>
+          {nearLightning && nearLightning.length > 0
+            ? nearLightning.map((nearLightning) => (
+                <SwiperSlide
+                  key={
+                    "near-lightning-card-" + nearLightning.lightningMeeting.id
                   }
-                )
-              : null}
-            <SwiperSlide
-              key={"add-card-slide"}
-              className="h-full cursor-pointer"
-              style={{
-                backgroundColor: "#FFF",
-                borderRadius: 16,
-                border: "2px dashed #D9D9D9",
-              }}
-              onClick={() => {
-                router.push(
-                  "/lightning" +
-                    (nearLightning && nearLightning.length > 0
-                      ? ""
-                      : "?create=true")
-                );
-              }}
-            >
-              <div className="cursor-pointer flex flex-col items-center justify-center h-full">
-                {nearLightning && nearLightning.length == 0 && (
-                  <div className="flex flex-col items-center justify-center">
-                    <h1 className="text-center text-gray-400 font-bold">
-                      현재 근처에 번개가 없어요.
-                    </h1>
-                    <h1 className="text-center text-gray-400 font-bold">
-                      번개를 만들어보세요.
-                    </h1>
-                  </div>
-                )}
-                <Image
-                  src={"/icons/Thunder-Icon-filled.svg"}
-                  width={48}
-                  height={64}
-                  alt=""
-                  color="#D9D9D9"
-                  className="mx-auto mt-8 mb-4"
-                />
-                <h1 className="text-center text-gray-400 font-bold">
-                  {nearLightning && nearLightning.length > 0
-                    ? "번개 더 찾아보기"
-                    : "번개 만들러 가기"}
-                </h1>
-              </div>
-            </SwiperSlide>
-          </>
-        </Swiper>
-      </div>
+                  className="!w-[280px] !aspect-[16/9]"
+                >
+                  <NearLightningCard {...nearLightning} />
+                </SwiperSlide>
+              ))
+            : null}
+          <SwiperSlide
+            key={"add-card-slide"}
+            className="!w-[280px] !aspect-[16/9] cursor-pointer bg-background rounded-[4px] border-[2px] border-dashed border-grey-400"
+            onClick={() => {
+              router.push(
+                "/lightning" +
+                  (nearLightning && nearLightning.length > 0
+                    ? ""
+                    : "?create=true")
+              );
+            }}
+          >
+            <div className="cursor-pointer flex flex-col items-center justify-center h-full gap-2">
+              {nearLightning && nearLightning.length == 0 && (
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <h1 className="text-center text-grey-400 font-normal text-sm">
+                    지금 근처에 번개가 없어요.
+                  </h1>
+                  <h1 className="text-center text-grey-400 font-normal text-sm">
+                    번개를 만들어보세요.
+                  </h1>
+                </div>
+              )}
+              <ThunderIconFilled className="size-[48px] text-grey-800" />
+              <h1 className="text-center text-grey-400 font-semibold text-sm">
+                {nearLightning && nearLightning.length > 0
+                  ? "번개 더 찾아보기"
+                  : "번개 만들기"}
+              </h1>
+            </div>
+          </SwiperSlide>
+        </>
+      </Swiper>
+      <div className="swiper-pagination"></div>
     </div>
   );
 }
 
-export function NearLightningContentFallback() {
-  return (
-    <div className="w-full h-[240px] md:h-[400px] flex items-center justify-center px-[36px]">
-      <SkeletonView className="w-full h-[240px] md:h-[400px] rounded-lg relative" />
-    </div>
-  );
-}
+export function NearLightningContentError({
+  resetErrorBoundary,
+}: FallbackProps) {
+  const handleRetry = () => {
+    // retryKey 변경 → resetKeys 변경 → ErrorBoundary 리셋 → 컴포넌트 리렌더링
+    resetErrorBoundary();
+  };
 
-export function NearLightningContentError() {
   return (
-    <div className="w-full h-[240px] md:h-[400px] flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-gray-500 mb-2">정보를 불러오는데 실패했습니다.</p>
+    <div className="w-full relative">
+      <div className="mx-auto text-center w-[280px] aspect-[16/9] flex flex-col items-center justify-center">
+        <p className="text-grey-400 mb-2">근처 번개를 불러오는데 실패했어요.</p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={handleRetry}
           className="text-blue-500 hover:text-blue-700 underline"
         >
           다시 시도

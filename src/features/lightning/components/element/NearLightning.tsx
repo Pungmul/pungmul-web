@@ -1,7 +1,5 @@
 "use client";
-import NearLightningContent, { NearLightningContentError, NearLightningContentFallback } from "../widget/NearLightningContent";
-import Suspense from "@pThunder/shared/components/SuspenseComponent";
-import { ErrorBoundary } from "react-error-boundary";
+import { NearLightningContent } from "../widget/NearLightningContent";
 
 export default function NearLightning() {
   return (
@@ -9,17 +7,8 @@ export default function NearLightning() {
       <h2 className="flex flex-row items-end px-[24px] text-[18px] font-bold">
         근처에서 생긴 번개
       </h2>
-      <ErrorBoundary
-        fallback={
-          <NearLightningContentError />
-        }
-      >
-        <Suspense
-          fallback={<NearLightningContentFallback />}
-        >
-          <NearLightningContent />
-        </Suspense>
-      </ErrorBoundary>
+
+      <NearLightningContent />
     </section>
   );
 }

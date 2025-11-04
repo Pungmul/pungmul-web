@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { useLocation } from "@pThunder/store/location";
+import { useLocation } from "@/features/location/store";
 
 export function usePatchLocation() {
   const { 

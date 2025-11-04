@@ -1,8 +1,8 @@
-import { NotificationData } from "@pThunder/features/notification/model/index";
+import type { NotificationData } from "@/features/notification";
 
 export async function loadNotReadMessageCnt(): Promise<number> {
   try {
-    const proxyUrl = `/notification/notReadCnt`;
+    const proxyUrl = `/api/notification/notReadCnt`;
 
     const proxyResponse = await fetch(proxyUrl, {
       credentials: "include",
@@ -23,7 +23,7 @@ export async function loadNotReadMessageCnt(): Promise<number> {
 export async function loadNotReadMessage(): Promise<NotificationData[]> {
   try {
     const proxyResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_LOCAL_URL}/notification/notReadMessage`,
+      `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/notification/notReadMessage`,
       {
         credentials: "include",
       }

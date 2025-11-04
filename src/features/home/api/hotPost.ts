@@ -1,4 +1,4 @@
-import { Post } from "@pThunder/features/post/model/index";
+import type { Post } from "@/features/post";
 
 export async function loadHotPostList(): Promise<Post[]> {
   try {
