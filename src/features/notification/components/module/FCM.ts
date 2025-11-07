@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { FirebaseOptions, initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { notificationStore } from "@/store/notification/notificationStore";
+import { notificationStore } from "@/features/notification/store";
 
 // Firebase 설정 - 클라이언트 노출이 안전함
 const firebaseConfig: FirebaseOptions = {
@@ -71,7 +71,7 @@ export default function FCMClient() {
       // FCM 토큰 요청 함수
       const fetchFCMToken = async (fcmToken: string) => {
         try {
-          const response = await fetch("/fcm-token", {
+          const response = await fetch("/api/fcm-token", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

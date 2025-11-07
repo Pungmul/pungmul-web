@@ -1,5 +1,5 @@
 "use client";
-import { notificationStore } from "@/store/notification/notificationStore";
+import { notificationStore } from "@/features/notification/store";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
