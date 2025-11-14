@@ -1,4 +1,4 @@
-import { Member } from "@pThunder/shared";
+import type { Member } from "@/features/member";
 
 import Image from "next/image";
 

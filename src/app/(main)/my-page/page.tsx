@@ -1,21 +1,24 @@
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { prefetchMyPageInfo } from "@/features/my-page";
 import { MyPageClient } from "@/features/my-page";
-import Suspense from "@/shared/components/SuspenseComponent";
+import { Header, Space } from "@pThunder/shared";
+import { Metadata } from "next";
 
 // 서버 사이드 렌더링 완전 비활성화
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
-export default function MyPagePage() {
-  const queryClient = prefetchMyPageInfo();
+export const metadata: Metadata = {
+  title: `풍덩 | 마이 페이지`,
+};
 
+export default function MyPagePage() {
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<div>Loading...</div>}>
+    <div className="bg-grey-100 h-full w-full">
+      <div className="flex flex-col h-full w-full min-w-[360px] max-w-[768px] mx-auto relative bg-grey-100">
+        <Header title="마이 페이지" isBackBtn={false} />
+        <Space h={12} />
         <MyPageClient />
-      </Suspense>
-    </HydrationBoundary>
+      </div>
+    </div>
   );
 }
