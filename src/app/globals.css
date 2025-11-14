@@ -146,7 +146,7 @@
 
     /* 다크모드에서 색상 변수들을 다크 색상으로 전환 */
     --color-primary-light: var(--color-primary-dark);
-    
+
     --color-grey-100: var(--color-grey-100-dark);
     --color-grey-200: var(--color-grey-200-dark);
     --color-grey-300: var(--color-grey-300-dark);
@@ -186,9 +186,9 @@
 }
 
 html {
-
   font-family: var(--font-nanum-neo);
-  touch-action: none;
+  touch-action: pan-y;
+  overscroll-behavior: none;
   /* 상하 스크롤은 가능, 줌 방지 */
 }
 
@@ -196,9 +196,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-nanum);
-  /* font-family: Arial, Helvetica, sans-serif; */
-  /* max-width: 420px; */
-  touch-action: none;
+  touch-action: pan-y;
   /* 상하 스크롤은 가능, 줌 방지 */
 }
 
