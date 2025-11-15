@@ -23,6 +23,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (req.nextUrl.pathname.startsWith("/kakao/callback")) {
+    return NextResponse.next();
+  }
+
   if (req.nextUrl.pathname.startsWith("/kakao/sign-up")) {
     if (kakaoSignUpToken) {
       return NextResponse.next();

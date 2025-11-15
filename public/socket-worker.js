@@ -8,10 +8,6 @@ importScripts(
   "https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.1.0/bundles/stomp.umd.min.js"
 );
 
-console.log("🔍 SharedWorker: SockJS 로드됨:", typeof SockJS);
-console.log("🔍 SharedWorker: self.StompJS 로드됨:", typeof self.StompJs);
-console.log("🔍 SharedWorker: self.StompJS 로드됨:", self.StompJs);
-
 let stompClient = null;
 const connections = new Map();
 const subscriptions = new Map();
@@ -19,16 +15,12 @@ const pendingSubscriptions = new Map(); // 대기 중인 구독들을 저장
 
 // SharedWorker 모드
 self.addEventListener("connect", (event) => {
-  console.log("🔍 SharedWorker: connect 이벤트 수신");
 
   const port = event.ports[0];
   const clientId = Date.now() + Math.random();
   connections.set(clientId, port);
 
-  console.log("🔍 SharedWorker: connections 확인:", connections);
-
   port.addEventListener("message", (event) => {
-    console.log("🔍 SharedWorker: 메시지 수신:", event.data);
     handleMessage(event.data, clientId);
   });
 
@@ -58,10 +50,7 @@ function handleMessage(data, clientId) {
 }
 
 function connectWebSocket(config, clientId) {
-  console.log("🔍 SharedWorker: WebSocket 연결 시도 - clientId:", clientId);
-
   if (stompClient && stompClient.connected) {
-    console.log("🔍 SharedWorker: 이미 연결된 상태");
     sendToClient(clientId, {
       type: "CONNECTED",
       clientId: clientId,
@@ -69,7 +58,6 @@ function connectWebSocket(config, clientId) {
     return;
   }
   const socket = new SockJS(config.url);
-  console.log("🔍 SharedWorker: SockJS 소켓 생성:", config.url);
 
   stompClient = new self.StompJs.Client({
     webSocketFactory: () => socket, // SockJS 사용
@@ -77,11 +65,7 @@ function connectWebSocket(config, clientId) {
     connectHeaders: {
       Authorization: config.headers.Authorization,
     },
-    debug: (str) => {
-      console.log("🔍 SharedWorker: Stomp 디버그 메시지:", str);
-    },
     onConnect: () => {
-      console.log("🔍 SharedWorker: WebSocket 연결 완료");
 
       sendToClient(clientId, {
         type: "CONNECTED",
@@ -92,7 +76,6 @@ function connectWebSocket(config, clientId) {
       retryPendingSubscriptions();
     },
     onStompError: (error) => {
-      console.error("❌ SharedWorker: STOMP 에러", error);
       sendToClient(clientId, {
         type: "ERROR",
         error: error,
@@ -101,7 +84,6 @@ function connectWebSocket(config, clientId) {
   });
 
   if (!stompClient) {
-    console.error("❌ SharedWorker: Stomp 클라이언트 생성 실패");
     sendToClient(clientId, {
       type: "ERROR",
       error: "Stomp 클라이언트 생성 실패",
@@ -109,21 +91,11 @@ function connectWebSocket(config, clientId) {
     return;
   }
 
-  console.log("🔍 SharedWorker: Stomp 클라이언트 생성됨:", stompClient);
-
   stompClient.activate();
 }
 
 function subscribeToTopic(data, clientId) {
-  console.log(
-    "🔍 SharedWorker: 구독 시도 - topic:",
-    data.topic,
-    "clientId:",
-    clientId
-  );
-
   if (!stompClient || !stompClient.connected) {
-    console.error("🔍 SharedWorker: WebSocket not connected, 구독 대기");
     // 대기 중인 구독으로 저장
     if (!pendingSubscriptions.has(clientId)) {
       pendingSubscriptions.set(clientId, []);
@@ -138,17 +110,13 @@ function subscribeToTopic(data, clientId) {
   if (subscriptions.has(topic)) {
     const existingSubscribers = subscriptions.get(topic);
     existingSubscribers.add(clientId);
-    console.log("🔍 SharedWorker: 기존 토픽에 구독자 추가:", topic);
   } else {
     // 새로운 토픽 구독
     const subscribers = new Set([clientId]);
     subscriptions.set(topic, subscribers);
 
-    console.log("🔍 SharedWorker: 새로운 토픽 구독:", topic);
-
     try {
       stompClient.subscribe(topic, (message) => {
-        console.log("🔍 SharedWorker: 메시지 수신 - topic:", topic);
         const messageData = JSON.parse(message.body);
 
         // 해당 토픽을 구독하는 모든 클라이언트에게 메시지 전달
@@ -174,7 +142,6 @@ function subscribeToTopic(data, clientId) {
         },
       });
     } catch (error) {
-      console.error("🔍 SharedWorker: 구독 실패:", error);
       sendToClient(clientId, {
         type: "ERROR",
         error: error,
@@ -194,20 +161,17 @@ function unsubscribeFromTopic(data, clientId) {
     // 해당 토픽을 구독하는 클라이언트가 없으면 구독 해제
     if (subscribers.size === 0) {
       subscriptions.delete(topic);
-      console.log("🔍 SharedWorker: 토픽 구독 해제:", topic);
     }
   }
 }
 
 function sendMessage(data, clientId) {
   if (!stompClient || !stompClient.connected) {
-    console.error("🔍 SharedWorker: WebSocket not connected");
     return;
   }
 
   const { topic, message } = data;
   stompClient.publish({destination: topic, body: JSON.stringify(message)});
-  console.log("🔍 SharedWorker: 메시지 전송 - topic:", topic);
 }
 
 function disconnectClient(clientId) {
@@ -226,7 +190,6 @@ function disconnectClient(clientId) {
   if (connections.size === 0 && stompClient) {
     stompClient.disconnect();
     stompClient = null;
-    console.log("🔍 SharedWorker: 모든 클라이언트 연결 해제, WebSocket 해제");
   }
 }
 
@@ -243,12 +206,8 @@ function sendToClient(clientId, message) {
 }
 
 function retryPendingSubscriptions() {
-  console.log("🔍 SharedWorker: 대기 중인 구독들 재시도");
-  console.log("🔍 DedicatedWorker: 대기 중인 구독들:", pendingSubscriptions);
-
   pendingSubscriptions.forEach((subscriptions, clientId) => {
     subscriptions.forEach((data) => {
-      console.log("🔍 SharedWorker: 대기 중인 구독 재시도:", data.topic);
       subscribeToTopic(data, clientId);
     });
   });

@@ -13,6 +13,36 @@ const nextConfig = {
     scrollRestoration: true,
   },
   allowedDevOrigins: ["http://localhost:3000", "http://192.168.0.10:3000"],
+  async headers() {
+    return [
+      {
+        source: '/socket-worker.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript',
+          },
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/',
+          },
+        ],
+      },
+      {
+        source: '/dedicated-worker.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript',
+          },
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
