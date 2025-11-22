@@ -64,21 +64,15 @@ export function LightningOverlay() {
           exit={{ y: "100%" }}
           onDragEnd={handleDragEnd}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="absolute top-0 left-0 w-dvw z-50 mt-[6vh] o"
+          className="absolute top-0 left-0 w-dvw z-50 mt-[6vh] h-[94vh]"
         >
           <div
             onClick={(e) => {
               e.stopPropagation();
             }}
-            className="relative bg-background h-full pt-[8px] md:max-w-[960px] md:mx-auto z-50"
-            style={{
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-            }}
+            className="relative bg-background h-full md:max-w-[960px] md:mx-auto z-50 overflow-y-auto rounded-t-2xl"
           >
-            <div className="pt-[12px]">
-              <LightningCreateForm />
-            </div>
+            <LightningCreateForm />
           </div>
         </motion.div>
       )}

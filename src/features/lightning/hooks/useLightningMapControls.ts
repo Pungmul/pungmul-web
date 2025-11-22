@@ -67,7 +67,6 @@ export const useLightningMapControls = ({
         locationPoint: currentLocation,
       });
 
-      marker.setMap(mapRef.current);
       GPSmarkerRef.current = marker;
     } else {
       GPSmarkerRef.current.setPosition(
@@ -77,6 +76,8 @@ export const useLightningMapControls = ({
         )
       );
     }
+    
+    GPSmarkerRef.current.setMap(mapRef.current);
     setIsLocationLoaded(true);
 
     if (bottomSheetRef.current) {

@@ -219,40 +219,39 @@ export default function LocationModal({
   }
 
   return (
-    <Modal isOpen={isLocationModalOpen} title="주소 선택" onClose={closeModal}>
-      <div className="flex">
-        <div>
-          {withSearchBar && <LocationSearchBar onSelect={handleSelect} />}
-          <div
-            ref={mapContainerRef}
-            className="w-[375px] h-[500px] rounded-md overflow-hidden"
-          />
-          <div className="p-4 space-y-4">
-            {currentAddress && (
-              <div className="text-sm text-grey-600 bg-grey-100 p-3 rounded">
-                <p className="font-medium">선택된 주소:</p>
-                <p className="font-semibold text-grey-800">{currentAddress}</p>
-                <p className="text-xs text-grey-500 mt-1">
-                  지도를 드래그하여 원하는 위치를 선택하세요
-                </p>
-              </div>
-            )}
-            <div className="flex space-x-2">
-              <Button
-                onClick={handleSubmit}
-                className="bg-primary text-background"
-              >
-                확인
-              </Button>
-              <Button
-                type="button"
-                onClick={closeModal}
-                className="!bg-background border border-grey-500 text-grey-500"
-              >
-                취소
-              </Button>
-            </div>
+    <Modal
+      isOpen={isLocationModalOpen}
+      title="주소 선택"
+      onClose={closeModal}
+      className="min-w-[200px] w-full max-w-[calc(100dvw-48px)]"
+    >
+      <div className="space-y-4">
+        {withSearchBar && <LocationSearchBar onSelect={handleSelect} />}
+        <div
+          ref={mapContainerRef}
+          className="w-full h-[300px] md:h-[500px] rounded-md overflow-hidden"
+        />
+
+        {currentAddress && (
+          <div className="text-sm text-grey-600 bg-grey-100 p-3 rounded">
+            <p className="font-medium">선택된 주소:</p>
+            <p className="font-semibold text-grey-800">{currentAddress}</p>
+            <p className="text-xs text-grey-500 mt-1">
+              지도를 드래그하여 원하는 위치를 선택하세요
+            </p>
           </div>
+        )}
+        <div className="flex space-x-2">
+          <Button onClick={handleSubmit} className="bg-primary text-background">
+            확인
+          </Button>
+          <Button
+            type="button"
+            onClick={closeModal}
+            className="!bg-background border border-grey-500 text-grey-500"
+          >
+            취소
+          </Button>
         </div>
       </div>
     </Modal>

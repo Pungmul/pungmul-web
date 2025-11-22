@@ -2,6 +2,7 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { cn } from "../../lib";
 
 interface ModalProps {
   isOpen: boolean;
@@ -65,11 +66,11 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
           onClick={onClose}
         />
         <div
-          className={
-            "relative flex flex-col bg-background rounded-md shadow-lg p-4 " +
-            `${className}`
-          }
-          style={{ minWidth: 386, ...style }}
+          className={cn(
+            "relative flex flex-col bg-background rounded-md shadow-lg p-4 min-w-[386px]",
+            className
+          )}
+          style={{ ...style }}
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -96,7 +97,9 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
               </div>
             </div>
           )}
-          <div className={`relative flex-grow overflow-y-${overflow} overflow-x-visible`}>
+          <div
+            className={`relative flex-grow overflow-y-${overflow} overflow-x-visible`}
+          >
             {children}
           </div>
         </div>
