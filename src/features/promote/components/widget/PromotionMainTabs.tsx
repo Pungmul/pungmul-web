@@ -16,7 +16,7 @@ export function PromotionMainTabs({
   return (
     <AnimatePresence>
       <nav className="w-full flex flex-row items-center justify-between border-b border-grey-200 sticky top-0 bg-background z-20 h-12" key="promotion-tabs-nav">
-        <ul className="flex flex-row w-full px-5 flex-grow">
+        <ul className="flex flex-row w-full px-3 md:px-5 flex-grow">
           {PROMOTION_TABS.map((item) => (
             <motion.li
               key={item.label}
@@ -27,7 +27,7 @@ export function PromotionMainTabs({
                     ? "var(--color-grey-800)"
                     : "var(--color-grey-500)",
               }}
-              className="relative w-[96px] text-center text-[15px] md:text-[18px] font-semibold py-[12px] cursor-pointer"
+              className="relative w-[72px] md:w-[96px] text-center text-[15px] md:text-[18px] font-semibold py-[12px] cursor-pointer"
               onClick={() => onTabChange(item)}
             >
               {item.label}
@@ -44,7 +44,7 @@ export function PromotionMainTabs({
             </motion.li>
           ))}
         </ul>
-        <Link href="/board/promote/upcoming" className="inline-flex items-center gap-1 text-grey-500 text-[15px] flex-shrink-0">
+        <Link href="/board/promote/upcoming" className="inline-flex items-center gap-1 text-grey-500 text-[14px] md:text-[16px] flex-shrink-0 px-1">
           관람 신청한 공연 목록 <ChevronRightIcon className="size-5 text-grey-500 inline-block" />
         </Link>
       </nav>
