@@ -58,7 +58,7 @@ const AddressModal = ({
       <div className="flex flex-col gap-[12px] px-[12px] py-[8px]">
         <a
           target="_blank"
-          href={`https://map.naver.com/p?title=${address?.detail}&lng=${address?.longitude}&lat=${address?.latitude}&zoom=${NAVER_MAP_ZOOM_LEVEL}`}
+          href={`https://map.naver.com/p?title=${address?.detail || address?.buildingName}&lng=${address?.longitude}&lat=${address?.latitude}&zoom=${NAVER_MAP_ZOOM_LEVEL}`}
           onClick={(e) => {
             e.stopPropagation();
             handleClose();
@@ -69,7 +69,7 @@ const AddressModal = ({
         </a>
         <a
           target="_blank"
-          href={`https://map.kakao.com/link/map/${address?.detail},${address?.latitude},${address?.longitude},${KAKAO_MAP_ZOOM_LEVEL}`}
+          href={`https://map.kakao.com/link/map/${address?.detail || address?.buildingName},${address?.latitude},${address?.longitude},${KAKAO_MAP_ZOOM_LEVEL}`}
           onClick={(e) => {
             e.stopPropagation();
             handleClose();
@@ -127,7 +127,7 @@ const PromotionProfileCard = ({
                 장소
               </span>
               <span className="font-normal text-grey-800 text-[14px] lg:text-[18px]">
-                {address?.detail || "주소 없음"}
+                {address?.detail || address?.buildingName || "주소 없음"}
               </span>
               <ChevronRightIcon className="w-[16px] h-[16px] text-grey-500 flex-shrink-0" />
             </div>
@@ -212,7 +212,7 @@ const PromotionProfileWidget = ({
                 장소
               </span> */}
               <span className="font-normal text-grey-500 text-[14px] lg:text-[18px]">
-                {address?.detail || "주소 없음"}
+                {address?.detail || address?.buildingName || "주소 없음"}
               </span>
               <ChevronRightIcon className="w-[12px] h-[12px] text-grey-500 flex-shrink-0" />
             </div>

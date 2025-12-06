@@ -14,11 +14,8 @@ import { Question, QuestionType } from "../../types";
 import { TextQuestionForm } from "./TextQuestionForm";
 import { ChoiceQuestionForm } from "./ChoiceQuestionForm";
 import { CheckboxQuestionForm } from "./CheckboxQuestionForm";
-import {
-  ShortAnswerOutline,
-  RadioSelectSolid,
-  CheckBoxOutline,
-} from "@pThunder/shared/components/Icons";
+import { getQuestionTypeLabel } from "../../lib/questionType";
+import { QuestionTypeIcon } from "../element/QuestionTypeIcon";
 
 interface QuestionItemProps {
   question: Question;
@@ -59,46 +56,17 @@ export const QuestionItem = ({
   const questionTypes = [
     {
       type: "TEXT" as QuestionType,
-      label: "단답형",
-      icon: <ShortAnswerOutline className="w-4 h-4" />,
+      label: getQuestionTypeLabel("TEXT"),
     },
     {
       type: "CHOICE" as QuestionType,
-      label: "객관식",
-      icon: <RadioSelectSolid className="w-4 h-4" />,
+      label: getQuestionTypeLabel("CHOICE"),
     },
     {
       type: "CHECKBOX" as QuestionType,
-      label: "체크 리스트",
-      icon: <CheckBoxOutline className="w-4 h-4" />,
+      label: getQuestionTypeLabel("CHECKBOX"),
     },
   ];
-
-  const getQuestionTypeLabel = (type: QuestionType) => {
-    switch (type) {
-      case "TEXT":
-        return "단답형";
-      case "CHOICE":
-        return "객관식";
-      case "CHECKBOX":
-        return "체크 리스트";
-      default:
-        return "";
-    }
-  };
-
-  const getQuestionTypeIcon = (type: QuestionType) => {
-    switch (type) {
-      case "TEXT":
-        return <ShortAnswerOutline className="w-4 h-4" />;
-      case "CHOICE":
-        return <RadioSelectSolid className="w-4 h-4" />;
-      case "CHECKBOX":
-        return <CheckBoxOutline className="w-4 h-4" />;
-      default:
-        return null;
-    }
-  };
 
   const getDefaultSettings = (type: QuestionType): string => {
     switch (type) {
@@ -180,7 +148,9 @@ export const QuestionItem = ({
                 setIsTypeDropdownOpen(!isTypeDropdownOpen);
               }}
             >
-              <div>{getQuestionTypeIcon(question.questionType)}</div>
+              <div>
+                <QuestionTypeIcon type={question.questionType} className="size-4" />
+              </div>
               <div className="text-[12px] font-medium px-[8px] py-[4px] text-grey-700">
                 {getQuestionTypeLabel(question.questionType)}
               </div>
@@ -212,7 +182,7 @@ export const QuestionItem = ({
                           : "text-grey-500 fill-grey-500"
                       }
                     >
-                      {typeOption.icon}
+                      <QuestionTypeIcon type={typeOption.type} className="size-4" />
                     </div>
                     <span className="text-[12px] font-medium">
                       {typeOption.label}
