@@ -37,12 +37,16 @@ import InviteUserModal from "@pThunder/features/chat/components/widget/InviteUse
 import { useQueryClient } from "@tanstack/react-query";
 import { Alert, Toast } from "@pThunder/shared";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import { useChatRoomStore } from "@pThunder/features/chat/store/chatRoomStore";
+import { useSocketConnection } from "@pThunder/core/socket";
 
 // CSR로 완전 전환 - 서버 렌더링 비활성화
 
 export default function Page() {
   const { roomId } = useParams();
+  const isConnected = useSocketConnection();
   const { data: myInfo } = useSuspenseGetMyPageInfo();
+  const setFocusingRoomId = useChatRoomStore(state=> state.setFocusingRoomId);
   const router = useRouter();
 
   const [title, setTitle] = useState("");
@@ -77,6 +81,25 @@ export default function Page() {
   // 소켓에서 받은 실시간 메시지들을 저장
   const [socketMessages, setSocketMessages] = useState<Message[]>([]);
 
+  const resetRoomUnreadCount = useCallback(
+    (roomId: string) => {
+      queryClient.setQueryData(
+        ["chatRoomList"],
+        (oldData: ChatRoomListItemDto[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map((room) =>
+            room.chatRoomUUID === roomId ? { ...room, unreadCount: 0 } : room
+          );
+        }
+      );
+    },
+    [queryClient]
+  );
+
+  useEffect(() => {
+    setFocusingRoomId(roomId as string);
+    resetRoomUnreadCount(roomId as string);
+  }, [roomId, resetRoomUnreadCount, setFocusingRoomId]);
   // 메시지 리스트 최적화된 훅 사용
   const messageList = useMessageList({
     chatRoomData,
@@ -113,7 +136,7 @@ export default function Page() {
   });
 
   // 소켓 훅 사용
-  const { isConnected: messageConnected } = useRoomMessageSocket(
+  useRoomMessageSocket(
     roomId as string,
     {
       onMessage: (message: Message) => {
@@ -379,7 +402,7 @@ export default function Page() {
             </div>
           }
         />
-        {loading || !messageConnected ? (
+        {loading || !isConnected ? (
           <div className="flex justify-center items-center h-full">
             <Spinner size={36} />
           </div>

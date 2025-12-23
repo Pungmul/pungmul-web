@@ -4,12 +4,14 @@ import { useSelectFriendModal } from "@/features/friends/store";
 import { useState } from "react";
 import { getChoseong } from "es-hangul";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useRoomList } from "../../hooks";
 import { ChatAddIcon } from "@pThunder/shared/components/Icons";
 import { SearchInput } from "@/shared/components";
+import { useRoomListSocket } from "../../socket";
+import { useChatRoomListQuery } from "../../queries";
 
 export default function ChatRoomList() {
-  const { chatRooms, isLoading } = useRoomList();
+  const { data: chatRooms, isLoading: isLoading } = useChatRoomListQuery();
+  useRoomListSocket();
 
   const { openModalToSelectFriend } = useSelectFriendModal();
   const clickAddChatButton = () => {
@@ -25,10 +27,7 @@ export default function ChatRoomList() {
         className="flex flex-row items-center justify-between flex-shrink-0"
         style={{ height: 50, paddingLeft: 24, paddingRight: 24 }}
       >
-        <div
-          className="flex-grow"
-          style={{ fontSize: 16, fontWeight: 700 }}
-        >
+        <div className="flex-grow" style={{ fontSize: 16, fontWeight: 700 }}>
           채팅 목록
         </div>
         <div className="flex flex-row gap-1">

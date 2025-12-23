@@ -1,8 +1,14 @@
 import { Metadata } from "next";
 
-import { RoomContainer, ChatRoomBoxSkeleton } from "@/features/chat";
+import {
+  RoomContainer,
+  ChatRoomBoxSkeleton,
+  loadChatRoomList,
+} from "@/features/chat";
 import { lazy } from "react";
 import { SuspenseComponent as Suspense } from "@/shared";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "@pThunder/core";
 
 export const metadata: Metadata = {
   title: "풍덩 | 채팅",
@@ -15,9 +21,10 @@ const ChatRoomList = lazy(
   () => import("@pThunder/features/chat/components/widget/ChatRoomList")
 );
 
-const SelectFriendModal = lazy(
-  () => import("@/features/friends/store/useSelectFriendModalContext")
-  .then(module => ({ default: module.SelectFriendModal }))
+const SelectFriendModal = lazy(() =>
+  import("@/features/friends/store/useSelectFriendModalContext").then(
+    (module) => ({ default: module.SelectFriendModal })
+  )
 );
 
 function ChatLayoutContent({ children }: { children: React.ReactNode }) {
@@ -33,5 +40,17 @@ function ChatLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <ChatLayoutContent>{children}</ChatLayoutContent>;
+  const queryClient = getQueryClient();
+
+  queryClient.prefetchQuery({
+    queryKey: ["chatRoomList"],
+    queryFn: () => loadChatRoomList(),
+  });
+
+  const dehydratedState = dehydrate(queryClient);
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <ChatLayoutContent>{children}</ChatLayoutContent>
+    </HydrationBoundary>
+  );
 }

@@ -36,7 +36,7 @@ export function formatRelativeDate(inputDate: Date): string {
     const isAM = hour < 12;
     const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
 
-    return `${isAM ? "오전" : "오후"} ${formattedHour}시 ${minute}분`;
+    return `${isAM ? "오전" : "오후"} ${formattedHour}:${minute}`;
   }
 
   const diffDateCount = Math.floor(

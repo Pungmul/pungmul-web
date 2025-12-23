@@ -88,7 +88,7 @@ export const ChatDrawer = ({
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="absolute top-0 right-0 w-full max-w-[360px] md:max-w-[420px] h-full bg-white flex flex-col z-50"
+          className="absolute top-0 right-0 w-full max-w-[360px] md:max-w-[420px] h-full bg-background flex flex-col z-50"
           style={{ touchAction: "none" }}
         >
           <div style={{ touchAction: "none" }} className="w-full">

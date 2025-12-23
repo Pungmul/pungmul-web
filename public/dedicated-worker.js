@@ -13,14 +13,16 @@ self.addEventListener("message", (event) => {
 });
 
 function handleMessage(data) {
-  const { type, data: messageData } = data;
+  const { type, data: messageData, commandId = null } = data;
+
+  console.log("[DedicatedWorker] 메시지 수신:", { type, commandId, data: messageData });
 
   switch (type) {
     case "CONNECT":
-      connectWebSocket(messageData);
+      connectWebSocket(messageData, commandId);
       break;
     case "SUBSCRIBE":
-      subscribeToTopic(messageData);
+      subscribeToTopic(messageData, commandId);
       break;
     case "UNSUBSCRIBE":
       unsubscribeFromTopic(messageData);
@@ -34,10 +36,14 @@ function handleMessage(data) {
   }
 }
 
-function connectWebSocket(config) {
+function connectWebSocket(config, commandId) {
+  console.log("[DedicatedWorker] WebSocket 연결 시도:", { commandId, url: config.url });
+
   if (stompClient && stompClient.connected) {
+    console.log("[DedicatedWorker] 이미 연결된 WebSocket 재사용:", { commandId });
     self.postMessage({
       type: "CONNECTED",
+      commandId: commandId,
     });
     return;
   }
@@ -48,9 +54,11 @@ function connectWebSocket(config) {
   stompClient = exports.Stomp.over(socket);
   
   if (!stompClient) {
+    console.error("[DedicatedWorker] Stomp 클라이언트 생성 실패:", { commandId });
     self.postMessage({
       type: "ERROR",
       error: "Stomp 클라이언트 생성 실패",
+      commandId: commandId,
     });
     return;
   }
@@ -58,42 +66,49 @@ function connectWebSocket(config) {
   stompClient.connect(
     config.headers || {},
     () => {
+      console.log("[DedicatedWorker] WebSocket 연결 성공:", { commandId });
       self.postMessage({
         type: "CONNECTED",
+        commandId: commandId,
       });
 
       // 연결 완료 후 대기 중인 구독들을 다시 시도
       retryPendingSubscriptions();
     },
     (error) => {
+      console.error("[DedicatedWorker] WebSocket 연결 에러:", { error, commandId });
       self.postMessage({
         type: "ERROR",
         error: error,
+        commandId: commandId,
       });
     }
   );
 }
 
-function subscribeToTopic(data) {
-  
+function subscribeToTopic(data, commandId) {
+  const { topic } = data;
+
   if (!stompClient || !stompClient.connected) {
+    console.log("[DedicatedWorker] WebSocket 미연결, 구독 대기:", { topic, commandId });
     // 대기 중인 구독으로 저장
-    pendingSubscriptions.push(data);
+    pendingSubscriptions.push({ ...data, commandId });
     return;
   }
 
-  const { topic } = data;
-
   // 이미 구독 중인 토픽인지 확인
   if (subscriptions.has(topic)) {
+    console.log("[DedicatedWorker] 이미 구독 중인 토픽:", { topic, commandId });
     return;
   } else {
+    console.log("[DedicatedWorker] 새 토픽 구독:", { topic, commandId });
     // 새로운 토픽 구독
     subscriptions.set(topic, true);
 
     
     stompClient.subscribe(topic, (message) => {
       const messageData = JSON.parse(message.body);
+      console.log("[DedicatedWorker] 토픽 메시지 수신:", { topic, messageData });
 
       self.postMessage({
         type: "MESSAGE",
@@ -110,45 +125,55 @@ function subscribeToTopic(data) {
       data: {
         topic: topic,
       },
+      commandId: commandId,
     });
+    console.log("[DedicatedWorker] 구독 완료:", { topic, commandId });
   }
 }
 
 function unsubscribeFromTopic(data) {
   const { topic } = data;
+  console.log("[DedicatedWorker] 토픽 구독 해제:", { topic });
 
   // 구독 제거
   if (subscriptions.has(topic)) {
     subscriptions.delete(topic);
+    console.log("[DedicatedWorker] 구독 해제 완료:", { topic });
   }
 }
 
 function sendMessage(data) {
   if (!stompClient || !stompClient.connected) {
+    console.warn("[DedicatedWorker] WebSocket 미연결, 메시지 전송 실패:", { data });
     return;
   }
 
   const { topic, message } = data;
+  console.log("[DedicatedWorker] 메시지 전송:", { topic, message });
   stompClient.publish({destination: topic, body: JSON.stringify(message)});
 }
 
 function disconnectWebSocket() {
+  console.log("[DedicatedWorker] WebSocket 연결 해제:");
   if (stompClient) {
     stompClient.disconnect();
     stompClient = null;
     subscriptions.clear();
-    pendingSubscriptions = [];
+    pendingSubscriptions.length = 0;
   }
 }
 
 function retryPendingSubscriptions() {
   if (pendingSubscriptions.length > 0) {
+    console.log("[DedicatedWorker] 대기 중인 구독 재시도:", { pendingCount: pendingSubscriptions.length });
     
     pendingSubscriptions.forEach((data) => {
-      subscribeToTopic(data);
+      const { commandId } = data;
+      subscribeToTopic(data, commandId);
     });
     
     // 재시도 후 대기 목록 클리어
-    pendingSubscriptions = [];
+    pendingSubscriptions.length = 0;
+    console.log("[DedicatedWorker] 대기 중인 구독 재시도 완료");
   }
 }

@@ -1,94 +1,73 @@
-import { useEffect, useState } from "react";
-import { sharedSocketManager } from "@pThunder/core/socket/SharedSocketManager";
-import { useGetToken } from "@pThunder/features/auth";
+"use client";
+import { useCallback, useEffect, useRef } from "react";
 import { useGetMyPageInfo } from "@pThunder/features/my-page";
-import { useChatRoomStore } from "@pThunder/features/chat/store/chatRoomStore";
-import { ChatRoomUpdateMessage } from "../types";
+import { ChatRoomListItemDto, ChatRoomUpdateMessage } from "../types";
+import { useQueryClient } from "@tanstack/react-query";
+import { useChatRoomStore } from "../store/chatRoomStore";
+import { useSocketSubscription } from "@pThunder/core/socket/hooks/useSocketSubscribe";
 
 export function useRoomListSocket() {
-  const { data: token } = useGetToken();
   const { data: userData } = useGetMyPageInfo();
+  const queryClient = useQueryClient();
 
-  const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  // Zustand 스토어에서 메시지 핸들러 가져오기
-  const { handleSocketMessage:handleChatRoomUpdateMessage } = useChatRoomStore();
+  const currentChatRoomId = useChatRoomStore((state) => state.focusingRoomId);
+  const idRef = useRef<string>(currentChatRoomId);
 
   useEffect(() => {
-    if (!token || !userData?.name) {
-      return;
-    }
+    idRef.current = currentChatRoomId;
+  }, [currentChatRoomId]);
 
-    // 이미 연결 중이거나 연결된 상태면 중복 연결 방지
-    if (isConnecting || isConnected) {
-      return;
-    }
+  const recieveMessage = useCallback(
+    (message: ChatRoomUpdateMessage) => {
+      const oldData = queryClient.getQueryData<ChatRoomListItemDto[]>([
+        "chatRoomList",
+      ]);
+      if (!oldData) return;
 
-    const handleSocketMessage = (data: unknown) => {
-      const message = data as ChatRoomUpdateMessage;
-      try {
-        // 채팅 메시지인 경우 스토어 업데이트
-        if (message) {
-          // 소켓 메시지 핸들러로도 전달 (추가 처리 필요시)
-          handleChatRoomUpdateMessage(message);
+      const room = oldData.find(
+        (room) => room.chatRoomUUID === message.chatRoomUUID
+      );
+      if (!room) {
+        queryClient.invalidateQueries({ queryKey: ["chatRoomList"] });
+        return;
+      }
+
+      const { chatRoomUUID: roomId, content, timestamp } = message;
+      queryClient.setQueryData(
+        ["chatRoomList"],
+        (oldData: ChatRoomListItemDto[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData
+            .map((room) => {
+              return room.chatRoomUUID === roomId
+                ? {
+                    ...room,
+                    lastMessageContent: content,
+                    lastMessageTime: timestamp,
+                    unreadCount:
+                      idRef.current === roomId
+                        ? 0
+                        : room.unreadCount
+                        ? room.unreadCount + 1
+                        : 1,
+                  }
+                : room;
+            })
+            .sort((a, b) => {
+              return (
+                new Date(b.lastMessageTime ?? "").getTime() -
+                new Date(a.lastMessageTime ?? "").getTime()
+              );
+            });
         }
-      } catch (error) {
-        console.error("Socket message parsing error:", error, message);
-      }
-    }
-    const connectSharedSocket = async () => {
-      try {
-        setIsConnecting(true);
+      );
+    },
+    [queryClient]
+  );
 
-        await sharedSocketManager.connect({
-          url:
-            process.env.NEXT_PUBLIC_WEBSOCKET_URL || "ws://localhost:8080/ws",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setIsConnected(true);
-        setIsConnecting(false);
-
-        // 채팅 알림 구독
-        const notificationTopic = `/sub/chat/notification/${userData.username}`;
-        sharedSocketManager.subscribe(notificationTopic, handleSocketMessage);
-
-      } catch {
-        setIsConnected(false);
-        setIsConnecting(false);
-
-        // 연결 실패 시 3초 후 재시도
-        setTimeout(() => {
-          if (!isConnected && !isConnecting) {
-            connectSharedSocket();
-          }
-        }, 3000);
-      }
-    };
-
-    connectSharedSocket();
-
-    return () => {
-      // 컴포넌트 언마운트 시 구독 해제 및 연결 해제
-      if (userData?.name) {
-        const notificationTopic = `/sub/chat/notification/${userData.name}`;
-        sharedSocketManager.unsubscribe(notificationTopic, handleSocketMessage);
-      }
-
-      // 다른 채팅방에서 소켓을 사용하지 않는다면 연결 해제
-      if (
-        sharedSocketManager.getConnectionStatus() &&
-        sharedSocketManager.getSubscriptionCount() === 0
-      ) {
-        sharedSocketManager.disconnect();
-      }
-
-      setIsConnected(false);
-      setIsConnecting(false);
-    };
-  }, [token, userData, handleChatRoomUpdateMessage]);
-
-  return { isConnected };
+  useSocketSubscription({
+    topic: `/sub/chat/notification/${userData?.username}`,
+    onMessage: recieveMessage,
+    enabled: !!userData?.username,
+  });
 }

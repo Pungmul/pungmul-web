@@ -1,6 +1,4 @@
 "use client";
-
-import { useRoomList } from "../../hooks";
 import { useChatNotification } from "../../hooks/useChatNotification";
 
 interface ChatTabBadgeProps {
@@ -15,8 +13,7 @@ export const ChatTabBadge = ({
   children,
   className = "",
 }: ChatTabBadgeProps) => {
-  const { totalUnreadCount } = useRoomList();
-  const { shouldShowBadge, badgeText } = useChatNotification();
+  const { shouldShowBadge, badgeText, totalUnreadCount } = useChatNotification();
 
   return (
     <div className={`relative ${className}`}>
