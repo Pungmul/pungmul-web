@@ -1,3 +1,8 @@
+// Type guards
+export * from "./guards";
+// Pending message types
+export * from "./pendingMessage";
+
 import { User } from "../../member";
 
 export interface ChatRoomInfo {
@@ -101,10 +106,16 @@ export interface ChatRoomListItemDto {
 
 export type ChatMessageDto = MessageList;
 
+export interface UserLastReadMessageId {
+  userId: number;
+  lastReadMessageId: number | null;
+}
+
 export interface ChatRoomDto {
   chatRoomInfo: ChatRoomInfo;
   userInfoList: User[];
   messageList: MessageList;
+  userInitReadList: UserLastReadMessageId[];
 }
 
 // {
@@ -130,3 +141,5 @@ export interface ChatRoomUpdateMessage {
   content: string;
   timestamp: string;
 }
+
+export * from "./guards";

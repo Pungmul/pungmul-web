@@ -96,8 +96,8 @@ const PendingMessageListComponent: React.FC<PendingMessageListProps> = ({
                     onClick={() => {
                       onResendImage(
                         message.imageUrlList.map(
-                          (url) => new File([], url)
-                        ) as unknown as FileList
+                          (url) => new File([], url),
+                        ) as unknown as FileList,
                       );
                     }}
                     style={{ cursor: "pointer" }}

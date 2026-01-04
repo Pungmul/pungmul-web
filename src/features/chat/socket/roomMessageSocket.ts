@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Message } from "../types";
+import { Message, isMessage } from "../types";
 import { useSocketSubscription } from "@pThunder/core/socket/hooks/useSocketSubscribe";
 
 export function useRoomMessageSocket(
@@ -14,16 +14,16 @@ export function useRoomMessageSocket(
 ) {
   const handleAlarm = useCallback(
     (message: unknown) => {
-      const parsedMessage = message as Message;
-      onAlarm(parsedMessage);
+      if (!isMessage(message)) return;
+      onAlarm(message);
     },
     [onAlarm]
   );
 
   const handleMessage = useCallback(
     (message: unknown) => {
-      const parsedMessage = message as Message;
-      onMessage(parsedMessage);
+      if (!isMessage(message)) return;
+      onMessage(message);
     },
     [onMessage]
   );

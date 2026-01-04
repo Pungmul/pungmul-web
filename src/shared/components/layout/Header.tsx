@@ -14,7 +14,7 @@ export function Header({
   isBackBtn = true,
   className = "",
 }: {
-  title: string;
+  title: string | React.ReactNode;
   rightBtn?: React.ReactNode;
   onLeftClick?: () => void;
   isBackBtn?: boolean;
@@ -71,7 +71,13 @@ export function Header({
         }
       />
       {isBackBtn && leftButton}
-      <div className="font-normal z-10 text-grey-800 text-[20px]">{title}</div>
+      {typeof title === "string" ? (
+        <div className="font-normal z-10 text-grey-800 text-[20px]">
+          {title}
+        </div>
+      ) : (
+        title
+      )}
       {!!rightBtn && (
         <div className="absolute" style={{ right: 24 }}>
           {rightBtn}

@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { throttle } from "lodash";
 import getScrollableParent from "@/shared/lib/getScrollableParent";
+import { SCROLL_RELEASE_DELAY_MS, SCROLL_THROTTLE_MS } from "../../constant/ui";
 
 const DateItem = ({ date, onClick }: { date: string; onClick?: () => void }) => {
   const [isScrolling, setIsScrolling] = useState(false);
@@ -21,8 +22,8 @@ const DateItem = ({ date, onClick }: { date: string; onClick?: () => void }) => 
       if (scrollReleaseTimeout) clearTimeout(scrollReleaseTimeout);
       scrollReleaseTimeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 1000);
-    }, 200); // 500ms은 너무 길 수 있음, 보통 100~300 추천
+      }, SCROLL_RELEASE_DELAY_MS);
+    }, SCROLL_THROTTLE_MS);
 
     scrollableParent.addEventListener("scroll", scrollHandler);
 

@@ -1,4 +1,9 @@
-import { SocketConfig, Subscription, WorkerMessage, WorkerResponse } from "./types";
+import {
+  SocketConfig,
+  Subscription,
+  WorkerMessage,
+  WorkerResponse,
+} from "./types";
 
 type PendingCommand = {
   resolve: (value?: unknown) => void;
@@ -77,7 +82,9 @@ export class SharedSocketManager {
             break;
           case "SUBSCRIBED":
             const { topic: subscribedTopic } = data as { topic: string };
-            console.log("🔍 Worker: 구독 완료 - topic:", subscribedTopic, { commandId });
+            console.log("🔍 Worker: 구독 완료 - topic:", subscribedTopic, {
+              commandId,
+            });
             // commandId로 Promise resolve
             if (!!commandId) {
               this.resolveCommand(commandId, data);
@@ -85,7 +92,10 @@ export class SharedSocketManager {
             break;
           case "MESSAGE":
             // MESSAGE는 이벤트 구독 콜백으로 처리 (Promise와 무관)
-            const { topic, message } = data as { topic: string; message: unknown };
+            const { topic, message } = data as {
+              topic: string;
+              message: unknown;
+            };
             console.log(
               "🔍 Worker: 메시지 수신 - topic:",
               topic,
@@ -110,7 +120,10 @@ export class SharedSocketManager {
             this.isConnected = false;
             // commandId로 Promise reject
             if (commandId) {
-              this.rejectCommand(commandId, error || new Error("Unknown error"));
+              this.rejectCommand(
+                commandId,
+                error || new Error("Unknown error")
+              );
             }
             this.notifyStateSubscriptions();
             break;
@@ -130,7 +143,10 @@ export class SharedSocketManager {
     }
   }
 
-  async subscribe(topic: string, callback: (data: unknown) => void): Promise<Subscription> {
+  async subscribe(
+    topic: string,
+    callback: (data: unknown) => void
+  ): Promise<Subscription> {
     console.log("🔍 구독 시도 - topic:", topic);
     console.log("callback", callback, topic);
 
@@ -188,6 +204,7 @@ export class SharedSocketManager {
             data: { topic: subscription.topic },
           } as WorkerMessage);
           console.log("🔍 구독 해제 요청 완료 - topic:", subscription.topic);
+          console.log("🔍 잔여 구독 콜백 수", callbacks.size);
         }
       }
       return;
@@ -276,7 +293,10 @@ export class SharedSocketManager {
    * commandId를 사용하여 비동기 명령 전송 및 응답 대기
    */
   private sendCommand(
-    type: Exclude<WorkerMessage["type"], "SEND_MESSAGE" | "UNSUBSCRIBE" | "DISCONNECT" >,
+    type: Exclude<
+      WorkerMessage["type"],
+      "SEND_MESSAGE" | "UNSUBSCRIBE" | "DISCONNECT"
+    >,
     data?: unknown
   ): Promise<unknown> {
     return new Promise((resolve, reject) => {
@@ -331,7 +351,6 @@ export class SharedSocketManager {
       console.error("🔍 명령 실패:", { commandId, error });
     }
   }
-
 
   /**
    * 상태 변경 구독

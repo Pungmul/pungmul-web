@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { sendTextMessage } from "../api";
+import { chatQueryKeys } from "./keys";
 
 export const useSendTextMessageMutation = () => {
   const queryClient = useQueryClient();
@@ -15,7 +16,7 @@ export const useSendTextMessageMutation = () => {
     onSuccess: (_, { roomId }) => {
       // 채팅방 데이터 무효화하여 최신 메시지 반영
       return queryClient.invalidateQueries({
-        queryKey: ["chatRoom", "chatRoomInfinite", roomId],
+        queryKey: chatQueryKeys.room(roomId),
       });
     },
     onError: (error) => {

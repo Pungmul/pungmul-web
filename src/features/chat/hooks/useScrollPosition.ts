@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useRef } from "react";
 
 export const useScrollPosition = () => {
@@ -12,15 +13,19 @@ export const useScrollPosition = () => {
   }, []);
 
   const maintainScrollPosition = useCallback(() => {
-    if (scrollRef.current > 0 && wholeRef.current && messageContainerRef.current) {
+    if (
+      scrollRef.current > 0 &&
+      wholeRef.current &&
+      messageContainerRef.current
+    ) {
       const newHeight = messageContainerRef.current.scrollHeight;
       const prevHeight = scrollRef.current;
       const delta = newHeight - prevHeight;
-      
+
       wholeRef.current.scrollTo({
         top: wholeRef.current.scrollTop + delta,
       });
-      
+
       scrollRef.current = newHeight;
     }
   }, []);

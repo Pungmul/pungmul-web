@@ -1,11 +1,15 @@
 "use client";
-import React, { useCallback, useRef } from "react";
-import { Message } from "../../types";
-import { ChatMessage } from "../element/ChatMessage";
-import { ImageMessage } from "../element/ImageMessage";
-import dayjs from "dayjs";
-import DateItem from "./DateItem";
+import React, { useCallback, useMemo,useRef } from "react";
+
 import getScrollableParent from "@/shared/lib/getScrollableParent";
+
+import { isReadByLastReadMessageId } from "../../services/isReadByLastReadMessageId";
+import { Message } from "../../types";
+import { MessageItem } from "./MessageItem";
+
+interface UserLastReadMessageIdMap {
+  [key: string]: number | null;
+}
 
 interface UserImageMap {
   [key: string]: string | null;
@@ -18,25 +22,10 @@ interface UserNameMap {
 interface MessageListProps {
   messages: Message[];
   currentUserId: string;
+  userLastReadMessageIdMap: UserLastReadMessageIdMap;
   userImageMap: UserImageMap;
   userNameMap: UserNameMap;
 }
-
-const TimeFormat = (time: Date): string => {
-  const Hours = time.getHours();
-  const Minutes = time.getMinutes();
-
-  if (Hours === 0) return "오전 12:00";
-  if (Hours < 12)
-    return `오전 ${Hours.toString().padStart(
-      2,
-      "0"
-    )}:${Minutes.toString().padStart(2, "0")}`;
-  if (Hours === 12) return `오후 12:00`;
-  return `오후 ${(Hours - 12)
-    .toString()
-    .padStart(2, "0")}:${Minutes.toString().padStart(2, "0")}`;
-};
 
 const HEADER_HEIGHT = 50;
 const DATE_ITEM_HEIGHT = 24;
@@ -45,10 +34,46 @@ const MESSAGE_LIST_GAP = 12;
 const MessageListComponent: React.FC<MessageListProps> = ({
   messages,
   currentUserId,
+  userLastReadMessageIdMap,
   userImageMap,
   userNameMap,
 }) => {
   const dateRefs = useRef<Map<string, HTMLLIElement | null>>(new Map());
+
+  // unreadCount를 한 번에 계산 (O(n×m) → 한 번만 실행)
+  const unreadCountMap = useMemo(() => {
+    const map = new Map<number | string, number>();
+
+    messages.forEach((msg) => {
+      if (typeof msg.id !== "number") {
+        map.set(msg.id, 0);
+        return;
+      }
+
+      const isMyMessage = msg.senderUsername === currentUserId;
+
+      // 내가 보낸 메시지: 나를 제외한 다른 사람들 중 읽지 않은 사람 수
+      // 다른 사람이 보낸 메시지: 모든 사람 중 읽지 않은 사람 수
+      let unreadCount = 0;
+
+      Object.entries(userLastReadMessageIdMap).forEach(([userId, lastReadId]) => {
+        // 내가 보낸 메시지의 경우 나 자신은 제외
+        if (isMyMessage && userId === currentUserId) {
+          return;
+        }
+
+        // 해당 유저가 이 메시지를 읽지 않았으면 카운트 증가
+        if (!isReadByLastReadMessageId(msg.id as number, lastReadId)) {
+          unreadCount++;
+        }
+      });
+
+      map.set(msg.id, unreadCount);
+    });
+
+    return map;
+  }, [messages, userLastReadMessageIdMap, currentUserId]);
+
   // 날짜 타임스탬프 클릭 핸들러
   const handleDateClick = useCallback((dateKey: string) => {
     const targetElement = dateRefs.current.get(dateKey);
@@ -82,195 +107,40 @@ const MessageListComponent: React.FC<MessageListProps> = ({
     }
   }, []);
 
-  const renderMessage = useCallback(
-    (_message: Message, _prevMessage?: Message, _nextMessage?: Message) => {
-      const isUser = _message.senderUsername === currentUserId;
-      const timeStamp = TimeFormat(new Date(_message.createdAt));
-      const isSameTimeBefore =
-        _prevMessage &&
-        _message.senderUsername === _prevMessage.senderUsername &&
-        TimeFormat(new Date(_message.createdAt)) ===
-          TimeFormat(new Date(_prevMessage?.createdAt));
-
-      const isSameTimeAfter =
-        _nextMessage &&
-        _message.senderUsername === _nextMessage.senderUsername &&
-        TimeFormat(new Date(_message.createdAt)) ===
-          TimeFormat(new Date(_nextMessage?.createdAt));
-
-      const isSameDate =
-        _prevMessage &&
-        dayjs(_message.createdAt).format("YYYY.MM.DD ddd") ===
-          dayjs(_prevMessage.createdAt).format("YYYY.MM.DD ddd");
-
-      const dateKey = dayjs(_message.createdAt).format("YYYY-MM-DD");
-
-      if (_message.chatType === "TEXT") {
-        return (
-          <React.Fragment key={_message.id}>
-            {!isSameDate && (
-              <DateItem
-                key={_message.id + "date"}
-                date={dayjs(_message.createdAt).format("YYYY.MM.DD ddd")}
-                onClick={() => handleDateClick(dateKey)}
-              />
-            )}
-            <li
-              className="flex flex-col gap-2"
-              key={_message.id}
-              ref={(el) => {
-                if (!isSameDate) {
-                  dateRefs.current.set(dateKey, el);
-                }
-              }}
-            >
-              <ChatMessage
-                key={_message.id}
-                message={_message.content}
-                sideContent={
-                  _message.createdAt && (
-                    <div className="flex flex-col gap-[2px] shrink-0 min-w-fit">
-                      <div
-                        className={
-                          "text-[#DDD] text-[10px] lg:text-[11px]" +
-                          (isUser ? " self-start" : " self-end")
-                        }
-                      >
-                        읽음
-                      </div>
-                      {!isSameTimeAfter && (
-                        <div
-                          className={
-                            "text-[#DDD] text-[10px] lg:text-[11px]" +
-                            (isUser ? " self-start" : " self-end")
-                          }
-                        >
-                          {timeStamp}
-                        </div>
-                      )}
-                    </div>
-                  )
-                }
-                isUser={isUser}
-                userImageUrl={userImageMap[_message.senderUsername] ?? null}
-                senderUsername={userNameMap[_message.senderUsername] ?? ""}
-                isProfileRevealed={!isSameTimeBefore}
-              />
-            </li>
-          </React.Fragment>
-        );
-      } else if (_message.chatType === "IMAGE") {
-        return (
-          <React.Fragment key={_message.id}>
-            {!isSameDate && (
-              <DateItem
-                key={_message.id + "date"}
-                date={dayjs(_message.createdAt).format("YYYY.MM.DD ddd")}
-                onClick={() => handleDateClick(dateKey)}
-              />
-            )}
-
-            <li
-              key={_message.id}
-              ref={(el) => {
-                if (!isSameDate) {
-                  dateRefs.current.set(dateKey, el);
-                }
-              }}
-            >
-              <ImageMessage
-                imageList={_message.imageUrlList || []}
-                sideContent={
-                  _message.createdAt && (
-                    <div className="flex flex-col gap-[2px] shrink-0 min-w-fit">
-                      <div
-                        className={
-                          "text-[#DDD] text-[10px] lg:text-[11px]" +
-                          (isUser ? " self-start" : " self-end")
-                        }
-                      >
-                        읽음
-                      </div>
-                      {!isSameTimeAfter && (
-                        <div
-                          className={
-                            "text-[#DDD] text-[10px] lg:text-[11px]" +
-                            (isUser ? " self-start" : " self-end")
-                          }
-                        >
-                          {timeStamp}
-                        </div>
-                      )}
-                    </div>
-                  )
-                }
-                isUser={isUser}
-                userImageUrl={userImageMap[_message.senderUsername] ?? null}
-                senderUsername={userNameMap[_message.senderUsername] ?? ""}
-                isProfileRevealed={!isSameTimeBefore}
-              />
-            </li>
-          </React.Fragment>
-        );
-      } else if (_message.chatType === "JOIN") {
-        const inviter = userNameMap[_message.senderUsername] ?? "";
-        return (
-          <React.Fragment key={_message.id}>
-            {!isSameDate && (
-              <DateItem
-                key={_message.id + "date"}
-                date={dayjs(_message.createdAt).format("YYYY.MM.DD ddd")}
-                onClick={() => handleDateClick(dateKey)}
-              />
-            )}
-            <li key={_message.id}>
-              <LogMessage>
-                {`${inviter}님이 ${_message.content
-                  .split("님")[0]!
-                  .trim()}님을 초대했습니다.`}
-              </LogMessage>
-            </li>
-          </React.Fragment>
-        );
-      } else if (_message.chatType === "LEAVE") {
-        return (
-          <React.Fragment key={_message.id}>
-            {!isSameDate && (
-              <DateItem
-                key={_message.id + "date"}
-                date={dayjs(_message.createdAt).format("YYYY.MM.DD ddd")}
-                onClick={() => handleDateClick(dateKey)}
-              />
-            )}
-            <LogMessage>{`${_message.content}`}</LogMessage>
-          </React.Fragment>
-        );
-      }
-
-      return null;
-    },
-    [currentUserId, userImageMap, userNameMap]
-  );
-
   return (
     <ul className="flex flex-col list-none gap-[12px]">
       {messages.map((message, index) => {
         const prevMessage = messages[index - 1];
         const nextMessage = messages[index + 1];
-        return renderMessage(message, prevMessage, nextMessage);
+        const dateKey = new Date(message.createdAt).toISOString().split("T")[0]!;
+        const isSameDate =
+          prevMessage &&
+          new Date(message.createdAt).toDateString() ===
+            new Date(prevMessage.createdAt).toDateString();
+
+        return (
+          <MessageItem
+            key={message.id}
+            message={message}
+            prevMessage={prevMessage}
+            nextMessage={nextMessage}
+            currentUserId={currentUserId}
+            unreadCount={unreadCountMap.get(message.id) ?? 0}
+            userImageUrl={userImageMap[message.senderUsername] ?? null}
+            senderDisplayName={userNameMap[message.senderUsername] ?? ""}
+            onDateClick={handleDateClick}
+            dateRef={
+              !isSameDate
+                ? (el) => {
+                    if (el) dateRefs.current.set(dateKey, el);
+                  }
+                : undefined
+            }
+          />
+        );
       })}
     </ul>
   );
 };
 
 export const MessageList = React.memo(MessageListComponent);
-
-const LogMessage = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="h-full flex flex-row justify-center items-end">
-      <div className="text-grey-500 bg-grey-100 px-2 py-1 h-full flex items-center rounded-md text-xs lg:text-sm">
-        {children}
-      </div>
-    </div>
-  );
-};

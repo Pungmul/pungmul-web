@@ -1,11 +1,14 @@
+/** 이미지 업로드 타임아웃 (30초) */
+const IMAGE_UPLOAD_TIMEOUT_MS = 30 * 1000;
+
 export const sendImageMessage = async (
   roomId: string,
-  formData: FormData
+  formData: FormData,
 ): Promise<void> => {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
-  }, 5000);
+  }, IMAGE_UPLOAD_TIMEOUT_MS);
 
   const signal = controller.signal;
   const response = await fetch(`/api/chats/${roomId}/images`, {

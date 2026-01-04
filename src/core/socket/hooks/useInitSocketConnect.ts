@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useSocketConnection } from "./useSocketConnection";
-import { connectSocket } from "../lib/socketHandler";
+import { connectSocket, disconnectSocket } from "../lib/socketHandler";
 import { useGetToken } from "@pThunder/features/auth";
 
 export function useInitSocketConnect() {
@@ -9,7 +9,12 @@ export function useInitSocketConnect() {
   const isConnected = useSocketConnection();
 
   useEffect(() => {
-    if (isConnected || !token) {
+    if (isConnected) {
+      return; // 이미 연결되어 있거나 토큰이 없으면 연결하지 않음
+    }
+    if (!token) {
+      // 토큰이 없으면 연결을 끊음
+      disconnectSocket();
       return;
     }
     connectSocket({
@@ -24,5 +29,12 @@ export function useInitSocketConnect() {
       .catch((error) => {
         console.error("웹 소켓 연결 실패:", error);
       });
+
+    return () => {
+      if (isConnected) {
+        console.log("웹 소켓 연결 해제");
+        disconnectSocket();
+      }
+    };
   }, [isConnected, token]);
 }
