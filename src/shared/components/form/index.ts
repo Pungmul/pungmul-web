@@ -9,3 +9,4 @@ export { TimeInput } from './TimeInput'
 export { TimePicker } from './TimePicker'
 export { NumberStepper } from './NumberStepper'
 export { default as SearchInput } from './SearchInput'
+export { RangeSlider } from "./RangeSlider"

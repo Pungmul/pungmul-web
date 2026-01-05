@@ -28,6 +28,7 @@ export {
   TimePicker,
   TimeInput,
   SearchInput,
+  RangeSlider,
 } from "./form";
 
 export {
