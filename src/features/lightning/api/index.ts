@@ -6,3 +6,4 @@ export * from './getUserLocation';
 export * from './updateUserLocation';
 export * from './loadLightningData';
 export * from './prefetchLightningData';
+export * from './createLightning';

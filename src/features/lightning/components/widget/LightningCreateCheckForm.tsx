@@ -1,14 +1,20 @@
 "use client";
-import { BottomFixedButton, Header, Spinner } from "@/shared/components";
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useLightningCreateStore } from "../../store/lightningCreateStore";
-import { useKakaoMapsEffect } from "@/shared/hooks/useKakaoMaps";
-import MapContainer from "@pThunder/shared/components/MapContainer";
-import { createLightningCircle } from "../../lib";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { Toast } from "@/shared";
+import { BottomFixedButton, Header, Spinner } from "@/shared/components";
+import MapContainer from "@/shared/components/MapContainer";
+import { useKakaoMapsEffect } from "@/shared/hooks/useKakaoMaps";
+import { updateLocation } from "@/features/location";
+
+import { createLightningAPI } from "../../api/createLightning";
+import { createLightningCircle } from "../../lib";
 import { lightningQueryKeys } from "../../queries";
-import { Toast } from "@pThunder/shared";
+import { buildLightningRequest } from "../../services/buildLightningRequest";
+import { useLightningCreateStore } from "../../store/lightningCreateStore";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -16,9 +22,15 @@ export const fetchCache = "force-no-store";
 export default function LightningCreateCheckForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { formData, createLightning, isSubmitting } = useLightningCreateStore();
+  const { formData, isSubmitting, setIsSubmitting } = useLightningCreateStore();
+
   const { mutate: createLightningMutation } = useMutation({
-    mutationFn: createLightning,
+    mutationFn: async () => {
+      setIsSubmitting(true);
+      await updateLocation();
+      const request = buildLightningRequest(formData);
+      return createLightningAPI(request);
+    },
     onSuccess: async () => {
       Toast.show({ message: "번개 생성에 성공했습니다.", type: "success" });
       await queryClient.invalidateQueries({
@@ -31,6 +43,9 @@ export default function LightningCreateCheckForm() {
     },
     onError: () => {
       Toast.show({ message: "번개 생성에 실패했습니다.", type: "error" });
+    },
+    onSettled: () => {
+      setIsSubmitting(false);
     },
   });
 
@@ -48,8 +63,8 @@ export default function LightningCreateCheckForm() {
     mapRef.current.setCenter(
       new kakao.maps.LatLng(
         formData.locationPoint.latitude,
-        formData.locationPoint.longitude
-      )
+        formData.locationPoint.longitude,
+      ),
     );
     // 지도 중심 이동
   }, [formData.locationPoint]);
@@ -105,9 +120,9 @@ export default function LightningCreateCheckForm() {
               </span>
             </div>
             <div>
-              <span className="text-sm text-grey-500">모집 기간:</span>
+              <span className="text-sm text-grey-500">모집 마감:</span>
               <span className="ml-2 font-medium">
-                {formData.recruitmentPeriod}분 뒤 까지
+                {formData.recruitEndTime}
               </span>
             </div>
 
