@@ -3,9 +3,8 @@ import dayjs from "dayjs";
 import { memo, useEffect, useRef } from "react";
 
 /**
- * 
- * @param timeString 시간 문자열 (HH:mm:ss)
- * @returns 
+ * 남은 시간을 분:초 형식으로 표시하는 패널 컴포넌트
+ * @param timeString - 목표 시간 문자열 (ISO 8601 형식)
  */
 export const TimeGapPannel = memo(({ timeString }: { timeString: string }) => {
   const minRef = useRef<HTMLDivElement>(null);

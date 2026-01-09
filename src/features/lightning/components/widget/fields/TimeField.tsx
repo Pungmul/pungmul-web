@@ -61,4 +61,7 @@ function TimeField() {
   );
 }
 
-export default React.memo(TimeField);
+const MemoizedTimeField = React.memo(TimeField);
+MemoizedTimeField.displayName = 'TimeField';
+
+export default MemoizedTimeField;

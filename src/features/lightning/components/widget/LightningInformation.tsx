@@ -32,10 +32,12 @@ export const LightningInformation = ({
   const { mutate: deleteLightningMeeting } = useDeleteLightningMeeting();
 
   const handleLeaveLightningMeeting = useCallback(() => {
-    if (!userPartinLightning) return;
+    const meetingId = userPartinLightning?.lightningMeeting?.id;
+    if (!meetingId) return;
+    
     leaveLightningMeeting(
       {
-        lightningMeetingId: userPartinLightning.lightningMeeting!.id,
+        lightningMeetingId: meetingId,
       },
       {
         onSuccess: async () => {
@@ -52,9 +54,11 @@ export const LightningInformation = ({
   }, [userPartinLightning, leaveLightningMeeting]);
 
   const handleDeleteLightningMeeting = useCallback(() => {
-    if (!userPartinLightning) return;
+    const meetingId = userPartinLightning?.lightningMeeting?.id;
+    if (!meetingId) return;
+    
     deleteLightningMeeting({
-      lightningMeetingId: userPartinLightning.lightningMeeting!.id,
+      lightningMeetingId: meetingId,
     }, {
       onSuccess: async () => {
         await queryClient.invalidateQueries({

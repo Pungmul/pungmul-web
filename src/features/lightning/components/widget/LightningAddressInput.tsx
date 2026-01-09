@@ -74,4 +74,7 @@ function LightningAddressInput() {
   );
 }
 
-export default React.memo(LightningAddressInput);
+const MemoizedLightningAddressInput = React.memo(LightningAddressInput);
+MemoizedLightningAddressInput.displayName = 'LightningAddressInput';
+
+export default MemoizedLightningAddressInput;

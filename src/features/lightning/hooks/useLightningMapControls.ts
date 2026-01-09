@@ -80,9 +80,10 @@ export const useLightningMapControls = ({
     GPSmarkerRef.current.setMap(mapRef.current);
     setIsLocationLoaded(true);
 
-    if (bottomSheetRef.current) {
+    if (bottomSheetRef.current && mapRef.current) {
+      const map = mapRef.current;
       bottomSheetRef.current.onLevelChange((oldLevel, newLevel) => {
-        mapRef.current!.panBy(0, (oldLevel - newLevel) / 2);
+        map.panBy(0, (oldLevel - newLevel) / 2);
       });
     }
   }, [currentLocation, isMapReady]);

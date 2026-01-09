@@ -32,4 +32,7 @@ function LightningTypeField() {
   );
 }
 
-export default React.memo(LightningTypeField);
+const MemoizedLightningTypeField = React.memo(LightningTypeField);
+MemoizedLightningTypeField.displayName = 'LightningTypeField';
+
+export default MemoizedLightningTypeField;

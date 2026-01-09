@@ -14,7 +14,13 @@ import { GPSOutline } from "@pThunder/shared/components/Icons";
 
 import { LightningCardList } from "./LightningCardList";
 import { LightningBottomSheetRefType } from "../../types";
-import { LOW_LEVEL, MEDIUM_LEVEL, HIGH_LEVEL } from "../../constant";
+import { 
+  LOW_LEVEL, 
+  MEDIUM_LEVEL, 
+  HIGH_LEVEL,
+  GESTURE_THRESHOLD,
+  GESTURE_VELOCITY_THRESHOLD,
+} from "../../constant";
 
 interface LightningBottomSheetProps {
   myInfo: Member;
@@ -48,9 +54,6 @@ const setDownLevel = (level: number) => {
     return LOW_LEVEL;
   }
 };
-
-const GESTURE_THRESHOLD = 60;
-const GESTURE_VELOCITY_THRESHOLD = 200;
 
 export const LightningBottomSheet = ({
   myInfo,

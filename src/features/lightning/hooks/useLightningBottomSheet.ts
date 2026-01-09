@@ -16,8 +16,9 @@ export const useLightningBottomSheet = ({ mapRef }: UseLightningBottomSheetProps
   // Bottom Sheet 이벤트 설정
   useKakaoMapsEffect(() => {
     if (bottomSheetRef.current && mapRef.current) {
+      const map = mapRef.current;
       bottomSheetRef.current.onLevelChange((oldLevel: number, newLevel: number) => {
-        mapRef.current!.panBy(0, (oldLevel - newLevel) / 2);
+        map.panBy(0, (oldLevel - newLevel) / 2);
       });
     }
   }, []);

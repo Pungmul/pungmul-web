@@ -32,4 +32,7 @@ function TargetField() {
   );
 }
 
-export default React.memo(TargetField);
+const MemoizedTargetField = React.memo(TargetField);
+MemoizedTargetField.displayName = 'TargetField';
+
+export default MemoizedTargetField;

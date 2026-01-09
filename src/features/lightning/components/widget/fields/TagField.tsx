@@ -44,4 +44,7 @@ function TagField() {
   );
 }
 
-export default React.memo(TagField);
+const MemoizedTagField = React.memo(TagField);
+MemoizedTagField.displayName = 'TagField';
+
+export default MemoizedTagField;
