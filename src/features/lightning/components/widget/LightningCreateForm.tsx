@@ -1,16 +1,17 @@
 "use client";
-import { BottomFixedButton, Header, Input } from "@/shared/components";
-import { useLightningCreateForm } from "../../hooks/useLightningCreateForm";
-import LightningAddressInput from "./LightningAddressInput";
 import { FormProvider } from "react-hook-form";
 
+import { BottomFixedButton, Header, Input } from "@/shared/components";
+
+import { useLightningCreateForm } from "../../hooks/useLightningCreateForm";
+import LightningTypeField from "./fields/LightningTypeField";
 // 필드 컴포넌트들
 import PersonnelFields from "./fields/PersonnelFields";
-import RecruitmentPeriodField from "./fields/RecruitmentPeriodField";
+import RecruitEndTimeField from "./fields/RecruitmentPeriodField";
 import TagField from "./fields/TagField";
-import TimeField from "./fields/TimeField";
-import LightningTypeField from "./fields/LightningTypeField";
 import TargetField from "./fields/TargetField";
+import TimeField from "./fields/TimeField";
+import LightningAddressInput from "./LightningAddressInput";
 
 export default function LightningCreateForm() {
   return (
@@ -53,7 +54,7 @@ const CreateLightningFormBody = () => {
           <TargetField />
           <TimeField />
           <PersonnelFields />
-          <RecruitmentPeriodField />
+          <RecruitEndTimeField />
 
           <TagField />
         </section>

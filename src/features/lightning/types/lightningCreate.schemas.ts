@@ -5,7 +5,7 @@ export const lightningCreateSchema = z.object({
   minPersonnel: z.number().min(1, "최소 인원은 1명 이상이어야 합니다").max(10, "최대 10명까지 가능합니다"),
   maxPersonnel: z.number().min(1, "최대 인원은 1명 이상이어야 합니다").max(20, "최대 20명까지 가능합니다"),
   lightningType: z.enum(["일반 모임", "풍물 모임"]),
-  recruitmentPeriod: z.number().min(1, "모집 기간은 1분 이상이어야 합니다").max(1440, "최대 24시간까지 가능합니다"),
+  recruitEndTime: z.string().min(1, "모집 종료 시간을 선택해주세요"),
   address: z.string().min(1, "주소를 선택해주세요"),
   detailAddress: z.string().optional(),
   locationPoint: z.object({

@@ -12,8 +12,6 @@ export const useLightningCreateForm = () => {
     resolver: zodResolver(lightningCreateSchema),
     defaultValues: {
       ...formData,
-      // recruitmentPeriod가 비어있으면 기본값 설정
-      recruitmentPeriod: formData.recruitmentPeriod || 5,
     },
     mode: "onChange",
     reValidateMode: "onChange",
