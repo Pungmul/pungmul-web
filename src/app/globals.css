@@ -6,126 +6,126 @@
   --background: #ffffff;
   --foreground: #171717;
   /* 폰트는 layout.tsx에서 localFont로 로드됨 */
-  --swiper-theme-color: #FF5E3E !important;
+  --swiper-theme-color: #ff5e3e !important;
 
-  --color-primary: #FF5E3E;
-  --color-primary-light: #FF8B8B;
-  --color-primary-dark: #FF4C4C;
+  --color-primary: #ff5e3e;
+  --color-primary-light: #ff8b8b;
+  --color-primary-dark: #ff4c4c;
 
-  --color-secondary: #FED421;
+  --color-secondary: #fed421;
 
-  --color-correct: #2172FE;
-  --color-warning: #E14141;
-  --color-green: #31DD65;
+  --color-correct: #2172fe;
+  --color-warning: #e14141;
+  --color-green: #31dd65;
 
-  --color-kakao: #FEE500;
+  --color-kakao: #fee500;
   /* 라이트 모드 색상을 기본 변수로 설정 */
-  --color-grey-100: #F7F7F8;
-  --color-grey-200: #EDEEF0;
-  --color-grey-300: #DFE1E4;
-  --color-grey-400: #C6C8CC;
-  --color-grey-500: #A4A6AA;
-  --color-grey-600: #73757A;
-  --color-grey-700: #43454A;
+  --color-grey-100: #f7f7f8;
+  --color-grey-200: #edeef0;
+  --color-grey-300: #dfe1e4;
+  --color-grey-400: #c6c8cc;
+  --color-grey-500: #a4a6aa;
+  --color-grey-600: #73757a;
+  --color-grey-700: #43454a;
   --color-grey-800: #232424;
 
-  --color-purple-100: #F2EEFF;
-  --color-purple-200: #CDC5FF;
-  --color-purple-300: #A79DFF;
-  --color-purple-400: #877FFF;
-  --color-purple-500: #6652E0;
-  --color-purple-600: #4A38B3;
+  --color-purple-100: #f2eeff;
+  --color-purple-200: #cdc5ff;
+  --color-purple-300: #a79dff;
+  --color-purple-400: #877fff;
+  --color-purple-500: #6652e0;
+  --color-purple-600: #4a38b3;
   --color-purple-700: #232424;
 
-  --color-red-100: #FFECEC;
-  --color-red-200: #FFCECE;
-  --color-red-300: #FF8B8B;
-  --color-red-400: #FF6B6B;
-  --color-red-500: #FF4C4C;
-  --color-red-600: #DF4444;
-  --color-red-700: #D13F3F;
-  --color-red-800: #B12F2F;
+  --color-red-100: #ffecec;
+  --color-red-200: #ffcece;
+  --color-red-300: #ff8b8b;
+  --color-red-400: #ff6b6b;
+  --color-red-500: #ff4c4c;
+  --color-red-600: #df4444;
+  --color-red-700: #d13f3f;
+  --color-red-800: #b12f2f;
 
-  --color-lime-100: #EFFFC3;
-  --color-lime-200: #E2FE98;
-  --color-lime-300: #D5FD6A;
-  --color-lime-400: #CAFA40;
-  --color-lime-500: #C8FF00;
-  --color-lime-600: #BDEB00;
-  --color-lime-700: #AED400;
-  --color-lime-800: #A0BC00;
+  --color-lime-100: #efffc3;
+  --color-lime-200: #e2fe98;
+  --color-lime-300: #d5fd6a;
+  --color-lime-400: #cafa40;
+  --color-lime-500: #c8ff00;
+  --color-lime-600: #bdeb00;
+  --color-lime-700: #aed400;
+  --color-lime-800: #a0bc00;
 
   /* 원본 라이트 모드 색상들 유지 */
-  --color-grey-100-light: #F7F7F8;
-  --color-grey-200-light: #EDEEF0;
-  --color-grey-300-light: #DFE1E4;
-  --color-grey-400-light: #C6C8CC;
-  --color-grey-500-light: #A4A6AA;
-  --color-grey-600-light: #73757A;
-  --color-grey-700-light: #43454A;
+  --color-grey-100-light: #f7f7f8;
+  --color-grey-200-light: #edeef0;
+  --color-grey-300-light: #dfe1e4;
+  --color-grey-400-light: #c6c8cc;
+  --color-grey-500-light: #a4a6aa;
+  --color-grey-600-light: #73757a;
+  --color-grey-700-light: #43454a;
   --color-grey-800-light: #232424;
 
-  --color-purple-100-light: #F2EEFF;
-  --color-purple-200-light: #CDC5FF;
-  --color-purple-300-light: #A79DFF;
-  --color-purple-400-light: #877FFF;
-  --color-purple-500-light: #6652E0;
-  --color-purple-600-light: #4A38B3;
+  --color-purple-100-light: #f2eeff;
+  --color-purple-200-light: #cdc5ff;
+  --color-purple-300-light: #a79dff;
+  --color-purple-400-light: #877fff;
+  --color-purple-500-light: #6652e0;
+  --color-purple-600-light: #4a38b3;
   --color-purple-700-light: #232424;
 
-  --color-red-100-light: #FFECEC;
-  --color-red-200-light: #FFCECE;
-  --color-red-300-light: #FF8B8B;
-  --color-red-400-light: #FF6B6B;
-  --color-red-500-light: #FF4C4C;
-  --color-red-600-light: #DF4444;
-  --color-red-700-light: #D13F3F;
-  --color-red-800-light: #B12F2F;
+  --color-red-100-light: #ffecec;
+  --color-red-200-light: #ffcece;
+  --color-red-300-light: #ff8b8b;
+  --color-red-400-light: #ff6b6b;
+  --color-red-500-light: #ff4c4c;
+  --color-red-600-light: #df4444;
+  --color-red-700-light: #d13f3f;
+  --color-red-800-light: #b12f2f;
 
-  --color-lime-100-light: #EFFFC3;
-  --color-lime-200-light: #E2FE98;
-  --color-lime-300-light: #D5FD6A;
-  --color-lime-400-light: #CAFA40;
-  --color-lime-500-light: #C8FF00;
-  --color-lime-600-light: #BDEB00;
-  --color-lime-700-light: #AED400;
-  --color-lime-800-light: #A0BC00;
+  --color-lime-100-light: #efffc3;
+  --color-lime-200-light: #e2fe98;
+  --color-lime-300-light: #d5fd6a;
+  --color-lime-400-light: #cafa40;
+  --color-lime-500-light: #c8ff00;
+  --color-lime-600-light: #bdeb00;
+  --color-lime-700-light: #aed400;
+  --color-lime-800-light: #a0bc00;
 
-  --color-purple-100-dark: #2C2B3A;
-  --color-purple-200-dark: #3B365B;
-  --color-purple-300-dark: #5C50A7;
-  --color-purple-400-dark: #6E5ED3;
-  --color-purple-500-dark: #7866E9;
-  --color-purple-600-dark: #9382EE;
-  --color-purple-700-dark: #B3A7F2;
-  --color-purple-800-dark: #D2CAF6;
+  --color-purple-100-dark: #2c2b3a;
+  --color-purple-200-dark: #3b365b;
+  --color-purple-300-dark: #5c50a7;
+  --color-purple-400-dark: #6e5ed3;
+  --color-purple-500-dark: #7866e9;
+  --color-purple-600-dark: #9382ee;
+  --color-purple-700-dark: #b3a7f2;
+  --color-purple-800-dark: #d2caf6;
 
-  --color-red-100-dark: #622E2E;
+  --color-red-100-dark: #622e2e;
   --color-red-200-dark: #843636;
-  --color-red-300-dark: #A04949;
-  --color-red-400-dark: #B75C5C;
-  --color-red-500-dark: #D34444;
-  --color-red-600-dark: #D58585;
-  --color-red-700-dark: #E89A9A;
-  --color-red-800-dark: #F0BABA;
+  --color-red-300-dark: #a04949;
+  --color-red-400-dark: #b75c5c;
+  --color-red-500-dark: #d34444;
+  --color-red-600-dark: #d58585;
+  --color-red-700-dark: #e89a9a;
+  --color-red-800-dark: #f0baba;
 
   --color-grey-100-dark: #343536;
   --color-grey-200-dark: #404142;
   --color-grey-300-dark: #515253;
-  --color-grey-400-dark: #6A6B6D;
-  --color-grey-500-dark: #8A8B8D;
-  --color-grey-600-dark: #B0B2B3;
-  --color-grey-700-dark: #D2D3D4;
-  --color-grey-800-dark: #F7F7F8;
+  --color-grey-400-dark: #6a6b6d;
+  --color-grey-500-dark: #8a8b8d;
+  --color-grey-600-dark: #b0b2b3;
+  --color-grey-700-dark: #d2d3d4;
+  --color-grey-800-dark: #f7f7f8;
 
-  --color-lime-100-dark: #56622E;
-  --color-lime-200-dark: #78833C;
-  --color-lime-300-dark: #8D9644;
-  --color-lime-400-dark: #A2AA4E;
-  --color-lime-500-dark: #D0EA66;
-  --color-lime-600-dark: #D6EE7A;
-  --color-lime-700-dark: #DDF291;
-  --color-lime-800-dark: #E6F6AF;
+  --color-lime-100-dark: #56622e;
+  --color-lime-200-dark: #78833c;
+  --color-lime-300-dark: #8d9644;
+  --color-lime-400-dark: #a2aa4e;
+  --color-lime-500-dark: #d0ea66;
+  --color-lime-600-dark: #d6ee7a;
+  --color-lime-700-dark: #ddf291;
+  --color-lime-800-dark: #e6f6af;
 
   --text-h1: 24px;
   --text-h2: 20px;
@@ -142,7 +142,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #232424;
-    --foreground: #F7F7F8;
+    --foreground: #f7f7f8;
 
     /* 다크모드에서 색상 변수들을 다크 색상으로 전환 */
     --color-primary-light: var(--color-primary-dark);
@@ -186,18 +186,21 @@
 }
 
 html {
+  height: 100%;
+  overflow: hidden;
   font-family: var(--font-nanum-neo);
   touch-action: pan-y;
   overscroll-behavior: none;
-  /* 상하 스크롤은 가능, 줌 방지 */
 }
 
 body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-nanum);
   touch-action: pan-y;
-  /* 상하 스크롤은 가능, 줌 방지 */
 }
 
 @layer utilities {
@@ -252,7 +255,6 @@ input {
   /* 파이어폭스 */
 }
 
-
 .slide-enter {
   opacity: 1;
   transform: translateX(100%);
@@ -302,10 +304,12 @@ input {
 
 .ligtning-card-sign {
   overflow: hidden;
-  background: radial-gradient(ellipse at center,
-      rgba(154, 255, 65, 0.8) 0%,
-      rgba(26, 255, 68, 0.2) 50%,
-      rgba(179, 255, 28, 0.629) 60%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(154, 255, 65, 0.8) 0%,
+    rgba(26, 255, 68, 0.2) 50%,
+    rgba(179, 255, 28, 0.629) 60%
+  );
   background-size: 100% 100%;
   width: calc(100% + 128px);
   height: calc(100% + 128px);
@@ -330,7 +334,12 @@ input {
   --bg-default: var(--color-grey-300);
   --highlight: var(--color-grey-100);
   will-change: transform;
-  background: linear-gradient(to right, var(--bg-default), var(--highlight), var(--bg-default));
+  background: linear-gradient(
+    to right,
+    var(--bg-default),
+    var(--highlight),
+    var(--bg-default)
+  );
   animation: loading 3s infinite linear;
 }
 
@@ -526,7 +535,11 @@ input {
 
 /* 버튼 스타일 */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-light)
+  );
   color: white;
   padding: 14px 28px;
   border-radius: 12px;
@@ -541,7 +554,11 @@ input {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-light),
+    var(--color-primary-dark)
+  );
   box-shadow: 0 4px 16px rgba(129, 109, 255, 0.4);
   transform: translateY(-2px);
 }
@@ -673,7 +690,8 @@ input {
 .input-field:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(129, 109, 255, 0.1), 0 4px 12px rgba(129, 109, 255, 0.15);
+  box-shadow: 0 0 0 4px rgba(129, 109, 255, 0.1),
+    0 4px 12px rgba(129, 109, 255, 0.15);
   transform: translateY(-1px);
 }
 
