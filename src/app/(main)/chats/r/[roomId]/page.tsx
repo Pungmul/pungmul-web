@@ -49,7 +49,7 @@ export default function Page() {
   const isConnected = useSocketConnection();
   const { data: myInfo } = useSuspenseGetMyPageInfo();
   const setFocusingRoomId = useChatRoomStore(
-    (state) => state.setFocusingRoomId,
+    (state) => state.setFocusingRoomId
   );
   const router = useRouter();
 
@@ -68,7 +68,7 @@ export default function Page() {
 
   // 채팅방 데이터 조회
   const { data: chatRoomData, isLoading: isChatRoomLoading } = useChatRoomQuery(
-    roomId as string,
+    roomId as string
   );
   const {
     data: infiniteData,
@@ -147,9 +147,9 @@ export default function Page() {
         fetchNextPage();
       },
       INFINITE_SCROLL_DEBOUNCE_MS,
-      { leading: true, trailing: false },
+      { leading: true, trailing: false }
     ),
-    [fetchNextPage, isFetchingNextPage, saveScrollPosition],
+    [fetchNextPage, isFetchingNextPage, saveScrollPosition]
   );
 
   // 채팅 메시지 핸들러 훅 사용
@@ -187,13 +187,15 @@ export default function Page() {
       <div className="flex flex-col h-full bg-background relative overflow-y-auto overflow-x-hidden">
         <Header
           title={
-            <div className="flex items-center gap-2 h-full">
-              <div className="text-sm lg:text-base w-[160px] lg:w-[300px] truncate">
-                {title}
+            <div className="flex justify-center items-center gap-2 h-full">
+              <div className="text-sm lg:text-base leading-5 max-w-[160px] lg:max-w-[300px] truncate">
+                {title.slice(0, -3)}
               </div>
-              <div className="text-sm lg:text-base text-grey-500">
-                {chatRoomData?.userInfoList.length}
-              </div>
+              {chatRoomData?.userInfoList.length > 2 && (
+                <div className="text-sm lg:text-base leading-5 text-grey-500">
+                  {chatRoomData?.userInfoList.length}
+                </div>
+              )}
             </div>
           }
           onLeftClick={() => router.push("/chats/r/inbox")}

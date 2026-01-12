@@ -29,7 +29,7 @@ const SelectFriendModal = lazy(() =>
 
 function ChatLayoutContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative block md:flex md:flex-row w-full flex-grow overflow-y-auto">
+    <div className="relative block md:flex md:flex-row w-full flex-grow">
       <Suspense fallback={<ChatRoomBoxSkeleton key={"room-skeleton"} />}>
         <ChatRoomList key="chat-list" />
       </Suspense>

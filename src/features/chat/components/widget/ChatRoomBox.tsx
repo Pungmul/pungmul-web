@@ -49,8 +49,10 @@ const ChatRoomBox = ({ room }: { room: ChatRoomDto }) => {
       </div>
       <div className="md:flex flex-col flex-grow gap-[4px] overflow-hidden">
         <div className="flex flex-row items-start justify-between gap-[4px] leading-[125%]">
-          <div className="text-[13px] font-semibold">{room.roomName}</div>
-          <div className="text-[11px] flex-shrink-0">
+          <div className="text-[13px] font-semibold truncate max-lines-1 pr-2">
+            {room.roomName}
+          </div>
+          <div className="text-[11px] text-grey-500 flex-shrink-0">
             {room.lastMessageTime ? (
               formatRelativeDate(new Date(room.lastMessageTime))
             ) : (
@@ -70,8 +72,8 @@ const ChatRoomBox = ({ room }: { room: ChatRoomDto }) => {
             )}
           </div>
           {(room?.unreadCount ?? 0) > 0 && (
-            <div className="flex rounded-full items-center justify-center bg-primary text-background text-[11px] leading-[100%] w-[20px] h-[20px]">
-              {room.unreadCount}
+            <div className="flex rounded-full items-center justify-center bg-primary text-background text-xs leading-[100%] size-6">
+              {room.unreadCount! > 99 ? "99+" : room.unreadCount!}
             </div>
           )}
         </div>
