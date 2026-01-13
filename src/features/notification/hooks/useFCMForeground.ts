@@ -4,11 +4,14 @@ import { useEffect } from "react";
 import { onMessage } from "firebase/messaging";
 import { getFirebaseMessaging } from "../services";
 import { notificationStore } from "../store";
+import { supportsNotification } from "../lib/guards";
 
 export function useFCMForeground() {
   const addNotification = notificationStore((s) => s.addNotification);
 
   useEffect(() => {
+    if (!supportsNotification()) return;
+
     const messaging = getFirebaseMessaging();
     if (!messaging) return;
 

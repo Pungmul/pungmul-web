@@ -1,5 +1,6 @@
 import { FirebaseOptions, initializeApp, getApps } from "firebase/app";
 import { getMessaging, Messaging } from "firebase/messaging";
+import { supportsPushNotification } from "../lib/guards";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -14,13 +15,11 @@ const firebaseConfig: FirebaseOptions = {
 let messaging: Messaging | null = null;
 
 export function getFirebaseMessaging(): Messaging | null {
-  if (typeof window === "undefined") return null;
+  if (!supportsPushNotification()) return null;
 
   if (!messaging) {
     const app =
-      getApps().length === 0
-        ? initializeApp(firebaseConfig)
-        : getApps()[0];
+      getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
     messaging = getMessaging(app);
   }

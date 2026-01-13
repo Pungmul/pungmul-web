@@ -1,20 +1,14 @@
 import { getToken } from "firebase/messaging";
 import { getFirebaseMessaging } from "./firebaseClient";
 import { notificationPermissionStore } from "../store";
+import { supportsPushNotification } from "../lib/guards";
 
 export async function requestFCMToken(): Promise<string | null> {
-  if (typeof window === "undefined") {
-    console.warn("window not found");
-    return null;
-  }
-  if (!("serviceWorker" in navigator)) {
-    console.warn("serviceWorker not found");
-    return null;
-  }
+  if (!supportsPushNotification()) return null;
 
   // 알림 권한 요청
   const permission = await Notification.requestPermission();
-  
+
   // 알림 권한 상태 저장
   notificationPermissionStore.getState().setPermission(permission);
 

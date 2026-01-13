@@ -1,4 +1,5 @@
 "use client";
+
 import { useCallback, useState } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,6 +9,7 @@ import { Button } from "@/shared/components";
 import { registerFCMToken } from "../../api";
 import { requestFCMToken } from "../../services";
 import { useNotificationPermission } from "../../hooks";
+import { supportsNotification } from "../../lib/guards";
 
 export default function NotificationPermissionRequestCTA() {
   const [open, setOpen] = useState(true);
@@ -27,6 +29,7 @@ export default function NotificationPermissionRequestCTA() {
     setOpen(false);
   }, []);
 
+  if (!supportsNotification()) return null;
   if (permission === "granted") return null;
 
   return (

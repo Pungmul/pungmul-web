@@ -2,15 +2,13 @@
 
 import { useEffect } from "react";
 import { notificationPermissionStore } from "../store";
+import { supportsNotification } from "../lib/guards";
 
 export function useSyncNotificationPermission() {
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!supportsNotification()) return;
 
     const browserPermission = Notification.permission;
-    console.log("browserPermission", browserPermission);
-    notificationPermissionStore
-      .getState()
-      .setPermission(browserPermission);
+    notificationPermissionStore.getState().setPermission(browserPermission);
   }, []);
 }
