@@ -48,8 +48,9 @@ export function useSocketSubscription<T = unknown>({
       cancelled = true;
 
       if (subscriptionRef.current) {
-        unsubscribeSocket(subscriptionRef.current);
-        subscriptionRef.current = null;
+        unsubscribeSocket(subscriptionRef.current).then(() => {
+          subscriptionRef.current = null;
+        });
       }
     };
   }, [enabled, isConnected, topic]);

@@ -23,6 +23,7 @@ export class SharedSocketManager {
   private pendingCommands = new Map<string, PendingCommand>(); // commandId와 Promise 매핑
   private isConnected = false;
   private isSharedWorkerSupported: boolean;
+  private workerMode: "shared" | "dedicated" = "dedicated";
   private readonly COMMAND_TIMEOUT = 30000; // 30초 타임아웃
 
   private stateSubscriptions = new Set<() => void>();
@@ -44,20 +45,15 @@ export class SharedSocketManager {
       return;
     }
 
-    try {
-      console.log("🔍 Worker 생성 시작");
-
-      if (this.isSharedWorkerSupported) {
-        // SharedWorker 사용 (최적화)
-        this.worker = new SharedWorker("/socket-worker.js");
-        this.port = (this.worker as SharedWorker).port;
-        console.log("🔍 SharedWorker 모드로 연결");
-      } else {
-        // DedicatedWorker 사용 (폴백)
-        this.worker = new Worker("/dedicated-worker.js");
-        this.port = this.worker as unknown as MessagePort;
-        console.log("🔍 DedicatedWorker 모드로 폴백");
-      }
+    const tryConnect = async (useSharedWorker: boolean): Promise<void> => {
+      this.workerMode = useSharedWorker ? "shared" : "dedicated";
+      this.worker = useSharedWorker
+        ? new SharedWorker("/socket-worker.js")
+        : new Worker("/dedicated-worker.js");
+      this.port =
+        useSharedWorker
+          ? (this.worker as SharedWorker).port
+          : (this.worker as unknown as MessagePort);
 
       if (!this.port) {
         throw new Error("Worker port initialization failed");
@@ -72,11 +68,9 @@ export class SharedSocketManager {
           case "CONNECTED":
             this.isConnected = true;
             console.log("🔍 Worker: WebSocket 연결 완료", { commandId });
-            // commandId로 Promise resolve
             if (commandId) {
               this.resolveCommand(commandId, undefined);
             }
-            // 연결 완료 후 대기 중인 구독들을 처리
             this.notifyStateSubscriptions();
             this.retryPendingSubscriptions();
             break;
@@ -85,13 +79,11 @@ export class SharedSocketManager {
             console.log("🔍 Worker: 구독 완료 - topic:", subscribedTopic, {
               commandId,
             });
-            // commandId로 Promise resolve
             if (!!commandId) {
               this.resolveCommand(commandId, data);
             }
             break;
           case "MESSAGE":
-            // MESSAGE는 이벤트 구독 콜백으로 처리 (Promise와 무관)
             const { topic, message } = data as {
               topic: string;
               message: unknown;
@@ -118,7 +110,6 @@ export class SharedSocketManager {
           case "ERROR":
             console.error("🔍 Worker: 에러 발생", error, { commandId });
             this.isConnected = false;
-            // commandId로 Promise reject
             if (commandId) {
               this.rejectCommand(
                 commandId,
@@ -130,15 +121,41 @@ export class SharedSocketManager {
         }
       });
 
-      if (this.isSharedWorkerSupported && this.port) {
+      if (useSharedWorker) {
         (this.port as MessagePort).start();
-        console.log("🔍 port start");
       }
 
-      // 웹소켓 연결 요청
       await this.sendCommand("CONNECT", config);
+    };
+
+    const cleanupWorker = () => {
+      if (this.worker && "terminate" in this.worker) {
+        (this.worker as Worker).terminate();
+      }
+      this.worker = null;
+      this.port = null;
+    };
+
+    try {
+      if (this.isSharedWorkerSupported) {
+        try {
+          console.log("🔍 SharedWorker 모드로 연결 시도");
+          await tryConnect(true);
+          console.log("🔍 SharedWorker 연결 성공");
+        } catch (error) {
+          console.warn("🔍 SharedWorker 연결 실패, DedicatedWorker로 폴백:", error);
+          cleanupWorker();
+          console.log("🔍 DedicatedWorker 모드로 연결 시도");
+          await tryConnect(false);
+          console.log("🔍 DedicatedWorker 연결 성공");
+        }
+      } else {
+        console.log("🔍 DedicatedWorker 모드로 연결");
+        await tryConnect(false);
+      }
     } catch (error) {
       console.error("🔍 Worker 연결 실패:", error);
+      cleanupWorker();
       throw error;
     }
   }
@@ -248,6 +265,7 @@ export class SharedSocketManager {
     this.subscriptions.clear();
     this.port = null;
     this.worker = null;
+    this.workerMode = "dedicated";
   }
 
   getConnectionStatus(): boolean {
@@ -255,7 +273,7 @@ export class SharedSocketManager {
   }
 
   getWorkerType(): "shared" | "dedicated" {
-    return this.isSharedWorkerSupported ? "shared" : "dedicated";
+    return this.workerMode;
   }
 
   getSubscriptionCount(): number {
