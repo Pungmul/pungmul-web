@@ -1,4 +1,5 @@
 import { ChatRoomListItemDto } from "../types";
+import { sortChatRoomByDate } from "../lib";
 
 export const loadChatRoomList = async (): Promise<ChatRoomListItemDto[]> => {
   try {
@@ -13,7 +14,7 @@ export const loadChatRoomList = async (): Promise<ChatRoomListItemDto[]> => {
 
     const { list: data } = await response.json();
 
-    return data;
+    return sortChatRoomByDate(data);
   } catch (e) {
     throw e;
   }
