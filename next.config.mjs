@@ -9,35 +9,34 @@ const nextConfig = {
     ],
     minimumCacheTTL: 60 * 60 * 1000,
   },
-  experimental:{
+  experimental: {
     scrollRestoration: true,
   },
-  allowedDevOrigins: ["http://localhost:3000", "http://192.168.0.10:3000"],
   async headers() {
     return [
       {
-        source: '/socket-worker.js',
+        source: "/socket-worker.js",
         headers: [
           {
-            key: 'Content-Type',
-            value: 'application/javascript',
+            key: "Content-Type",
+            value: "application/javascript",
           },
           {
-            key: 'Service-Worker-Allowed',
-            value: '/',
+            key: "Service-Worker-Allowed",
+            value: "/",
           },
         ],
       },
       {
-        source: '/dedicated-worker.js',
+        source: "/dedicated-worker.js",
         headers: [
           {
-            key: 'Content-Type',
-            value: 'application/javascript',
+            key: "Content-Type",
+            value: "application/javascript",
           },
           {
-            key: 'Service-Worker-Allowed',
-            value: '/',
+            key: "Service-Worker-Allowed",
+            value: "/",
           },
         ],
       },

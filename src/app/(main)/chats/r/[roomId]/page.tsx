@@ -121,6 +121,9 @@ export default function Page() {
   useEffect(() => {
     setFocusingRoomId(roomId as string);
     resetRoomUnreadCount(roomId as string);
+    return () => {
+      setFocusingRoomId(null);
+    };
   }, [roomId, resetRoomUnreadCount, setFocusingRoomId]);
 
   // 전역 스크롤 비활성화
