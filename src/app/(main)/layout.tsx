@@ -9,6 +9,7 @@ import { HeaderProgressBar, ToastContainer } from "@/shared/components";
 import { Suspense } from "react";
 import ReactQueryProviders from "@/shared/lib/useReactQuery";
 import { SocketProvider } from "@/core";
+import { ChatNotificationSocket } from "@/features/chat";
 
 // export const dynamic = "force-static";
 
@@ -23,6 +24,7 @@ export default async function RootLayout({
         <div id="main-contents" className="relative flex">
           <FCMClient />
           <NotificationContainer />
+          <ChatNotificationSocket />
           <NotificationToast />
           <ToastContainer />
           <Suspense fallback={null}>

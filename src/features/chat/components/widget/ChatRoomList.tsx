@@ -6,13 +6,10 @@ import { getChoseong } from "es-hangul";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ChatAddIcon } from "@pThunder/shared/components/Icons";
 import { SearchInput } from "@/shared/components";
-import { useRoomListSocket } from "../../socket";
 import { useChatRoomListQuery } from "../../queries";
 
 export default function ChatRoomList() {
   const { data: chatRooms, isLoading: isLoading } = useChatRoomListQuery();
-  useRoomListSocket();
-
   const { openModalToSelectFriend } = useSelectFriendModal();
   const clickAddChatButton = () => {
     openModalToSelectFriend();
