@@ -1,4 +1,5 @@
 import { ImageObject } from "@pThunder/shared";
+import type { Address } from "@/shared/types";
 
 export type QuestionType = "TEXT" | "CHOICE" | "CHECKBOX";
 
@@ -103,13 +104,6 @@ export interface PromotionDetail {
   questions: QuestionDto[];
 }
 
-export interface Address {
-  latitude: number;
-  longitude: number;
-  detail: string;
-  buildingName: string;
-}
-
 export interface PerformanceImageUrl {
   id: number;
   imageUrl: string;
@@ -164,4 +158,34 @@ export interface PromotionSurveyAnswerRequest {
   questionId: number;
   selectedOptionIds: number[];
   answerText: string | null;
+}
+
+// 통계 관련 타입
+export interface OptionStatistics {
+  optionId: number;
+  optionLabel: string;
+  count: number;
+  percentage: number;
+}
+
+export interface QuestionStatistics {
+  questionId: number;
+  questionLabel: string;
+  required: boolean;
+  questionType: QuestionType;
+  orderNo: number;
+  // TEXT 타입의 경우
+  textAnswers: string[];
+  // CHOICE, CHECKBOX 타입의 경우
+  optionStatistics: OptionStatistics[];
+  totalResponses: number;
+}
+
+export interface ResponseDto {
+  responseId: number;
+  formId: number;
+  submitterUsername: string;
+  submitterNickname: string;
+  submittedAt: string;
+  answerList: AnswerDto[];
 }
