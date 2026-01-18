@@ -4,7 +4,6 @@ import { TextQuestionAnswer } from "./TextQuestionAnswer";
 import { ChoiceQuestionAnswer } from "./ChoiceQuestionAnswer";
 import { CheckboxQuestionAnswer } from "./CheckboxQuestionAnswer";
 
-
 interface QuestionAnswerProps {
   question: QuestionDto;
   questionIndex: number;

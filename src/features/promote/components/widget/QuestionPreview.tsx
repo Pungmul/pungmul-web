@@ -9,7 +9,10 @@ interface QuestionPreviewProps {
   questionIndex: number;
 }
 
-export const QuestionPreview = ({ question, questionIndex }: QuestionPreviewProps) => {
+export const QuestionPreview = ({
+  question,
+  questionIndex,
+}: QuestionPreviewProps) => {
   const renderQuestionContent = () => {
     switch (question.questionType) {
       case "TEXT":

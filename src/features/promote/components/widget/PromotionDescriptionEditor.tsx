@@ -10,7 +10,9 @@ import { uploadImageToS3 } from "../../api";
 // Toast UI Editor를 클라이언트에서만 로드
 const Editor = dynamic(
   () =>
-    import("@/features/promote/components/import").then((mod) => ({ default: mod.ToastEditor })),
+    import("@/features/promote/components/import").then((mod) => ({
+      default: mod.ToastEditor,
+    })),
   {
     ssr: false,
     loading: () => (
@@ -24,20 +26,20 @@ const Editor = dynamic(
 export const PromotionDescriptionEditor = () => {
   // 내부 ref 생성
   const editorRef = useRef<EditorType | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useLayoutEffect(() => {
-    const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     // 초기 값 세팅
-    setTheme(darkMediaQuery.matches ? 'dark' : 'light');
+    setTheme(darkMediaQuery.matches ? "dark" : "light");
 
     // 변경 감지
-    const handler = (e: MediaQueryListEvent) => setTheme(e.matches ? 'dark' : 'light');
-    darkMediaQuery.addEventListener('change', handler);
-    darkMediaQuery.addListener(handler);
+    const handler = (e: MediaQueryListEvent) =>
+      setTheme(e.matches ? "dark" : "light");
+    darkMediaQuery.addEventListener("change", handler);
 
-    return () => darkMediaQuery.removeEventListener('change', handler);
+    return () => darkMediaQuery.removeEventListener("change", handler);
   }, []);
   // URL에서 formId 가져오기
   const searchParams = useSearchParams();

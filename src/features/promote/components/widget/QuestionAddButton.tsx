@@ -73,14 +73,19 @@ export const QuestionAddButton = ({ addQuestion }: QuestionAddButtonProps) => {
         <div className="text-[14px] font-normal text-grey-400">
           설문 추가하기
         </div>
-        <PlusCircleIcon className="size-[16px] text-grey-400" strokeWidth={1.5} />
+        <PlusCircleIcon
+          className="size-[16px] text-grey-400"
+          strokeWidth={1.5}
+        />
       </div>
       <div
         className={`absolute w-full px-[12px] left-0`}
         ref={selectContainerRef}
       >
         <ul
-          className={`w-full py-[8px] gap-[4px] bg-background rounded-lg border border-grey-400 h-fit z-10 shadow-xs ${isOpen ? "block" : "hidden"}`}
+          className={`w-full py-[8px] gap-[4px] bg-background rounded-lg border border-grey-400 h-fit z-10 shadow-xs ${
+            isOpen ? "block" : "hidden"
+          }`}
           ref={selectorRef}
         >
           <li
@@ -90,7 +95,9 @@ export const QuestionAddButton = ({ addQuestion }: QuestionAddButtonProps) => {
             <span className="flex items-center justify-center">
               <ShortAnswerOutline className="size-[24px] text-grey-400" />
             </span>
-            <span className="text-[14px] font-medium text-grey-400">단답형</span>
+            <span className="text-[14px] font-medium text-grey-400">
+              단답형
+            </span>
           </li>
           <li
             className="flex flex-row items-center justify-start w-full px-[16px] py-[8px] cursor-pointer gap-[16px] hover:bg-grey-100"
@@ -99,7 +106,9 @@ export const QuestionAddButton = ({ addQuestion }: QuestionAddButtonProps) => {
             <span className="flex items-center justify-center">
               <RadioSelectSolid className="size-[24px] text-grey-400" />
             </span>
-            <span className="text-[14px] font-medium text-grey-400">객관식</span>
+            <span className="text-[14px] font-medium text-grey-400">
+              객관식
+            </span>
           </li>
           <li
             className="flex flex-row items-center justify-start w-full px-[16px] py-[8px] cursor-pointer gap-[16px] hover:bg-grey-100"
@@ -108,7 +117,9 @@ export const QuestionAddButton = ({ addQuestion }: QuestionAddButtonProps) => {
             <span className="flex items-center justify-center">
               <CheckBoxOutline className="size-[24px] text-grey-400" />
             </span>
-            <span className="text-[14px] font-medium text-grey-400">체크 리스트</span>
+            <span className="text-[14px] font-medium text-grey-400">
+              체크 리스트
+            </span>
           </li>
         </ul>
       </div>
