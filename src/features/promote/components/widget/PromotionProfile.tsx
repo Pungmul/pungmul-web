@@ -2,9 +2,14 @@
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Modal, Responsive } from "@pThunder/shared";
 import type { Address } from "@/shared/types";
-import dayjs from "dayjs";
 import { useState, useImperativeHandle, useRef } from "react";
 import Image from "next/image";
+import {
+  getAddressDisplayText,
+  getAddressMapTitle,
+  formatPromotionDate,
+  formatPromotionTime,
+} from "../../lib";
 
 /** 카카오 맵 줌 레벨  1 ~ 8 클 수록 축소*/
 const KAKAO_MAP_ZOOM_LEVEL = 1;
@@ -53,28 +58,36 @@ const AddressModal = ({
     handleOpen,
   }));
 
+  const mapTitle = getAddressMapTitle(address);
+
   return (
     <Modal isOpen={isOpen} onClose={handleClose} hasHeader={false}>
       <div className="flex flex-col gap-[12px] px-[12px] py-[8px]">
         <a
           target="_blank"
-          href={`https://map.naver.com/p?title=${address?.detail}&lng=${address?.longitude}&lat=${address?.latitude}&zoom=${NAVER_MAP_ZOOM_LEVEL}`}
+          rel="noopener noreferrer"
+          href={`https://map.naver.com/p?title=${encodeURIComponent(
+            mapTitle
+          )}&lng=${address?.longitude}&lat=${address?.latitude}&zoom=${NAVER_MAP_ZOOM_LEVEL}`}
           onClick={(e) => {
             e.stopPropagation();
             handleClose();
           }}
           className="text-white text-[16px] text-center font-semibold bg-[#2db400] rounded-[8px] p-[8px]"
+          aria-label="네이버 지도에서 위치 보기"
         >
           네이버 지도로 보기
         </a>
         <a
           target="_blank"
-          href={`https://map.kakao.com/link/map/${address?.detail},${address?.latitude},${address?.longitude},${KAKAO_MAP_ZOOM_LEVEL}`}
+          rel="noopener noreferrer"
+          href={`https://map.kakao.com/link/map/${mapTitle},${address?.latitude},${address?.longitude},${KAKAO_MAP_ZOOM_LEVEL}`}
           onClick={(e) => {
             e.stopPropagation();
             handleClose();
           }}
           className="text-grey-800 text-[16px] text-center font-semibold bg-[#FEE500] rounded-[8px] p-[8px]"
+          aria-label="카카오 지도에서 위치 보기"
         >
           카카오 지도로 보기
         </a>
@@ -127,7 +140,7 @@ const PromotionProfileCard = ({
                 장소
               </span>
               <span className="font-normal text-grey-800 text-[14px] lg:text-[18px]">
-                {address?.detail || "주소 없음"}
+                {getAddressDisplayText(address)}
               </span>
               <ChevronRightIcon className="w-[16px] h-[16px] text-grey-500 flex-shrink-0" />
             </div>
@@ -136,29 +149,15 @@ const PromotionProfileCard = ({
                 날짜
               </span>
               <span className="font-normal text-grey-800 text-[14px] lg:text-[18px]">
-                {(() => {
-                  const date = startAt
-                    ? dayjs(new Date(startAt))
-                    : dayjs(new Date("2025-09-11T17:00:00"));
-                  return `${date.format("YYYY.MM.DD(ddd)")}`;
-                })()}
+                {formatPromotionDate(startAt)}
               </span>
             </div>
             <div className="flex flex-row gap-[12px] items-center font-normal max-w-full line-clamp-1">
               <span className="font-normal text-grey-500 text-[14px] lg:text-[18px]">
                 시간
               </span>
-
               <span className="font-normal text-grey-800 text-[14px] lg:text-[18px]">
-                {(() => {
-                  const date = startAt
-                    ? dayjs(new Date(startAt))
-                    : dayjs(new Date("2025-09-11T17:00:00"));
-                  const hour = date.hour();
-                  const timePrefix = hour < 12 ? "이른" : "늦은";
-                  const time12 = date.format("h시 mm분");
-                  return `${timePrefix} ${time12}`;
-                })()}
+                {formatPromotionTime(startAt)}
               </span>
             </div>
           </div>
@@ -208,82 +207,19 @@ const PromotionProfileWidget = ({
                 addressModalRef.current?.handleOpen();
               }}
             >
-              {/* <span className="font-normal text-grey-500 text-[14px] lg:text-[18px] ">
-                장소
-              </span> */}
               <span className="font-normal text-grey-500 text-[14px] lg:text-[18px]">
-                {address?.detail || "주소 없음"}
+                {getAddressDisplayText(address)}
               </span>
               <ChevronRightIcon className="w-[12px] h-[12px] text-grey-500 flex-shrink-0" />
             </div>
             <div className="flex flex-row gap-[4px] items-center font-normal max-w-full line-clamp-1">
-              {/* <span className="font-normal text-grey-500 text-[14px] lg:text-[18px]">
-                날짜
-              </span> */}
               <span className="font-normal text-grey-500 text-[14px] lg:text-[18px]">
-                {(() => {
-                  const date = startAt
-                    ? dayjs(new Date(startAt))
-                    : dayjs(new Date("2025-09-11T17:00:00"));
-                  return `${date.format("YYYY.MM.DD (ddd)")}`;
-                })()}
+                {formatPromotionDate(startAt)}
               </span>
             </div>
           </div>
         </div>
-        {/* <div className="w-full flex flex-col gap-[16px] bg-grey-100 px-[24px] py-[16px]">
-          <PromotionAddress address={address || null} />
-          <PromotionTime startAt={startAt || "2025-09-11T17:00:00"} />
-        </div> */}
       </section>
     </>
   );
 };
-
-// const PromotionAddress = ({ address }: { address?: Address | null }) => {
-//   const addressModalRef = useRef<{
-//     handleClose: () => void;
-//     handleOpen: () => void;
-//   }>(null);
-//   return (
-//     <>
-//       {address && <AddressModal address={address} ref={addressModalRef} />}
-//       <section
-//         className="w-full flex flex-col gap-[12px] bg-background px-[12px] py-[8px] rounded-[8px] cursor-pointer"
-//         onClick={(e) => {
-//           e.stopPropagation();
-//           addressModalRef.current?.handleOpen();
-//         }}
-//       >
-//         <h6 className="text-grey-400 text-[14px] font-semibold">공연 장소</h6>
-//         <div className="flex flex-row items-center gap-[8px]">
-//           <div className="text-grey-800 text-[16px] font-normal flex-grow max-w-full line-clamp-2">
-//             {address?.detail || ""}
-//           </div>
-//           <ChevronRightIcon className="w-[16px] h-[16px] text-grey-500" />
-//         </div>
-//       </section>
-//     </>
-//   );
-// };
-
-// const PromotionTime = ({ startAt }: { startAt?: string }) => {
-//   return (
-//     <section className="w-full flex flex-col gap-[12px] bg-white px-[12px] py-[8px] rounded-[8px] cursor-pointer">
-//       <h6 className="text-grey-400 text-[14px] font-semibold">공연 시간</h6>
-//       <div className="flex flex-row items-center gap-[8px]">
-//         <div className="text-grey-800 text-[16px] font-normal flex-grow max-w-full line-clamp-2">
-//           {(() => {
-//             const date = startAt
-//               ? dayjs(new Date(startAt))
-//               : dayjs(new Date("2025-09-11T17:00:00"));
-//             const hour = date.hour();
-//             const timePrefix = hour < 12 ? "이른" : "늦은";
-//             const time12 = date.format("h시 mm분");
-//             return `${date.format("YYYY.MM.DD(ddd)")} ${timePrefix} ${time12}`;
-//           })()}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
