@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import {
-  Address,
   FormDetailDto,
   FormSaveDto,
   FormSaveResponse,
@@ -9,6 +8,7 @@ import {
 } from "../types";
 import dayjs from "dayjs";
 import type { Editor as EditorType } from "@toast-ui/react-editor";
+import type { Address } from "@/shared/types";
 
 interface ImageInfo {
   id: number;
@@ -335,7 +335,7 @@ export const usePromotionPostingStore = create<
     };
   },
 
-  saveForm: ({formId, onSuccess, onError}) => {
+  saveForm: ({ formId, onSuccess, onError }) => {
     const { setVersion, markAsClean, setPending } = get();
     const formData = get().prepareFormData();
 
@@ -363,7 +363,7 @@ export const usePromotionPostingStore = create<
       });
   },
 
-  submitForm: ({formId, onSuccess, onError}) => {
+  submitForm: ({ formId, onSuccess, onError }) => {
     const { setVersion, markAsClean, setPending } = get();
     const formData = get().prepareFormData();
 

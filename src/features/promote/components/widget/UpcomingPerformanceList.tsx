@@ -1,5 +1,6 @@
 "use client";
-import { Address } from "@/features/promote";
+import type { Address } from "@/shared/types";
+
 import { useUpcomingPerformanceList } from "../..";
 import Image from "next/image";
 import dayjs from "dayjs";

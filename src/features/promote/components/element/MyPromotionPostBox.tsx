@@ -4,7 +4,7 @@ import Image from "next/image";
 import dayjs from "dayjs";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { FormDto } from "../../types";
-import { addressToString } from "../../lib/addressToString";
+import { addressToString } from "../../lib";
 
 // MyPromotionPostBox 컴포넌트
 export function MyPromotionPostBox({ form }: { form: FormDto }) {

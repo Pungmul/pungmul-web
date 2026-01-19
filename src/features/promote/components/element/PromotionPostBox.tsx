@@ -3,7 +3,7 @@ import Image from "next/image";
 import dayjs from "dayjs";
 import { UsersIcon } from "@heroicons/react/24/solid";
 import { Promotion } from "../../types";
-import { addressToString } from "../../lib/addressToString";
+import { addressToString } from "../../lib";
 
 // PromotionPostBox 컴포넌트
 export function PromotionPostBox({ promotion }: { promotion: Promotion }) {
