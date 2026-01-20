@@ -1,13 +1,49 @@
 "use client";
 import type { Address } from "@/shared/types";
 
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useUpcomingPerformanceList } from "../..";
+import { LinkChipButton, ListEmptyView } from "@/shared/components";
 import Image from "next/image";
 import dayjs from "dayjs";
 import Link from "next/link";
 
-export default function UpcomingPerformanceList() {
+const defaultUpcomingEmpty = (
+  <ListEmptyView
+    message="관람 예정인 공연이 없어요."
+    action={
+      <LinkChipButton
+        href="/board/promote/l"
+        filled
+        className="inline-flex items-center gap-1"
+      >
+        지금 관람객을 모집중인 공연 확인하기
+        <ChevronRightIcon className="w-4 h-4 flex-shrink-0" />
+      </LinkChipButton>
+    }
+  />
+);
+
+interface UpcomingPerformanceListProps {
+  ListEmptyComponent?: React.ReactNode;
+}
+
+export default function UpcomingPerformanceList({
+  ListEmptyComponent = defaultUpcomingEmpty,
+}: UpcomingPerformanceListProps = {}) {
   const { data: upcomingPerformanceList } = useUpcomingPerformanceList();
+
+  const isEmpty =
+    !upcomingPerformanceList || upcomingPerformanceList.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="flex min-h-0 w-full flex-1 flex-col">
+        {ListEmptyComponent}
+      </div>
+    );
+  }
+
   return (
     <div>
       {upcomingPerformanceList.map((performance) => (

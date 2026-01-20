@@ -2,10 +2,11 @@
 import { useRef } from "react";
 
 import ObserveTrigger from "@/shared/components/ObserveTrigger";
+import { ListEmptyView } from "@/shared/components";
 
 import { PostBoxWithCategory } from "@/features/board/components/element/PostBoxWithCategory";
 
-import { PostWithCategoryName } from '../../types';
+import { PostWithCategoryName } from "../../types";
 import PostBoxSkelleton from "../element/PostBoxSkelleton";
 
 interface PostWithCategoryNameListProps {
@@ -16,17 +17,25 @@ interface PostWithCategoryNameListProps {
   ListEmptyComponent?: React.ReactNode;
 }
 
-export  default function PostWithCategoryNameList({
+const defaultListEmpty = (
+  <ListEmptyView message="아직 게시글이 없습니다" />
+);
+
+export default function PostWithCategoryNameList({
   posts,
   isLoading,
   hasNextPage,
   onLoadMore,
-  ListEmptyComponent = <DefaultListEmptyComponent />,
+  ListEmptyComponent = defaultListEmpty,
 }: PostWithCategoryNameListProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (!isLoading && posts.length === 0) {
-    return ListEmptyComponent;
+    return (
+      <div className="flex min-h-0 w-full flex-1 flex-col">
+        {ListEmptyComponent}
+      </div>
+    );
   }
   return (
     <div ref={containerRef} className="flex flex-col w-full max-w-full">
@@ -45,16 +54,6 @@ export  default function PostWithCategoryNameList({
           />
         </li>
       </ul>
-    </div>
-  );
-}
-
-function DefaultListEmptyComponent(): React.ReactNode {
-  return (
-    <div className="h-full flex-grow flex items-center justify-center py-12 px-4">
-      <div className="text-grey-500 text-center">
-        <p className="text-lg font-medium mb-2">아직 게시글이 없습니다</p>
-      </div>
     </div>
   );
 }

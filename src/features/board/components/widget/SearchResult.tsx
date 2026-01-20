@@ -1,6 +1,7 @@
 "use client";
 import { PostBoxSkelleton } from "@/features/post";
 import { PostList } from "@/features/post";
+import { ListEmptyView } from "@/shared/components";
 
 import { useSearchPostList } from "@/features/board";
 
@@ -49,18 +50,12 @@ export default function SearchResult({
 }
 
 function DefaultSearchListEmptyComponent({
-    keyword,
-  }: {
-    keyword: string;
-  }): React.ReactNode {
-    return (
-      <div className="h-full flex-grow flex items-center justify-center py-12 px-4">
-        <div className="text-grey-500 text-center">
-          <p className="text-lg font-medium mb-2">
-            {`"${keyword}"`}에 대한 검색 결과가 없습니다
-          </p>
-        </div>
-      </div>
-    );
-  }
+  keyword,
+}: {
+  keyword: string;
+}): React.ReactNode {
+  return (
+    <ListEmptyView message={`"${keyword}"에 대한 검색 결과가 없어요.`} />
+  );
+}
   
