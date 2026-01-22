@@ -29,10 +29,9 @@ export const useClubOptions = (): SelectorItem<string | null>[] => {
         value: NO_CLUB_VALUE,
       },
       ...clubList.map((club) => ({
-        label: `${club.clubName} (${club.school})`,
-        value: club.clubName,
+        label: `${club.groupName} (${club.school})`,
+        value: club.groupName,
       })),
     ];
   }, [clubList, isLoading]);
 };
-

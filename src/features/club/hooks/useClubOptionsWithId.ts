@@ -30,10 +30,9 @@ export const useClubOptionsWithId = (): SelectorItem<number | null>[] => {
         value: null,
       },
       ...clubList.map((club) => ({
-        label: `${club.clubName} (${club.school})`,
+        label: `${club.groupName} (${club.school})`,
         value: club.clubId,
       })),
     ];
   }, [clubList, isLoading]);
 };
-

@@ -60,7 +60,7 @@ export const createPersonalSchema = async () => {
   let clubNames: string[];
   try {
     const clubList = await clubListApi();
-    clubNames = clubList.map((club: ClubInfo) => club.clubName);
+    clubNames = clubList.map((club: ClubInfo) => club.groupName);
     // "없음" 옵션 추가
     if (!clubNames.includes("없음")) {
       clubNames.push("없음");

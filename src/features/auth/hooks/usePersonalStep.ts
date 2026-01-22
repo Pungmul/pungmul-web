@@ -7,14 +7,14 @@ import { z } from "zod";
 
 export const usePersonalStep = () => {
   const { data: clubList = [] } = useClubList();
-  
+
   // 클럽 목록이 있으면 동적으로 schema 생성, 없으면 fallback schema 사용
   const dynamicSchema = useMemo(() => {
     if (!clubList || clubList.length === 0) {
       return personalSchema;
     }
 
-    const clubNames = clubList?.map((club) => club.clubName);
+    const clubNames = clubList.map((club) => club.groupName);
     if (!clubNames.includes("없음")) {
       clubNames.push("없음");
     }
@@ -30,7 +30,9 @@ export const usePersonalStep = () => {
       name: z
         .string()
         .min(1, "이름을 입력해주세요")
-        .regex(/^[가-힣]+$/, { message: "올바른 형식의 한글 이름을 입력하세요" }),
+        .regex(/^[가-힣]+$/, {
+          message: "올바른 형식의 한글 이름을 입력하세요",
+        }),
       nickname: z.string().optional(),
       club: createClubEnum(clubNames).nullable().optional(),
       clubAge: z

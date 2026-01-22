@@ -1,7 +1,4 @@
-import {
-  EditPageRequestForm,
-  EditProfileFormValues,
-} from "@/features/my-page";
+import { EditPageRequestForm, EditProfileFormValues } from "@/features/my-page";
 import { ClubInfo } from "@/features/club";
 import { NO_CLUB_VALUE } from "@/features/club/constant";
 
@@ -10,7 +7,9 @@ export const transformEditProfileData = (
   clubList?: ClubInfo[]
 ): EditPageRequestForm => {
   const targetClub = formData.club
-    ? [...(clubList ?? []), { clubName: NO_CLUB_VALUE, clubId: null }].find((club) => club.clubName === formData.club)
+    ? [...(clubList ?? []), { groupName: NO_CLUB_VALUE, clubId: null }].find(
+        (club) => club.groupName === formData.club
+      )
     : null;
 
   return {
@@ -20,5 +19,3 @@ export const transformEditProfileData = (
     clubAge: parseInt(formData.clubAge ?? ""),
   };
 };
-
-
