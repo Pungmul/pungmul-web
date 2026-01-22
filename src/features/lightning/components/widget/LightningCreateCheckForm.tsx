@@ -15,9 +15,6 @@ import { createLightningCircle } from "../../lib";
 import { useCreateLightning } from "../../queries";
 import { useLightningCreateStore } from "../../store/lightningCreateStore";
 
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-
 export default function LightningCreateCheckForm() {
   const router = useRouter();
   const { formData } = useLightningCreateStore();
@@ -29,7 +26,7 @@ export default function LightningCreateCheckForm() {
         Toast.show(createLightningSuccessToastConfig);
         router.replace("/lightning");
       },
-      onError: () => Toast.show(createLightningErrorToastConfig),
+      onError: (error) => Toast.show(createLightningErrorToastConfig(error)),
     });
   };
 
@@ -47,8 +44,8 @@ export default function LightningCreateCheckForm() {
     mapRef.current.setCenter(
       new kakao.maps.LatLng(
         formData.locationPoint.latitude,
-        formData.locationPoint.longitude,
-      ),
+        formData.locationPoint.longitude
+      )
     );
     // 지도 중심 이동
   }, [formData.locationPoint]);

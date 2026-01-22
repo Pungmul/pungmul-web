@@ -23,15 +23,15 @@ export const useLightningBuild = () => {
   const { formData } = useLightningCreateStore();
   const { mutate: createLightningMutation, isPending } = useCreateLightning();
 
-  const runCreateAndNavigate = () => {
+  const handleCreate = () => {
     createLightningMutation(formData, {
       onSuccess: () => {
         Toast.show(createLightningSuccessToastConfig);
         setBuildStep("Completed");
         router.replace("/lightning");
       },
-      onError: () => {
-        Toast.show(createLightningErrorToastConfig);
+      onError: (error) => {
+        Toast.show(createLightningErrorToastConfig(error));
         setBuildStep("Summary");
       },
     });
@@ -50,7 +50,7 @@ export const useLightningBuild = () => {
 
   const handleNextClick = () => {
     if (buildStep === "Summary") {
-      runCreateAndNavigate();
+      handleCreate();
     } else {
       // 다른 단계에서는 다음 단계로 이동
       setBuildStep(
