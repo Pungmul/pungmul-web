@@ -1,12 +1,9 @@
 import { create } from "zustand";
 
-type ToastType = "success" | "error" | "warning" | "info";
+import { ToastConfig } from "../types/toast";
 
-interface ToastProps {
-  message: string;
-  type: ToastType;
-  duration: number;
-}
+/** 스토어 내부 토스트 상태 — ToastConfig와 동일하되 모든 필드 required */
+type ToastProps = Required<ToastConfig>;
 
 interface ToastState {
   visible: boolean;
@@ -27,15 +24,7 @@ export const toastStore = create<ToastState>(() => ({
 }));
 
 export const Toast = {
-  show: ({
-    message,
-    type = "success",
-    duration = 5000,
-  }: {
-    message: string;
-    type?: ToastType;
-    duration?: number;
-  }) => {
+  show: ({ message, type = "success", duration = 5000 }: ToastConfig) => {
     toastStore.setState({
       toast: { message, type, duration },
       visible: true,
@@ -49,4 +38,3 @@ export const Toast = {
     toastStore.setState({ visible: false });
   },
 };
-
