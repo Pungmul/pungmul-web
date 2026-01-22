@@ -2,18 +2,17 @@
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { Toast } from "@/shared";
 import { BottomFixedButton, Header, Spinner } from "@/shared/components";
 import MapContainer from "@/shared/components/MapContainer";
 import { useKakaoMapsEffect } from "@/shared/hooks/useKakaoMaps";
-import { updateLocation } from "@/features/location";
+import { Toast } from "@/shared";
 
-import { createLightningAPI } from "../../api/createLightning";
+import {
+  createLightningErrorToastConfig,
+  createLightningSuccessToastConfig,
+} from "../../constant";
 import { createLightningCircle } from "../../lib";
-import { lightningQueryKeys } from "../../queries";
-import { buildLightningRequest } from "../../services/buildLightningRequest";
+import { useCreateLightning } from "../../queries";
 import { useLightningCreateStore } from "../../store/lightningCreateStore";
 
 export const dynamic = "force-dynamic";
@@ -21,33 +20,18 @@ export const fetchCache = "force-no-store";
 
 export default function LightningCreateCheckForm() {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const { formData, isSubmitting, setIsSubmitting } = useLightningCreateStore();
+  const { formData } = useLightningCreateStore();
+  const { mutate, isPending } = useCreateLightning();
 
-  const { mutate: createLightningMutation } = useMutation({
-    mutationFn: async () => {
-      setIsSubmitting(true);
-      await updateLocation();
-      const request = buildLightningRequest(formData);
-      return createLightningAPI(request);
-    },
-    onSuccess: async () => {
-      Toast.show({ message: "번개 생성에 성공했습니다.", type: "success" });
-      await queryClient.invalidateQueries({
-        queryKey: lightningQueryKeys.lightningList(),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: lightningQueryKeys.status(),
-      });
-      router.replace("/lightning");
-    },
-    onError: () => {
-      Toast.show({ message: "번개 생성에 실패했습니다.", type: "error" });
-    },
-    onSettled: () => {
-      setIsSubmitting(false);
-    },
-  });
+  const handleCreate = () => {
+    mutate(formData, {
+      onSuccess: () => {
+        Toast.show(createLightningSuccessToastConfig);
+        router.replace("/lightning");
+      },
+      onError: () => Toast.show(createLightningErrorToastConfig),
+    });
+  };
 
   const mapRef = useRef<kakao.maps.Map>(null);
 
@@ -158,10 +142,10 @@ export default function LightningCreateCheckForm() {
       {/* 하단 버튼 */}
       <BottomFixedButton
         type="button"
-        onClick={() => createLightningMutation()}
-        disabled={isSubmitting}
+        onClick={handleCreate}
+        disabled={isPending}
       >
-        {isSubmitting ? <Spinner /> : "번개 생성"}
+        {isPending ? <Spinner /> : "번개 생성"}
       </BottomFixedButton>
     </div>
   );

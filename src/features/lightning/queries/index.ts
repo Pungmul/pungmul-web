@@ -7,3 +7,4 @@ export * from './useExitLightningMeeting';
 export * from './useDeleteLightningMeeting';
 export * from './useUpdateUserLocation';
 export * from './useLoadLightningData';
+export * from './useCreateLightning';
