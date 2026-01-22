@@ -59,7 +59,6 @@ export default function LightningCreateCheckForm() {
         <div className="w-full aspect-[20/9] rounded-lg overflow-hidden">
           <MapContainer
             mapRef={mapRef}
-            setIsMapReady={() => {}}
             className="w-full h-full"
             additionalOptions={{ draggable: false, scrollwheel: false }}
           />

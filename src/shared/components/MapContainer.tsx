@@ -24,7 +24,7 @@ export default function MapContainer({
   children?: React.ReactNode;
   className?: string;
   additionalOptions?: Partial<kakao.maps.MapOptions>;
-  setIsMapReady: (ready: boolean) => void;
+  setIsMapReady?: (ready: boolean) => void;
 }) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   // 지도 초기화 (SDK 로드 완료 후)
@@ -49,7 +49,7 @@ export default function MapContainer({
     const mapInstance = new window.kakao.maps.Map(container, options);
 
     mapRef.current = mapInstance;
-    setIsMapReady(true);
+    setIsMapReady?.(true);
   }, [setIsMapReady]);
 
   return (
