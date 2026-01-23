@@ -6,6 +6,7 @@ import {
   ViewDetector,
   AlertModal,
 } from "@/shared/components";
+import { FCMServiceWorkerRegistration } from "@/features/notification";
 
 import "@/app/globals.css";
 
@@ -32,10 +33,11 @@ export default async function Layout({
 }>) {
   return (
     <html lang="ko" className={nanumSquareNeo.variable}>
-      <PinchZoomPreventionScript />
-      <ViewDetector />
-      <AlertModal />
       <body>
+        <PinchZoomPreventionScript />
+        <FCMServiceWorkerRegistration />
+        <ViewDetector />
+        <AlertModal />
         {/* children은 페이지 컴포넌트 */}
         {/* 페이지 컴포넌트가 서버 컴포넌트라도 오류 없이 렌더링 됨 */}
         {children}
