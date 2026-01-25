@@ -82,7 +82,7 @@ const PostDetailOverlay: React.FC<PostDetailOverlayProps> = ({ postId, onClose }
   };
 
   return (
-    <div className="fixed top-0 left-0 h-dvh z-50">
+    <div className="fixed top-0 left-0 h-app z-50">
       <AnimatePresence mode="sync">
         {postId !== undefined && (
           <motion.div
@@ -95,7 +95,7 @@ const PostDetailOverlay: React.FC<PostDetailOverlayProps> = ({ postId, onClose }
               transition: { duration: 0.2, ease: "easeOut" },
             }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute top-0 left-0 w-dvw h-dvh z-10"
+            className="absolute top-0 left-0 w-dvw h-app z-10"
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.5)",
             }}
@@ -126,7 +126,7 @@ const PostDetailOverlay: React.FC<PostDetailOverlayProps> = ({ postId, onClose }
             }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="absolute top-0 left-0 w-dvw h-dvh bg-white z-20 overflow-y-auto"
+            className="absolute top-0 left-0 w-dvw h-app bg-white z-20 overflow-y-auto"
           >
             <PostDetail postId={postId} />
           </motion.div>

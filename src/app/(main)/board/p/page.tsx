@@ -18,7 +18,7 @@ export default async function Posting({
 
   return (
     <div className="w-full bg-grey-100">
-      <div className="w-full md:max-w-[768px] min-h-dvh md:mx-auto h-full bg-background">
+      <div className="w-full md:max-w-[768px] min-h-app md:mx-auto h-full bg-background">
         <Suspense
           clientOnly
           fallback={

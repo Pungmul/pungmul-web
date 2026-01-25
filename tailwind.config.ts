@@ -13,6 +13,12 @@ const config: Config = {
   darkMode: "media", // 시스템 설정에 따라 자동 전환
   theme: {
     extend: {
+      height: {
+        app: "var(--app-height)",
+      },
+      minHeight: {
+        app: "var(--app-height)",
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

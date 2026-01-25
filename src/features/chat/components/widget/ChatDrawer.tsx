@@ -64,7 +64,7 @@ export const ChatDrawer = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="absolute top-0 left-0 w-full h-dvh z-10"
+          className="absolute top-0 left-0 w-full h-app z-10"
           style={{
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}

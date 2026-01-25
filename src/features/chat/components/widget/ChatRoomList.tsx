@@ -19,7 +19,7 @@ export default function ChatRoomList() {
   const [searchKeyword, setSearchKeyword] = useState("");
 
   return (
-    <div className="flex flex-col h-[calc(100vh-65px)] md:h-dvh md:w-[360px] lg:w-[400px] md:border-r md:border-grey-200 w-full">
+    <div className="flex flex-col h-[calc(100vh-65px)] md:h-app md:w-[360px] lg:w-[400px] md:border-r md:border-grey-200 w-full">
       <div className="flex flex-row items-center justify-between flex-shrink-0 h-[56px] px-[24px]">
         <div className="flex-grow" style={{ fontSize: 16, fontWeight: 700 }}>
           채팅 목록

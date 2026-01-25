@@ -53,7 +53,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   if (!token) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center h-dvh gap-[24px]">
+      <div className="flex-1 flex flex-col justify-center items-center h-app gap-[24px]">
         <h1 className="text-2xl">토큰이 유효하지 않습니다: 잘못된 접근입니다.</h1>
         <Button
           className="bg-primary text-background"

@@ -150,7 +150,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
   return ReactDOM.createPortal(
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-50 w-dvh h-dvh justify-center flex flex-col">
+      <div className="fixed inset-0 z-50 w-dvh h-app justify-center flex flex-col">
         {/* Background overlay */}
         <div
           className="absolute inset-0 bg-black bg-opacity-80"

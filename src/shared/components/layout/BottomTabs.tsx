@@ -150,7 +150,7 @@ export default function BottomTabs() {
   return (
     <>
       <nav
-        className={`w-full py-[8px] bg-background flex-shrink-0 border-t sticky z-30 md:border-r md:border-t-0 md:w-auto md:h-dvh px-[32px] ${
+        className={`w-full py-[8px] bg-background flex-shrink-0 border-t sticky z-30 md:border-r md:border-t-0 md:w-auto md:h-app px-[32px] ${
           view === "desktop" ? " top-0" : " bottom-0"
         }`}
         ref={tabsRef}
@@ -273,7 +273,7 @@ export default function BottomTabs() {
             animate={{ x: tabsWidth }}
             exit={{ x: -360 + tabsWidth }}
             transition={{ duration: 0.5 }}
-            className="md:flex hidden fixed left-0 top-0 bottom-0 w-[360px] h-dvh flex-shrink-0  flex-col items-center justify-between bg-background border backdrop-blur-sm z-20"
+            className="md:flex hidden fixed left-0 top-0 bottom-0 w-[360px] h-app flex-shrink-0  flex-col items-center justify-between bg-background border backdrop-blur-sm z-20"
           >
             <Header
               title="알림"

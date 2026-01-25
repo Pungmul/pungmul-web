@@ -9,7 +9,7 @@ export const metadata = {
 export default function PromotionFormPage() {
   return (
     <div className="w-full bg-grey-100">
-      <div className="relative w-full min-h-dvh md:max-w-[768px] h-full mx-auto bg-background">
+      <div className="relative w-full min-h-app md:max-w-[768px] h-full mx-auto bg-background">
         <Suspense
           fallback={
             <div className="w-full h-full flex items-center justify-center bg-background">

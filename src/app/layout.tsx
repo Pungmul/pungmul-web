@@ -27,6 +27,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: "#ffffff",
+  viewportFit: "cover", /* PWA stand-alone 시 노치/홈 인디케이터 영역 대응 */
 };
 
 // export const dynamic = "force-static";

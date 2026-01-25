@@ -14,13 +14,13 @@ export default function RoomPageContent({
       key="responsive-room-page"
       mobile={
         roomId ? (
-          <div className="absolute top-0 left-0 w-full h-dvh z-50">
+          <div className="absolute top-0 left-0 w-full h-app z-50">
             {children}
           </div>
         ) : null
       }
       desktop={
-        <div className="w-full min-w-[50dvw] h-dvh overflow-y-auto">
+        <div className="w-full min-w-[50dvw] h-app overflow-y-auto">
           {children}
         </div>
       }
