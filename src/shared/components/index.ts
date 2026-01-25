@@ -53,3 +53,4 @@ export { WebViewLink } from "./ResponsiveLink";
 
 export { PinchZoomPreventionScript } from "./PreventPinchZoom";
 export { default as ViewDetector } from "./ViewDetector";
+export { default as PWAInstallPrompt } from "./PWAInstallPrompt";

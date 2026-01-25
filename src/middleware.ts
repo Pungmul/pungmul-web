@@ -8,7 +8,8 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith("/icons") ||
     req.nextUrl.pathname.startsWith("/logos") ||
     req.nextUrl.pathname.startsWith("/fonts") ||
-    req.nextUrl.pathname.startsWith("/terms")
+    req.nextUrl.pathname.startsWith("/terms") ||
+    req.nextUrl.pathname.startsWith("/manifest.webmanifest")
   ) {
     return NextResponse.next();
   }

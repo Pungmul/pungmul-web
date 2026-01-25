@@ -5,6 +5,7 @@ import {
   PinchZoomPreventionScript,
   ViewDetector,
   AlertModal,
+  PWAInstallPrompt,
 } from "@/shared/components";
 import { FCMServiceWorkerRegistration } from "@/features/notification";
 
@@ -22,6 +23,10 @@ const nanumSquareNeo = localFont({
 
 export const viewport: Viewport = {
   userScalable: false,
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#ffffff",
 };
 
 // export const dynamic = "force-static";
@@ -36,6 +41,7 @@ export default async function Layout({
       <body>
         <PinchZoomPreventionScript />
         <FCMServiceWorkerRegistration />
+        <PWAInstallPrompt />
         <ViewDetector />
         <AlertModal />
         {/* children은 페이지 컴포넌트 */}
