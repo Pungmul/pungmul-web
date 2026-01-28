@@ -1,17 +1,11 @@
 import { useSignUpRequest } from "../queries/useSignUpRequest";
-import {
-  FullSignUpFormData,
-  fullSignUpSchema,
-} from "../types/sign-up.schemas";
-import { useRouter } from "next/navigation";
+import { FullSignUpFormData, fullSignUpSchema } from "../types/sign-up.schemas";
 import { transformSignUpData } from "../services/signUpService";
 import { useClubList } from "@pThunder/features/club";
 
 const useSignUpRequestHook = () => {
-  const router = useRouter();
-
   const { data: clubList = [] } = useClubList();
-  const { mutate: submitSignUp, isPending, error } = useSignUpRequest();
+  const { mutateAsync: submitSignUp, isPending, error } = useSignUpRequest();
 
   interface SubmitSignUpOptions {
     onSuccess?: () => void;
@@ -20,7 +14,7 @@ const useSignUpRequestHook = () => {
 
   const submitFinalSignUp = async (
     formData: FullSignUpFormData,
-    options?: SubmitSignUpOptions
+    options?: SubmitSignUpOptions,
   ) => {
     try {
       // 스키마 검증
@@ -30,15 +24,8 @@ const useSignUpRequestHook = () => {
       const finalData = transformSignUpData(clubList, formData);
 
       // API 호출
-      submitSignUp(finalData, {
-        onSuccess: () => {
-          router.push("/home");
-          options?.onSuccess?.();
-        },
-        onError: (error: Error) => {
-          options?.onError?.(error);
-        },
-      });
+      await submitSignUp(finalData);
+      options?.onSuccess?.();
     } catch (error: unknown) {
       options?.onError?.(error as Error);
     }
