@@ -1,17 +1,20 @@
+import { useState } from "react";
 import { useKakaoSignUpRequest } from "../queries/useKakaoSignUpRequest";
 import {
   FullSignUpFormData,
   fullSignUpSchema,
 } from "../types/kakao-sign-up.schemas";
-import { useRouter } from "next/navigation";
 import { transformKakaoSignUpData } from "../services/kakaoSignUpService";
 import { useClubList } from "@pThunder/features/club";
 
 const useKakaoSignUpRequestHook = () => {
-  const router = useRouter();
-
   const { data: clubList = [] } = useClubList();
-  const { mutate: submitSignUp, isPending, error } = useKakaoSignUpRequest();
+  const [isLoading, setIsLoading] = useState(true);
+  const {
+    mutateAsync: submitSignUp,
+    isPending,
+    error,
+  } = useKakaoSignUpRequest();
 
   interface SubmitSignUpOptions {
     onSuccess?: () => void;
@@ -20,7 +23,7 @@ const useKakaoSignUpRequestHook = () => {
 
   const submitFinalSignUp = async (
     formData: FullSignUpFormData,
-    options?: SubmitSignUpOptions
+    options?: SubmitSignUpOptions,
   ) => {
     try {
       // 스키마 검증
@@ -30,23 +33,18 @@ const useKakaoSignUpRequestHook = () => {
       const finalData = transformKakaoSignUpData(clubList, formData);
 
       // API 호출
-      submitSignUp(finalData, {
-        onSuccess: () => {
-          router.push("/home");
-          options?.onSuccess?.();
-        },
-        onError: (error: Error) => {
-          options?.onError?.(error);
-        },
-      });
+      await submitSignUp(finalData);
+      options?.onSuccess?.();
     } catch (error: unknown) {
       options?.onError?.(error as Error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return {
     submitFinalSignUp,
-    isPending,
+    isPending: isPending || isLoading,
     error,
   };
 };

@@ -10,13 +10,17 @@ export async function POST(req: Request) {
     const cookieStore = await cookies();
 
     const signUpToken = cookieStore.get("signUpToken")?.value;
+    const formData = new FormData();
+
+    const accountData = new Blob([JSON.stringify({ ...form, signUpToken })], {
+      type: "application/json",
+    });
+    formData.append("accountData", accountData);
+    formData.append("profile", new Blob([], { type: "image/png" }));
 
     const response = await fetch(proxyUrl, {
       method: "POST",
-      body: JSON.stringify({ signUpToken, ...form }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: formData, // 원본 body를 그대로 전달
     });
 
     if (!response.ok) {
@@ -50,7 +54,6 @@ export async function POST(req: Request) {
       message: "success to Sign Up! & Login!",
       token: accessToken,
     });
-
   } catch (error) {
     console.error("프록시 처리 중 에러:", error);
     return new Response("프록시 처리 실패", { status: 500 });

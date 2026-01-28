@@ -40,9 +40,23 @@ function KaKaoSignUpStepForms({
   const personalForm = usePersonalStep();
 
   return match(currentStep)
-    .with("약관동의", () => <TermsStep {...termsForm} onSubmit={onNextStep} />)
+    .with("약관동의", () => (
+      <TermsStep
+        {...termsForm}
+        onSubmit={(data) => {
+          rest.onSubmit({ ...rest.data, ...data });
+          onNextStep();
+        }}
+      />
+    ))
     .with("개인정보입력", () => (
-      <PersonalStep {...personalForm} onSubmit={onNextStep} />
+      <PersonalStep
+        {...personalForm}
+        onSubmit={(data) => {
+          rest.onSubmit({ ...rest.data, ...data });
+          onNextStep();
+        }}
+      />
     ))
     .with("완료", () => (
       <CompleteStep
